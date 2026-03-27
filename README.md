@@ -1,0 +1,1 @@
+In this repository, we implement a few point process samplers from the statistical physics literature, run hyperuniformity diagnostics, and compare the complexity of the samplers.
