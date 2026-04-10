@@ -7,5 +7,10 @@ Discussion 3 Avril RLR-AC
     - Voir Shih-casiulis-Martiniani (ils ont un répo github) ou Morse-Torquato-? 
   - on essaiera aussi Laguerre/Voronoi cells
 
+Discussion 10 Avril RLR-RB-AC
+  - ecrire un .tex sur squarenet
+  - integrer SF, Freud, squarenet ensemble; Mettre a jour SF (requirement python, poetry)
+  - plot différents estimateurs du structure facteur sur différents point process, comparer aux expressions théoriques
+
 
 Prochain RDV: Vendredi 27 avril à 15h15
