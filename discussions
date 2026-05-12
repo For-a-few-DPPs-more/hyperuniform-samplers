@@ -14,3 +14,11 @@ Discussion 10 Avril RLR-RB-AC
 
 
 Prochain RDV: Vendredi 27 avril à 15h15
+
+Discussion 12 Mai:
+-Vérifier le scattering en comparant avec Diala
+-Ecrire le .tex sur le tri, les estimateurs de Non Uniform fft et de corelation fonction
+-noter les résultats d'expériences, rassembler les plots
+-preparer une experience reproductible pour Rémi (notebook clair et .py a cote)
+-essayer de prouver des résultats de convergence sur SquareNet
+-mettre tout ca dans le github
