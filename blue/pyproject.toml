@@ -1,0 +1,37 @@
+[build-system]
+requires = ["hatchling >= 1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name        = "blue_sampler"
+version     = "0.1.4"
+description = "Stealthy point-pattern sampling on the unit torus"
+readme      = "README.md"
+license     = { text = "MIT" }
+requires-python = ">=3.10"
+
+keywords = [
+    "blue noise",
+    "stealthy",
+    "point process",
+    "sampling",
+    "jax",
+]
+
+dependencies = [
+    "numpy",
+    "jax",
+    "jaxlib",
+    "matplotlib",
+    "requests",
+    "squarenet",
+]
+
+[project.urls]
+Repository = "https://github.com/For-a-few-DPPs-more/hyperuniform-samplers"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/blue_sampler"]
+
+[tool.ruff]
+line-length = 100
