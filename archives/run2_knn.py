@@ -42,7 +42,7 @@ from ..blue.src.blue_sampler.kernels import (
     spectral_kernel,
 )
 
-from ..blue.src.blue_sampler.run import _build_bruteforce
+from ..blue.src.blue_sampler.run_recursive import _build_bruteforce
 from ..blue.src.blue_sampler.progress import ProgressLogger, _LevelCtx
 
 

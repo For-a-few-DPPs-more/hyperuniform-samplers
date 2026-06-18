@@ -15,10 +15,12 @@ Quick start
 from .entry_point import sample
 from .viz import plot, plot_structure_factor
 from .math_utils import structure_factor
+from .warm_start import sobol_init
 
 __all__ = [
     "sample",
     "plot",
     "plot_structure_factor",
     "structure_factor",
+    "sobol_init",
 ]

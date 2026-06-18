@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name        = "blue_sampler"
-version     = "0.1.4"
+version     = "0.1.7"
 description = "Stealthy point-pattern sampling on the unit torus"
 readme      = "README.md"
 license     = { text = "MIT" }
@@ -15,7 +15,6 @@ keywords = [
     "stealthy",
     "point process",
     "sampling",
-    "jax",
 ]
 
 dependencies = [
