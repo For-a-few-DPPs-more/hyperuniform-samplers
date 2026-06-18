@@ -8,7 +8,9 @@ blue_sampler is available on PyPi:
 
 import blue_sampler as blue
 
-x = blue.sample(N = 10_000, D = 3)
+x = blue.sample_points(N = 10_000, D = 3)
 blue.plot(x)
 blue.plot_structure_factor(x) #estimated using scattering intensity
+
+quad = blue.sample_tessels(N = 2**10) #will sample 2D quadrilaterals following a blue pattern
 ```

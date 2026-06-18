@@ -12,15 +12,16 @@ Quick start
 >>> blue.plot(x)
 >>> blue.plot_structure_factor(x)
 """
-from .entry_point import sample
+from .entry_point import sample_points, sample_tessels
 from .viz import plot, plot_structure_factor
 from .math_utils import structure_factor
 from .warm_start import sobol_init
 
 __all__ = [
-    "sample",
-    "plot",
-    "plot_structure_factor",
+    "sample_points",
+    "sample_tessels",
     "structure_factor",
     "sobol_init",
+    "plot",
+    "plot_structure_factor",
 ]

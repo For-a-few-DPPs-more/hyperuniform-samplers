@@ -75,8 +75,8 @@ def plot(
 
 def plot_structure_factor(
     points: np.ndarray,
-    bins: int = 100,
-    resolution: float = 30.0,
+    resolution: float = 1.0,
+    smoothed: bool = True,
     ax: plt.Axes | None = None,
     **plot_kw,
 ) -> plt.Figure:
@@ -88,10 +88,9 @@ def plot_structure_factor(
     ----------
     points : (N, D) array
         Point coordinates in [0, 1)^D.
-    bins : int
-        Number of radial bins for the structure-factor estimate.
     resolution : float
-        Random wave-vector density (vectors per bin) for the estimate.
+        increase the number of sampled wave vectors (default 1000)
+    smoothed: whether to apply local average or plot raw values (more fluctuations)
     ax : matplotlib Axes | None
         Existing axes to draw into.  When *None* a new figure is created.
     **plot_kw
@@ -102,7 +101,33 @@ def plot_structure_factor(
     fig : matplotlib.figure.Figure
     """
     pts = np.asarray(points).reshape(-1, np.asarray(points).shape[-1])
-    k, S = _structure_factor(pts, nbins=bins, resolution=resolution)
+    k, S = _structure_factor(pts, resolution=resolution)
+
+
+    def smooth_loglog(k, S, sigma):
+        logk = np.log(k)
+        logS = np.log(S)
+
+        out = np.empty_like(logS)
+
+        for i in range(len(k)):
+            w = np.exp(-(logk-logk[i])**2/(2*sigma**2))
+            w /= w.sum()
+            out[i] = np.sum(w*logS)
+
+        return np.exp(out)
+
+    if smoothed :
+        logk = np.log(k)
+        sigma = (logk[-1] - logk[0])*0.01
+        logS = np.log(S)
+
+        S = np.empty_like(logS)
+
+        for i in range(len(k)):
+            w = np.exp(-(logk-logk[i])**2/(2*sigma**2))
+            w /= w.sum()
+            S[i] = np.exp(np.sum(w*logS))
 
     kw = dict(marker="o", markersize=2, linewidth=1)
     kw.update(plot_kw)
@@ -113,10 +138,17 @@ def plot_structure_factor(
         fig = ax.get_figure()
 
     ax.loglog(k, S, **kw)
-    ax.set_xlabel("k")
+    ax.set_xlabel("k = 2pi/L sqrt(nx2+ny2)")
     ax.set_ylabel("S(k)")
-    ax.set_title("Structure factor  (log-log)")
+    ax.set_title("Structure factor (log-log, scattering intensity)")
     ax.grid(True, which="both", alpha=0.4)
     plt.tight_layout()
     plt.show()
     return fig
+
+def plot_tessel(ax, tessels):
+    for quad in tessels:
+        qloop = np.vstack([quad, quad[0]])
+        ax.plot(qloop[:,0], qloop[:,1], '-o', ms=3)
+        ax.fill(qloop[:,0], qloop[:,1], alpha=0.25)
+    return ax

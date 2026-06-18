@@ -1,14 +1,19 @@
 """
 Public Entry Point :
-blue.sample is the main fonction of blue, calling the internal solver under the hook
+blue.sample_points is the main fonction of blue, calling the internal solver under the hook.
+blue can also sample tessels, but only in 2D.
 """
 from typing import Literal
 import numpy as np
+import matplotlib.pyplot as plt
 from .run_bruteforce import _bruteforce_pipeline
 from .run_recursive import _recursive_pipeline
 from .run_warmstarted import _warmstarted_pipeline
 from .warm_start import sobol_init
 from .progress import ProgressLogger
+
+from .viz import plot_tessel
+from .tessels import fair_random_split
 
 _PRESETS: dict[int, dict] = {
     2: dict(spatial_radius=7, spectral_radius=7, LR_spatial=0.1,  LR_spectral=0.1, expension_factor=0.3, S=1.0),
@@ -17,7 +22,7 @@ _PRESETS: dict[int, dict] = {
 }
 
 
-def sample(
+def sample_points(
     N: int,
     D: int,
     bruteforce: bool = False,
@@ -109,3 +114,38 @@ def sample(
         _is_root=False,
         _is_leaf=True,
     )
+
+
+def sample_tessels(N = 2**10, display = True):
+    """
+    Starting from the unit square, recursively split it in random quadrilaterals.
+    If display is true, display the 9 first steps of the recursive spliting.
+
+    Returns
+    -------------
+        quad np.array (2**depth, 4, 2)
+        a tesselation composed of 2**depth quadrilaterals  with same area.
+
+    Notes
+    -------------
+        support only for 2D geometry and powers of 2 number of tessels
+        steps after the 9th split are NOT displayed as quads would be to small 
+        to plot theim.
+    """
+    depth = int(np.log2(N))
+    assert 2**depth == N, "N must be a power of 2"
+    if display:
+        _, axes = plt.subplots(3, 3, figsize=(10,10))
+    
+    quad = np.array([[[0,0],[1.0,0.0],[1.0,1.0],[0.0,1.0]]]) #initialisation as the unit square
+    for k in range(depth):
+        if (k < 9) & display:
+            ki, kj = k//3, k%3
+            plot_tessel(ax = axes[ki, kj], tessels = quad)
+            axes[ki, kj].axis("off")
+        quad = fair_random_split(quad)
+    
+    if display:
+        plt.tight_layout()
+        plt.show()
+    return quad

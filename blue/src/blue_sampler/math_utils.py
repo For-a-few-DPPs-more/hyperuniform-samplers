@@ -194,14 +194,38 @@ def random_rotations(x, batch_size, Dout, Din):
     )
     return offsets
 
+def sample_wave_vectors(kmed: int, kmax: int, D: int, n_high: int) -> np.ndarray:
+    # ─────────────────────────────
+    # LOW k : exhaustive lattice
+    # ─────────────────────────────
+
+    low = integers_in_half_ball(kmed, D)
+   
+    # ─────────────────────────────
+    # HIGH k : isotropic sampling
+    # ─────────────────────────────
+
+    dirs = np.random.normal(size=(n_high, D))
+    norm_dirs = np.linalg.norm(dirs, axis=1, keepdims=True)
+    
+    dirs = dirs / norm_dirs
+
+    r = np.random.uniform(kmed, kmax, size=(len(dirs), 1))
+    high = np.rint(r * dirs).astype(int)
+
+    # remove zeros + duplicates 
+    vecs = np.concatenate([low, high], axis=0)
+    vecs = vecs[np.any(vecs != 0, axis=1)]
+    
+    return np.unique(vecs, axis=0)
+
 # ──────────────────────────────────────────────────────────────────────────────
 # Structure factor
 # ──────────────────────────────────────────────────────────────────────────────
 
 def structure_factor(
     points: np.ndarray,
-    nbins: int = 100,
-    resolution: float = 30.0,
+    resolution: float = 1.0,
 ) -> tuple[np.ndarray, np.ndarray]:
     """
     Estimate the radial structure factor S(k) via scattering intensity.
@@ -209,30 +233,28 @@ def structure_factor(
     Parameters
     ----------
     points     : (N, D) array of point coordinates in [0, 1)^D.
-    nbins      : number of radial bins.
-    resolution : how many random wave-vectors to sample per bin.
+    resolution : increase the number of sampled wave vectors.
 
     Returns
     -------
-    k : (M,) float array — bin centres.
-    S : (M,) float array — mean S(k) per non-empty bin.
+    k : (M,) float array — exact wave-vector magnitudes.
+    S : (M,) float array — exact S(k) values.
     """
     pts = np.asarray(points)
+    if pts.size == 0:
+        return np.empty((0,)), np.empty((0,))
+        
     N, D = pts.shape
 
-    kmed = int(1_000 ** (1.0 / D))
-    kmax = int(2 * N ** (1.0 / D))
-    bins = np.linspace(0, kmax, nbins)
-
+    kmed = max(int(1_000 ** (1.0 / D)), 1)
+    kmax = 2 * N ** (1.0 / D)
+    
+    # Edge case: handle kmed potentially larger or equal to kmax
+    if kmax <= kmed:
+        kmax = kmed + 1
     # Random + deterministic wave-vector sampling
-    nvecs = np.random.randint(-kmax, kmax + 1, size=(int(resolution * nbins), D))
-    nvecs = np.concatenate([nvecs, integers_in_half_ball(kmed, D)], axis=0)
-    nvecs = nvecs[np.any(nvecs != 0, axis=1)]
-
-    knorm   = np.linalg.norm(nvecs, axis=1)
-    bin_idx = np.searchsorted(bins, knorm) - 1
-    valid   = (bin_idx >= 0) & (bin_idx < len(bins) - 1)
-    nvecs, bin_idx = nvecs[valid], bin_idx[valid]
+    n_high = int(resolution * 1000) 
+    nvecs = sample_wave_vectors(kmed, kmax, D, n_high)
 
     kvecs = jnp.array(2.0 * np.pi * nvecs)
     pts_j = jnp.array(pts)
@@ -242,14 +264,15 @@ def structure_factor(
         return jnp.abs(rho) ** 2 / N
 
     Sk = np.asarray(jax.lax.map(Sk_one, kvecs))
+    knorm2 = np.sum(nvecs**2, axis=1)
+    unique_knorm2, inverse_indices = np.unique(knorm2, return_inverse=True)
+    unique_k = 2*np.pi*np.sqrt(unique_knorm2)
+    
+    S_sum = np.bincount(inverse_indices, weights=Sk)
+    counts = np.bincount(inverse_indices)
+    unique_S = S_sum / counts
 
-    n_bins = len(bins) - 1
-    S_sum  = np.bincount(bin_idx, weights=Sk, minlength=n_bins)
-    counts = np.bincount(bin_idx,             minlength=n_bins)
-
-    S      = np.zeros_like(S_sum, dtype=float)
-    nz     = counts > 0
-    S[nz]  = S_sum[nz] / counts[nz]
-
-    centres = 0.5 * (bins[:-1] + bins[1:])
-    return centres[nz], S[nz]
+    # Sort by wave-vector magnitude for convenience
+    sort_idx = np.argsort(unique_k)
+    
+    return unique_k[sort_idx], unique_S[sort_idx]
