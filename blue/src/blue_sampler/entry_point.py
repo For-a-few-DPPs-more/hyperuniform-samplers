@@ -116,36 +116,92 @@ def sample_points(
     )
 
 
-def sample_tessels(N = 2**10, display = True):
+def sample_tessels(N = 2**10, targets = None, display = True):
     """
-    Starting from the unit square, recursively split it in random quadrilaterals.
-    If display is true, display the 9 first steps of the recursive spliting.
+    Starting from the unit square, recursively split it into random quadrilaterals.
+    If targets is None, splits are computed to achieve equal areas.
+    If targets is provided, splits are computed to achieve a median separation of the atoms.
+
+    If display is True, displays the first 9 steps of the recursive splitting.
+
+    Parameters
+    ----------
+    N : int, optional
+        Number of final tessels (must be a power of 2). Default is 1024.
+    targets : np.array of shape (K, 2) or (1, K, 2), optional
+        Coordinates of the atoms to split, in the [0,1)**D unit box.
+        K must be a multiple of N.
+    display : bool, optional
+        If True, plots the first 9 steps of the tessellation.
 
     Returns
-    -------------
-        quad np.array (2**depth, 4, 2)
-        a tesselation composed of 2**depth quadrilaterals  with same area.
+    -------
+    If targets is None:
+        quad : np.array of shape (N, 4, 2)
+            A tessellation composed of N quadrilaterals with equal area.
+    If targets is provided:
+        quad : np.array of shape (N, 4, 2)
+            A tessellation composed of N quadrilaterals.
+        targets : np.array of shape (N, K/N, 2)
+            The atoms distributed among their respective final quadrilaterals.
 
     Notes
-    -------------
-        support only for 2D geometry and powers of 2 number of tessels
-        steps after the 9th split are NOT displayed as quads would be to small 
-        to plot theim.
+    -----
+    Only supports 2D geometry and a power-of-two number of tessels (N).
+    Steps after the 9th split are NOT displayed as the quadrilaterals would 
+    be too small to be properly plotted.
+    A typical use case for `targets` is adaptive tessellation.
+    `targets` can, for example, be i.i.d. points sampled from a target density.
+    The final tessellation inherits the empirical variance of the sample. 
+    the more targets provided, the better the approximation, but the slower 
+    the computation (K/N should be at least 100 for a decent tesselation).
     """
     depth = int(np.log2(N))
     assert 2**depth == N, "N must be a power of 2"
-    if display:
-        _, axes = plt.subplots(3, 3, figsize=(10,10))
+
+    has_targets = targets is not None
     
-    quad = np.array([[[0,0],[1.0,0.0],[1.0,1.0],[0.0,1.0]]]) #initialisation as the unit square
+    if has_targets:
+        if targets.ndim == 2:
+            targets = targets[None, ...]
+        assert targets.shape[1] % N == 0, f"The number of targets ({targets.shape[1]}) must be a multiple of N ({N})."
+
+    if display:
+        # 1. Calcul dynamique de la grille (max 12 subplots)
+        n_plots = min(depth, 12)
+        ncols = min(3, n_plots) if n_plots > 0 else 1
+        nrows = int(np.ceil(n_plots / ncols))
+        
+        # Échelle cohérente : 4 unités de taille par subplot
+        fig, axes = plt.subplots(nrows, ncols, figsize=(4 * ncols, 4 * nrows))
+        
+        # Astuce : on aplatit pour indexer directement avec axes[k]
+        axes = np.atleast_1d(axes).flatten()
+    
+    # Initial quad
+    quad = np.array([[[0.0, 0.0], [1.0, 0.0], [1.0, 1.0], [0.0, 1.0]]]) 
+    
     for k in range(depth):
-        if (k < 9) & display:
-            ki, kj = k//3, k%3
-            plot_tessel(ax = axes[ki, kj], tessels = quad)
-            axes[ki, kj].axis("off")
-        quad = fair_random_split(quad)
+        if (k < 12) & display:
+            plot_tessel(ax=axes[k], tessels=quad)
+            axes[k].set_aspect('equal') 
+            axes[k].axis("off")
+            
+        if has_targets:
+            eps = 1e-9
+            targets = np.clip(targets, 0.0 + eps, 1.0 - eps)
+            quad, targets = fair_random_split(quad, targets=targets)
+        else:
+            quad = fair_random_split(quad)
     
     if display:
+        for j in range(n_plots, len(axes)):
+            axes[j].axis('off')
+            
         plt.tight_layout()
         plt.show()
+        
+    if has_targets:
+        return quad, targets
+        
     return quad
