@@ -225,7 +225,7 @@ def sample_wave_vectors(kmed: int, kmax: int, D: int, n_high: int) -> np.ndarray
 
 def structure_factor(
     points: np.ndarray,
-    resolution: float = 1.0,
+    resolution: int = 2000,
 ) -> tuple[np.ndarray, np.ndarray]:
     """
     Estimate the radial structure factor S(k) via scattering intensity.
@@ -233,12 +233,18 @@ def structure_factor(
     Parameters
     ----------
     points     : (N, D) array of point coordinates in [0, 1)^D.
-    resolution : increase the number of sampled wave vectors.
-
+    resolution : number of sampled wave vectors used to estimate sf.
     Returns
     -------
     k : (M,) float array — exact wave-vector magnitudes.
     S : (M,) float array — exact S(k) values.
+
+    Note
+    ----
+    beyond a radius fixed to capture 1/4 of the "resolution"
+    budget, ALL allowed wavevectors are sampled to get maximal
+    precision on low frequencies. Remaining budget is 
+    shared evenly accross all pertinent frequency scales.
     """
     pts = np.asarray(points)
     if pts.size == 0:
@@ -246,14 +252,14 @@ def structure_factor(
         
     N, D = pts.shape
 
-    kmed = max(int(1_000 ** (1.0 / D)), 1)
+    kmed = max(int((resolution/4.0) ** (1.0 / D)), 1)
     kmax = 2 * N ** (1.0 / D)
     
     # Edge case: handle kmed potentially larger or equal to kmax
     if kmax <= kmed:
         kmax = kmed + 1
     # Random + deterministic wave-vector sampling
-    n_high = int(resolution * 1000) 
+    n_high = int(resolution*3.0/4.0) 
     nvecs = sample_wave_vectors(kmed, kmax, D, n_high)
 
     kvecs = jnp.array(2.0 * np.pi * nvecs)

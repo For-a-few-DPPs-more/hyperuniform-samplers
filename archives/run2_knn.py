@@ -31,18 +31,18 @@ import jax
 import jax.numpy as jnp
 from sklearn.neighbors import BallTree
 
-from ..blue.src.blue_sampler.math_utils import (
+from ..blue.src.blue_sampler.math import (
     integers_in_half_ball,
     torus_wrap,
     prepare_wave_vectors,
 )
-from ..blue.src.blue_sampler.kernels import (
+from ..blue.src.blue_sampler.grad.kernels import (
     gauss_kernel,
     gauss_sin_kernel,
     spectral_kernel,
 )
 
-from ..blue.src.blue_sampler.run_recursive import _build_bruteforce
+from ..blue.src.blue_sampler.run.run_recursive import _build_bruteforce
 from ..blue.src.blue_sampler.progress import ProgressLogger, _LevelCtx
 
 
@@ -232,7 +232,7 @@ def run_knn_pipeline(
             return jax.lax.fori_loop(0, N_ITER, outer_step, x_val)
 
         # ── clone helper (flat version) ──────────────────────────────────────
-        from ..blue.src.blue_sampler.math_utils import simplex, random_rotations
+        from ..blue.src.blue_sampler.math import simplex, random_rotations
 
         Clone_simplex = simplex(Dsimp)
 

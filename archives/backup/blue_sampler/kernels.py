@@ -7,7 +7,7 @@ from __future__ import annotations
 import numpy as np
 import jax
 import jax.numpy as jnp
-from .math_utils import torus_delta, clean_grad
+from .math import torus_delta, clean_grad
 
 
 

@@ -1,11 +1,15 @@
 # blue-sampler
 
-Generate **stealthy point patterns** — low-discrepancy, spectrally isotropic
-samples on the unit torus [0, 1)^D.
+Generate large **stealthy point patterns** on the unit torus [0, 1)^D.
 
-Stealthy patterns suppress long-range density fluctuations while remaining
-aperiodic.  They are useful in rendering, quadrature, and computational
-physics wherever quasi-random, isotropic spatial coverage is needed.
+Stealthy point patterns have vanishing density fluctuations at low ("blue")
+frequencies, making them useful for Monte Carlo integration, image
+stippling, and any application that needs well-spread, low-discrepancy
+points.
+
+The blue noise sampler implemented here have linear complexity in the number of
+points and the dimension (per gradient step), and run in under 10 minutes for 
+1 million points 2D points.
 
 ## Installation
 
@@ -19,39 +23,25 @@ pip install blue_sampler
 import blue_sampler as blue
 
 # 10 000 points in 2-D
-x = blue.sample_points(10_000)
+x = blue.sample_points(N=10_000)
 blue.plot(x)
 blue.plot_structure_factor(x)
 
-# 3-D
-x = blue.sample_points(5_000, D=3)
+# arbitrary dimension D
+x = blue.sample_points(N=2_000, D=5)
 
-# Tessels (only supports 2D and  N has to be a power of 2)
-quad = blue.sample_tessels(N=2**10)
+# image stippling
+x = blue.im2points(image="zebra.jpg")
 ```
+
 ## Supported dimensions
 
-| D | Notes |
-|---|-------|
-| 2 | Fast, recommended for exploration |
-| 3 | ~3× slower than 2-D |
-|4/5| Requires more iterations |
-|>= 6| Only with bruteforce method and thus for small sample size (<10_000 points)
-
-## Algorithm overview
-
-The pipeline alternates between:
-
-1. **Spatial gradient** — short-range Gaussian repulsion via
-   neighbour convolution on the torus.
-2. **Spectral gradient** — minimises the structure factor S(k) for k below
-   a chosen cut-off, using a set of all the wave vectors within an integer
-   half-ball.
-3. **Grid assignment** (SquareNet) — periodic re-assignment to a regular
-   grid for efficient sparse local operations.
-
-For N ≤ Z 000 a direct O(N²) bootstrap is used.  For larger N a
-hierarchical strategy clones and refines a coarser solution.
+| D    | Notes                                 |
+|------|----------------------------------------|
+| 2    | Fast, recommended for exploration      |
+| 3    | ~2x slower than 2-D                    |
+| 4–5  | Requires more iterations               |
+| ≥ 6  | Experimental, for small sample sizes   |
 
 ## License
 

@@ -14,8 +14,8 @@ from numpy.typing import NDArray
 import matplotlib.pyplot as plt
 
 from .math import structure_factor as _structure_factor
-from .run.run_tessels import back_merge_tessels
-from .run.run_clusters import back_merge_clusters
+from .run_tessels import back_merge_tessels
+from .run_clusters import back_merge_clusters
 
 
 # ---------------------------------------------------------------------
@@ -24,7 +24,7 @@ from .run.run_clusters import back_merge_clusters
 
 def plot(
     points: NDArray,
-    auto_zoom: bool = False,
+    auto_zoom: bool = True,
     max_points: int = 30_000,
     ax: plt.Axes | None = None,
     return_fig: bool = False,
