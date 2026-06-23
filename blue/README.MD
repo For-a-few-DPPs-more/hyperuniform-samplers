@@ -1,5 +1,7 @@
 # blue-sampler
 
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/For-a-few-DPPs-more/hyperuniform-samplers/blob/main/blue/examples.ipynb)
+
 Generate large **stealthy point patterns** on the unit torus [0, 1)^D.
 
 Stealthy point patterns have vanishing density fluctuations at low ("blue")
@@ -7,9 +9,8 @@ frequencies, making them useful for Monte Carlo integration, image
 stippling, and any application that needs well-spread, low-discrepancy
 points.
 
-The blue noise sampler implemented here have linear complexity in the number of
-points and the dimension (per gradient step), and run in under 10 minutes for 
-1 million points 2D points.
+All samplers implemented here have **linear** complexity in the number of
+points, and run in under 10 minutes for 1 million points.
 
 ## Installation
 
@@ -33,6 +34,8 @@ x = blue.sample_points(N=2_000, D=5)
 # image stippling
 x = blue.im2points(image="zebra.jpg")
 ```
+
+![Zebra stippled with stealthy points](https://raw.githubusercontent.com/For-a-few-DPPs-more/hyperuniform-samplers/main/blue/zebrapoints.png)
 
 ## Supported dimensions
 
