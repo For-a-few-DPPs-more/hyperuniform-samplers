@@ -12,12 +12,13 @@ Quick start
 >>> blue.plot(x)
 >>> blue.plot_structure_factor(x)
 """
-from .api import sample_points, sample_tessels, sample_clusters, from_geometry
+from .api import im2points, sample_points, sample_tessels, sample_clusters, from_geometry
 from .viz import plot, plot_structure_factor, plot_tessels, plot_clusters
 from .math import structure_factor
 from .datasets import generate_dataset
 
 __all__ = [
+    "im2points",
     "sample_points",
     "sample_tessels",
     "sample_clusters",

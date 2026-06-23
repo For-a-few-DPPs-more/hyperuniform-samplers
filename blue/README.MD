@@ -10,7 +10,7 @@ stippling, and any application that needs well-spread, low-discrepancy
 points.
 
 The blue noise sampler implemented here have **linear** complexity in the 
-number of points and the dimension, and run in under 15 minutes for 1 million points.
+number of points and the dimension, and run in under 15 minutes for 1 million 2D points.
 
 ## Installation
 

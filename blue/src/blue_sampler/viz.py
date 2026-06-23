@@ -66,7 +66,7 @@ def plot(
         zoom = (max_points / len(pts)) ** (1.0 / D)
         pts = pts[(pts <= zoom).all(axis=1)]
 
-    kw = dict(s=0.4, color="black")
+    kw = dict(s=10_000/len(pts), color="black")
     kw.update(scatter_kw)
 
     if ax is None:
