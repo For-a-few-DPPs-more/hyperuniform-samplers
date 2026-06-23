@@ -1,16 +1,50 @@
-In this repository, we implement a few point process samplers from the statistical physics literature, run hyperuniformity diagnostics, and compare the complexity of the samplers.
+# blue-sampler
 
-📦 This repository contains the blue_sampler package (see blue.src).
-blue_sampler is available on PyPi:
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/For-a-few-DPPs-more/hyperuniform-samplers/blob/main/examples.ipynb)
+
+Generate large **stealthy point patterns** on the unit torus [0, 1)^D.
+
+Stealthy point patterns have vanishing density fluctuations at low ("blue")
+frequencies, making them useful for Monte Carlo integration, image
+stippling, and any application that needs well-spread, low-discrepancy
+points.
+
+The blue noise sampler implemented here have **linear** complexity in the 
+number of points and the dimension, and run in under 15 minutes for 1 million points.
+
+## Installation
+
+```bash
+pip install blue_sampler
+```
+
+## Quick start
 
 ```python
-#pip install blue_sampler
-
 import blue_sampler as blue
 
-x = blue.sample_points(N = 10_000, D = 3)
+# 10 000 points in 2-D
+x = blue.sample_points(N=10_000)
 blue.plot(x)
-blue.plot_structure_factor(x) #estimated using scattering intensity
+blue.plot_structure_factor(x)
 
-quad = blue.sample_tessels(N = 2**10) #will sample 2D quadrilaterals following a blue pattern
+# arbitrary dimension D
+x = blue.sample_points(N=2_000, D=5)
+
+# image stippling
+x = blue.im2points(image="zebra.jpg")
 ```
+![Zebra stippled with stealthy points](blue/zebrapoints.png)
+
+## Supported dimensions
+
+| D    | Notes                                 |
+|------|----------------------------------------|
+| 2    | Fast, recommended for exploration      |
+| 3    | ~2x slower than 2-D                    |
+| 4–5  | Requires more iterations               |
+| ≥ 6  | Experimental, for small sample sizes   |
+
+## License
+
+MIT
