@@ -67,8 +67,11 @@ class _LevelCtx:
     def _write(self, msg: str, newline: bool = False) -> None:
         self._log.write(self.level, self.N, msg, newline=newline)
 
-    def on_bruteforce_start(self) -> None:
-        self._write("bruteforce…")
+    def on_bruteforce_start(self, eta_seconds: float | None = None) -> None:
+        if eta_seconds is None:
+            self._write("bruteforce…")
+        else:
+            self._write(f"bruteforce — ETA ~{self._fmt_duration(eta_seconds)}")
 
     def on_bruteforce_done(self) -> None:
         elapsed = time.perf_counter() - self._t_start

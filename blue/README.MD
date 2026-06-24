@@ -1,6 +1,6 @@
 # blue-sampler
 
-[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/For-a-few-DPPs-more/hyperuniform-samplers/blob/main/examples.ipynb)
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github.com/ArmanddeCacqueray/random/blob/main/examples.ipynb)
 
 Generate large **stealthy point patterns** on the unit torus [0, 1)^D.
 
@@ -34,7 +34,7 @@ x = blue.sample_points(N=2_000, D=5)
 # image stippling
 x = blue.im2points(image="zebra.jpg")
 ```
-![Zebra stippled with stealthy points](zebrapoints.png)
+![Zebra stippled with stealthy points](https://github.com/ArmanddeCacqueray/random/blob/main/zebrapoints.png)
 
 ## Supported dimensions
 

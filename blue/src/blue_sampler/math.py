@@ -52,7 +52,7 @@ def integers_in_half_ball(radius: float, D: int) -> np.ndarray:
     if radius <= 1.9:
         return np.eye(D, dtype=np.int32)
 
-    r   = np.arange(-radius, radius + 1)
+    r   = np.arange(-np.ceil(radius), np.ceil(radius) + 1)
     pts = np.stack(np.meshgrid(*(r,) * D, indexing="ij"), axis=-1).reshape(-1, D)
     d2  = np.sum(pts ** 2, axis=-1)
     return drop_symmetric(pts[(d2 > 0) & (d2 <= radius ** 2)])
@@ -257,15 +257,8 @@ def structure_factor(
         return jnp.abs(rho) ** 2 / N
 
     Sk = np.asarray(jax.lax.map(Sk_one, kvecs))
-    knorm2 = np.sum(nvecs**2, axis=1)
-    unique_knorm2, inverse_indices = np.unique(knorm2, return_inverse=True)
-    unique_k = 2*np.pi*np.sqrt(unique_knorm2)
-    
-    S_sum = np.bincount(inverse_indices, weights=Sk)
-    counts = np.bincount(inverse_indices)
-    unique_S = S_sum / counts
-
+    knorm = 2*np.pi*np.sqrt(np.sum(nvecs**2, axis=1))
     # Sort by wave-vector magnitude for convenience
-    sort_idx = np.argsort(unique_k)
+    sort_idx = np.argsort(knorm)
     
-    return unique_k[sort_idx], unique_S[sort_idx]
+    return knorm[sort_idx], Sk[sort_idx]

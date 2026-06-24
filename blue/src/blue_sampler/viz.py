@@ -143,10 +143,10 @@ def plot_structure_factor(
             w = np.exp(-(logk - logk[i])**2 / (2 * sigma**2))
             w /= w.sum()
             S_smooth[i] = np.exp(np.sum(w * logS))
+        
+        S = S.clip(min = S_smooth.min()) 
 
-        S = S_smooth
-
-    kw = dict(marker="o", markersize=2, linewidth=1)
+    kw = dict(marker="o", markersize=2, linewidth=2)
     kw.update(plot_kw)
 
     if ax is None:
@@ -154,18 +154,20 @@ def plot_structure_factor(
     else:
         fig = ax.get_figure()
 
+    scat_color = "lightgray" if smoothed else "tab:blue"
+
+    ax.set_axisbelow(True)  # grille + ticks in background
+    ax.grid(True, which="both", alpha=0.4, zorder=0)
+
+    ax.scatter(k, S, s=5, color=scat_color, alpha=0.6, zorder=2)
+    ax.set_xscale("log")
+    ax.set_yscale("log")
     if smoothed:
-        ax.loglog(k, S, **kw)
-    else:
-        ax.scatter(k, S, s=5, alpha=0.5)
-        ax.set_xscale("log")
-        ax.set_yscale("log")
+        ax.loglog(k, S_smooth, color="tab:blue", zorder=3, **kw)
 
-    ax.set_xlabel("k = 2pi/L sqrt(nx2+ny2)")
-    ax.set_ylabel("S(k)")
+    ax.set_xlabel(r"$k = \frac{2\pi}{L}\sqrt{n_x^2 + n_y^2…}$")
+    ax.set_ylabel(r"$S(k)$")
     ax.set_title("Structure factor (log-log, scattering intensity)")
-    ax.grid(True, which="both", alpha=0.4)
-
     plt.tight_layout()
 
     if return_fig:

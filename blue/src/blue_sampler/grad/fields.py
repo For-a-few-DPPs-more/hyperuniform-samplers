@@ -36,8 +36,12 @@ def _fourier_grad_kernels(shape, sigma2_kernel, D):
         1j * 2.0 * np.pi * mesh[d] * V_hat
         for d in range(D)
     ]
-    return grad_hat
+    return grad_hat, V_hat
 
+def _log_barier(rho):
+    eps = 1e-15
+    alpha = rho.mean()*0.0003
+    return alpha * np.log((rho/rho.mean()).clip(min = 0) + eps)
 
 def _density_from_points(target, shape):
     D = target.shape[1]
@@ -46,14 +50,16 @@ def _density_from_points(target, shape):
     np.add.at(rho, tuple(idx[:, d] for d in range(D)), 1.0 / len(target))
     return rho
 
-
 def _field_from_density(rho, shape, sigma2_kernel, D):
+    rho = rho 
     anti_rho = rho.max() - rho
     field = np.empty(tuple(shape) + (D,), np.float32)
-    anti_rho_hat = np.fft.fftn(anti_rho)
-    grad_hat = _fourier_grad_kernels(shape, sigma2_kernel, D)
+    grad_hat, V_hat = _fourier_grad_kernels(shape, sigma2_kernel, D)
+    rho_smooth = np.real(np.fft.ifftn(np.fft.fftn(rho)*V_hat))
+    anti_rho_hat = np.fft.fftn(anti_rho - _log_barier(rho_smooth))
+
     for d in range(D):
-        field[..., d] = np.real(np.fft.ifftn(anti_rho_hat * grad_hat[d]))
+        field[..., d] = np.real(np.fft.ifftn(anti_rho_hat * grad_hat[d])) 
     return field
 
 
@@ -64,7 +70,6 @@ def _build_field(target, shape, sigma2_kernel, D, ftype):
         return _field_from_density(target, shape, sigma2_kernel, D)
     rho = _density_from_points(target, shape)
     return _field_from_density(rho, shape, sigma2_kernel, D)
-
 
 def make_multi_scales_field_fun(target, ftype="points"):
     """ftype selects what `target` is:

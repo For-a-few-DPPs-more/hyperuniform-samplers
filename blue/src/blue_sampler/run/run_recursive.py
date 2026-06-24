@@ -43,8 +43,8 @@ def _recursive_pipeline(
     expension_factor: float,
     LR_spatial: float,
     LR_spectral: float,
-    spatial_radius: int,
-    spectral_radius: int,
+    spatial_radius: float,
+    spectral_radius: float,
     N_PER_STEP: int,
     x: np.ndarray | None = None,
     target=None,
@@ -64,8 +64,8 @@ def _recursive_pipeline(
         IJK, _, Axes = grid_shape(N, D)
         Nsqrt      = N ** 0.5
         Ncbrt      = N ** (1.0 / D)
+        bruteforce = _bruteforce or (N <= 2_000) or D >= 6
         is_root    = _is_root or (N <= 2_000) or (x is not None)
-        bruteforce = _bruteforce or (N <= 2_000)
         sigma2     = S * 2.0 * (1.0 / Ncbrt) ** 2
         high_D     = sigma2 >= 0.03
 
@@ -199,8 +199,14 @@ def _recursive_pipeline(
                 )
             )
             ctx.start()
-            x_pts = prepare_points(xparent, N, IJK, D)
-            x_pts = run_iters(x_pts)
+            if bruteforce:
+                x_pts = _bruteforce_pipeline(
+                    N, D, N_ITER, ctx, 
+                    target=target, 
+                )(xparent)
+            else:
+                x_pts = prepare_points(xparent, N, IJK, D)
+                x_pts = run_iters(x_pts)
         if not bruteforce:
             ctx.done()
 

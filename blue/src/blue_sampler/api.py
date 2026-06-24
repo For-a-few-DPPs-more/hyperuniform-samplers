@@ -33,9 +33,10 @@ from .momentum.momentum import momentum_fit
 from .viz import plot
 
 _PRESETS = {
-    2: dict(spatial_radius=7, spectral_radius=7, LR_spatial=0.1,  LR_spectral=0.1, expension_factor=0.3, S=1.0),
-    3: dict(spatial_radius=5, spectral_radius=5, LR_spatial=0.1,  LR_spectral=0.1, expension_factor=0.3, S=1.0),
-    4: dict(spatial_radius=3, spectral_radius=3, LR_spatial=0.01, LR_spectral=0.1, expension_factor=1.0, S=0.5),
+    2: dict(spatial_radius=7, spectral_radius=7, LR_spatial=0.100, LR_spectral=0.1, expension_factor=0.3, S=1.0),
+    3: dict(spatial_radius=5, spectral_radius=5, LR_spatial=0.030, LR_spectral=0.1, expension_factor=0.3, S=1.0),
+    4: dict(spatial_radius=3, spectral_radius=3, LR_spatial=0.010, LR_spectral=0.1, expension_factor=1.0, S=0.5),
+    5: dict(spatial_radius=3, spectral_radius=3, LR_spatial=0.003, LR_spectral=0.1, expension_factor=1.5, S=0.5),
 }
 
 
@@ -126,7 +127,7 @@ def sample_points(
         logger.exit_level()
     
     else:
-        preset = _PRESETS[min(D, 4)]
+        preset = _PRESETS[min(D, 5)]
         sampled_points = _recursive_pipeline(
             N=N,
             D=D,
@@ -266,6 +267,42 @@ def sample_clusters(
         targets=targets,
         n_per_cluster=n_per_cluster,
     )
+
+def tile(x: NDArray, repeat: int, flatoutput: bool = True) -> NDArray:
+    """
+    Tile points on the unit torus to cover [0, 1)^D periodically.
+
+    Each of the `repeat**D` copies of `x` is rescaled by `1/repeat` and
+    shifted to its own sub-cube, so that the copies together pave the
+    unit torus again. For example in 2D with
+    repeat=2: tile (0, 0) holds x/2, tile (1, 1) holds x/2 + 0.5, etc.
+
+    Parameters
+    ----------
+    x : ndarray, shape (N, D)
+        Points in [0, 1)^D (unit torus).
+    repeat : int
+        Number of repetitions per axis. The output therefore contains
+        Nfinal = N * repeat**D points.
+    flatoutput : bool, default True
+        If True, reshape the output to (Nfinal, D). If False, keep the
+        tile structure as leading axes.
+
+    Returns
+    -------
+    ndarray, shape (Nfinal, D) if flatoutput else (repeat, ..., repeat, N, D)
+        Tiled version of `x`, periodized over [0, 1)^D.
+    """
+    N, D = x.shape
+
+    grids = np.meshgrid(*([np.arange(repeat)] * D), indexing="ij")
+    idx = np.stack(grids, axis=-1)                            # (repeat,)*D + (D,)
+    offset = (idx / repeat).reshape(*([repeat] * D), 1, D)    # (repeat,)*D + (1, D)
+
+    x_scaled = x / repeat                                      # (N, D)
+    xtiled = x_scaled + offset                                 # (repeat,)*D + (N, D)
+
+    return xtiled.reshape(-1, D) if flatoutput else xtiled
 
 def from_geometry(
     geometry: NDArray,
