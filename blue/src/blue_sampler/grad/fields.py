@@ -8,23 +8,6 @@ import jax.numpy as jnp
 from ..math import clean_grad
 from .im2fields import im2field
 
-# ---------------------------------------------------------------------
-# Spatial field
-# ---------------------------------------------------------------------
-def _make_truncated_grad_kernels(shape, sigma2_kernel, D, n_sigma=4):
-    shape = np.asarray(shape)
-    sigma_pix = [np.sqrt(sigma2_kernel) * shape[d] for d in range(D)]
-    radius = [int(np.ceil(n_sigma * s)) for s in sigma_pix]
-    axes = [np.arange(-r, r + 1) for r in radius]
-    mesh = np.meshgrid(*axes, indexing="ij")
-    r2 = sum((mesh[d] / shape[d]) ** 2 for d in range(D))
-    V = np.exp(-r2 / sigma2_kernel)
-    return [
-        -(2.0 / sigma2_kernel) * (mesh[d] / shape[d]) * V
-        for d in range(D)
-    ]
-
-
 def _fourier_grad_kernels(shape, sigma2_kernel, D):
     shape = np.asarray(shape)
     freqs = [np.fft.fftfreq(shape[d], d=1.0 / shape[d]) for d in range(D)]
@@ -39,27 +22,29 @@ def _fourier_grad_kernels(shape, sigma2_kernel, D):
     return grad_hat, V_hat
 
 def _log_barier(rho):
-    eps = 1e-15
-    alpha = rho.mean()*0.0003
-    return alpha * np.log((rho/rho.mean()).clip(min = 0) + eps)
+    eps = 1e-4
+    alpha = rho.mean()*1e-3
+    log_barier = alpha/((rho/rho.mean()).clip(min = 0) + eps)*(1+np.random.rand(*rho.shape))
+    return log_barier
 
 def _density_from_points(target, shape):
     D = target.shape[1]
     idx = np.floor(target * shape).astype(np.int64) % shape
-    rho = np.zeros(tuple(shape), np.float32)
+    rho = np.zeros(tuple(shape))
     np.add.at(rho, tuple(idx[:, d] for d in range(D)), 1.0 / len(target))
     return rho
 
 def _field_from_density(rho, shape, sigma2_kernel, D):
     rho = rho 
     anti_rho = rho.max() - rho
-    field = np.empty(tuple(shape) + (D,), np.float32)
+    field = np.empty(tuple(shape) + (D,))
     grad_hat, V_hat = _fourier_grad_kernels(shape, sigma2_kernel, D)
     rho_smooth = np.real(np.fft.ifftn(np.fft.fftn(rho)*V_hat))
-    anti_rho_hat = np.fft.fftn(anti_rho - _log_barier(rho_smooth))
+    anti_rho_hat = np.fft.fftn(anti_rho - _log_barier(rho_smooth)) 
 
     for d in range(D):
-        field[..., d] = np.real(np.fft.ifftn(anti_rho_hat * grad_hat[d])) 
+        field[..., d] = np.real(np.fft.ifftn(anti_rho_hat * grad_hat[d]))
+        
     return field
 
 

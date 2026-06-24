@@ -45,7 +45,7 @@ def im2points(image = "anything.jpg", N = 100_000):
     simple wrapper for image stippling
     """
     sample = sample_points(N = N, D = 2, targets = image)
-    plot(sample)
+    plot(sample, figsize = (10, 10))
     return sample
 
 def sample_points(

@@ -53,19 +53,26 @@ def _recursive_pipeline(
     _is_leaf: bool = True,
 ) -> np.ndarray:
     """Recursive stealthy-sampling pipeline. Spawns child pipelines when N is large."""
-    ctx = logger.enter_level(N, D, N_ITER)
-
     try:
         has_target = target is not None
+        is_root    = _is_root or (N <= 2_000) or (x is not None)
+        brute_thresh = 2000
+        if x is None:
+            x = np.random.rand(N, D)
         if has_target and D == 2:
-            spatial_radius = 8
+            #spatial_radius = 8
             S = 0.5
+            is_root = is_root or N <= 5_000
+            brute_thresh = 750
+            N_ITER = 8
+            if is_root:
+                N_ITER = 16
+        ctx = logger.enter_level(N, D, N_ITER)
         Dsimp      = min(D, 3)
         IJK, _, Axes = grid_shape(N, D)
         Nsqrt      = N ** 0.5
         Ncbrt      = N ** (1.0 / D)
-        bruteforce = _bruteforce or (N <= 2_000) or D >= 6
-        is_root    = _is_root or (N <= 2_000) or (x is not None)
+        bruteforce = _bruteforce or (N <= brute_thresh) or D >= 6
         sigma2     = S * 2.0 * (1.0 / Ncbrt) ** 2
         high_D     = sigma2 >= 0.03
 
@@ -101,7 +108,7 @@ def _recursive_pipeline(
 
         if has_target:
             macro_grad = make_target(target, sigma2, D)
-            slow_down = 0.3
+            slow_down = 0.5
             lr_micro *= slow_down
             lr_macro = lr_micro
   

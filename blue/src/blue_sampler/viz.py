@@ -28,6 +28,7 @@ def plot(
     max_points: int = 30_000,
     ax: plt.Axes | None = None,
     return_fig: bool = False,
+    figsize = (8, 8),
     **scatter_kw,
 ) -> tuple[plt.Figure, plt.Axes] | None:
     """
@@ -70,7 +71,7 @@ def plot(
     kw.update(scatter_kw)
 
     if ax is None:
-        fig = plt.figure(figsize=(8, 8))
+        fig = plt.figure(figsize=figsize)
         if D == 2:
             ax = fig.add_subplot(111)
         else:

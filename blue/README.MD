@@ -34,7 +34,7 @@ x = blue.sample_points(N=2_000, D=5)
 # image stippling
 x = blue.im2points(image="zebra.jpg")
 ```
-![Zebra stippled with stealthy points](https://github.com/ArmanddeCacqueray/random/blob/main/zebrapoints.png)
+![Zebra points](https://raw.githubusercontent.com/ArmanddeCacqueray/random/main/zebrapoints.png)
 
 ## Supported dimensions
 
