@@ -94,7 +94,7 @@ where `N` is the number of points in the original cloud, `N_t` the number of poi
 
 In particular, if the original cloud has `N` points and satisfies `S(k) ≤ ε` in its stealthy region, a tiled cloud with `N_t` points satisfies the corresponding bound `S_t(k_t) ≤ ε × N_t/N`.
 
-The tiling procedure below is designed to increase the number of points by factors of two while preserving periodicity and avoiding a systematic alignment of the copies with the coordinate axes.
+The tiling procedure below is described in Tiling.md
 
 
 ## Stealthiness
