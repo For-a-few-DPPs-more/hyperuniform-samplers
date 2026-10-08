@@ -6,6 +6,7 @@ Hyperuniformity means the points are not independent, as in usual random point c
 
 **2D example** (the `N = 1024`, `D = 2` point clouds of this database):
 
+Chi 43:
 ![2D example, N = 1024, chi43](https://zenodo.org/records/23244510/files/plot_2D_sample_chi43.png)
 
 ## Installation
@@ -156,4 +157,26 @@ S(k) = |Σⱼ exp(2iπ ⟨k, xⱼ⟩)|² / N
 
 so the Monte Carlo integration error of the Fourier test function `x ↦ exp(2iπ ⟨k, x⟩)` is `|Σⱼ exp(2iπ ⟨k, xⱼ⟩)| / N = sqrt(S(k) / N) ≤ 10⁻² / √N`.
 
-The figure below shows the curve `k ↦ S(k)` for every dimension `D = 2` to `16`, at `N = 1024`. The norm `‖k‖` is normalised by the inverse interparticle distance `1/δ`, with `δ = N^(-1/D)`, so that the abscissa `k = 1` corresponds to wave vectors satisfying `k₁² + ... + k_D² ≈ 1/δ²_
+The figure below shows the curve `k ↦ S(k)` for every dimension `D = 2` to `16`, at `N = 1024`. The norm `‖k‖` is normalised by the inverse interparticle distance `1/δ`, with `δ = N^(-1/D)`, so that the abscissa `k = 1` corresponds to wave vectors satisfying `k₁² + ... + k_D² ≈ 1/δ²`. The leftmost point of each curve corresponds to the smallest nonzero frequencies of the unit hypercube: vectors with a single nonzero component in `{-1, 1}`, such as `(±1, 0, ..., 0)`.
+
+![Structure factor S(k) for D = 2 to 16, N = 1024](https://zenodo.org/records/23244510/files/fouriererror_all_samples_from_paper_chi30.png)
+![Structure factor S(k) for D = 2 to 16, N = 1024](https://zenodo.org/records/23244510/files/fouriererror_all_samples_from_paper_chi43.png)
+
+## Use cases
+
+* **Monte Carlo / randomised QMC integration**, especially for periodic or compactly supported functions with smooth, low-frequency spectral content. Random shifts give independent replicas for reliable error bars. For other function spaces (e.g. discontinuous integrands, low-rank decomposition), other QMC methods will probably give lower discrepancy.
+* **Rendering and image synthesis:** pixel/sub-pixel anti-aliasing, path-tracing sample dimensions, dithering and halftoning, blue-noise textures for denoising.
+* **Spatial sampling:** homogeneous, isotropic particle initialisation for simulations (SPH, molecular dynamics), Poisson-disk-like placement, point sampling of geometry.
+* **Machine learning and design of experiments:** initial points for Bayesian or black-box optimisation, hyperparameter search, training-set sampling for surrogates and PINNs, uncertainty propagation.
+* **Hyperuniformity research:** a reproducible reference set to study structure-factor behaviour, the χ-dependent transition toward crystallisation, and dimension scaling (`D = 2` to `32`), or to benchmark new samplers.
+* **Large-scale sampling by tiling:** replicate a cloud to get millions of points, at the cost of stealthiness degrading proportionally to `N_t / N`.
+
+## Acknowledgements
+
+The GPU acceleration of the kernel reductions used in the sampler relies on the [PyKeOps](https://www.kernel-operations.io) library:
+
+> Charlier, Feydy, Glaunès, Collin, Durif, "Kernel Operations on the GPU, with Autodiff, without Memory Overflows", *Journal of Machine Learning Research* 22(74), 2021, pp. 1-6.
+
+## Licence
+
+The database and the corresponding source code are free to use under the **MIT licence**.
