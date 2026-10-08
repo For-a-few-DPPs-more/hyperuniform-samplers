@@ -111,11 +111,11 @@ so the Monte Carlo integration error of the Fourier test function x ↦ exp(2iπ
 
 The figure below shows the curve `k ↦ S(k)` for every dimension `D = 2` to `16`, at N = 1024. The norm `‖k‖` is normalised by the inverse interparticle distance 1/δ, with `δ = N^(-1/D)`, so that the abscissa `k = 1` corresponds to wave vectors satisfying `k₁² + ... + k_D² ≈ 1/δ²`. The leftmost point of each curve corresponds to the smallest nonzero frequencies of the unit hypercube: vectors with a single nonzero component in `{-1, 1}`, such as `(±1, 0, ..., 0)`.
 
-- Chi = 0.30 :
+- Chi = 0.30, D = 2, 3, ..., 16 :
   
 ![Structure factor S(k) for D = 2 to 16, N = 1024](https://zenodo.org/records/23244510/files/fouriererror_all_samples_from_paper_chi30.png)
 
-- Chi = 0.43 :
+- Chi = 0.43, D = 2, 3, ..., 16 :
 
 ![Structure factor S(k) for D = 2 to 16, N = 1024](https://zenodo.org/records/23244510/files/fouriererror_all_samples_from_paper_chi43.png)
 
