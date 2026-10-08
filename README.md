@@ -50,7 +50,7 @@ By construction, the provided samples guarantee:
 
 ### Randomisability
 
-Spectral optimisation result enforces periodic boundary conditions on the hypercube, so a sample can be randomised by a simple shift (and by flips, which preserve the structure factor):
+Spectral optimisation result enforces periodic boundary conditions on the hypercube, so a sample can be randomised by a simple shift:
 
 ```
 X_new = (X - s) mod 1,    s drawn uniformly in [0,1]^D
