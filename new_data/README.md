@@ -10,8 +10,8 @@ Once the `data/` folder contains the datasets downloaded from Zenodo, new point 
 
 | `chi` | χ    | Stealthiness within the spectral exclusion region |
 |---------|------|---------------------------------------------------|
-| `30`    | 0.30 | `S(k) <= 1e-10` (smaller exclusion region)        |
-| `43`    | 0.43 | `S(k) <= 1e-4` (larger exclusion region)          |
+| `30`    | 0.30 | `S(k) <= 1e-10`, 60% coverage of the reachable spectral domain (smaller exclusion region)        |
+| `43`    | 0.43 | `S(k) <= 1e-4`, 86% coverage (larger exclusion region)          |
 
 The matching samples must be present in `data/`. 
 
