@@ -19,7 +19,7 @@ import urllib.request
 import zipfile
 from pathlib import Path
 
-# Zenodo record holding the files (DOI 10.5281/zenodo.23237509).
+# Zenodo record holding the files (DOI 10.5281/zenodo.23237510).
 BASE_URL = "https://zenodo.org/records/23237510/files"
 
 AVAILABLE_DIMS = list(range(2, 17)) + [23, 32]

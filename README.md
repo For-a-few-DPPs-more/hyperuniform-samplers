@@ -8,16 +8,37 @@ Hyperuniformity means the points are not independent, as in usual random point c
 
 ![2D example, N = 1024](https://zenodo.org/records/23237510/files/plot_2D_sample.png)
 
-## Quick start
+## Installation
 
-see `quick_start.ipynb` to download the datasets from zenodo, and build new randomised ones
+Install the required dependencies:
+
+```bash
+pip install numpy h5py  # Required to load the datasets from Zenodo
+```
+
+For visualization, you can optionally install `blue-sampler`:
+
+```bash
+pip install blue-sampler  # Optional: only needed for visualization
+```
+
+> **Note:** `blue-sampler` is not required if you do not need the visualization features.
+
+## Quick Start
+
+1. Clone this GitHub repository.
+2. Open `quick_start.ipynb`.
+3. Follow the notebook to:
+
+   * download the datasets from Zenodo;
+   * build new randomized datasets.
 
 
 ## Data characteristics
 
 ### Format
 
-- Hosted on Zenodo (DOI 10.5281/zenodo.23237509).
+- Hosted on Zenodo (DOI 10.5281/zenodo.23237510).
 - Stored in **HDF5** for interoperability (Python, C++, MATLAB, Julia, R, ...).
 
 ### Coverage
@@ -27,7 +48,7 @@ see `quick_start.ipynb` to download the datasets from zenodo, and build new rand
 
 ## Sampling method
 
-**Spectral optimisation** (non-uniform Fourier transform): select all wave vectors within a ball, initialise with a random point cloud, then run a gradient descent on the Fourier loss.
+**Spectral optimisation** (non-uniform Fourier transform): select all wave vectors k within a ball ‖k‖ ≤ Kmax(N, D, χ) were χ is chosen slightly below 0.5 to ensure near maximal spectral coverage Kmax, initialise with a random point cloud, then run a gradient descent on the Fourier loss.
 
 We mostly follow [Morse et al.](https://doi.org/10.1103/PhysRevResearch.5.033190) (DOI: 10.1103/PhysRevResearch.5.033190). Main differences:
 
@@ -42,7 +63,8 @@ We mostly follow [Morse et al.](https://doi.org/10.1103/PhysRevResearch.5.033190
 
   Only the samples with `χ = 0.43`, `S(k) ≤ 10⁻⁴` are provided, since this is stealthy enough for our application and probably for most use cases. The `χ = 0.40`, `S(k) ≤ 10⁻¹⁰` samples must be regenerated as detailed in the Zenodo archive. Going beyond `10⁻¹⁰` is possible, but requires reimplementing the whole sampler with at least `float64` precision.
 
-- **Gradient descent:** Morse et al. use FIRE optimisation. We use a simple adaptive learning-rate scheme on the normalised gradient (only its direction matters): good steps boost the learning rate, bad steps slow it down. It works on any `(N, D)` out of the box, with no hyperparameter tuning. See the source code for details.
+- **Gradient descent:** Morse et al. use FIRE optimisation. We use a simple adaptive learning-rate scheme on the normalised gradient (only its direction matters): good steps boost the learning rate, bad steps slow it down. It works on any `(N, D)` out of the box, with no hyperparameter tuning. See the ![source code](https://github.com/For-a-few-DPPs-more/Recursive-Gaussian-Blue-Noise/blob/main/src/blue_sampler/run/run_nufft_keops.py) of the sampler for details.
+
 
 ## Guarantees
 
