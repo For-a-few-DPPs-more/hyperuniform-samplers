@@ -27,12 +27,6 @@ see `quick_start.ipynb` to download the datasets from zenodo, and build new rand
 - **Number of points:** `N = 2^10 = 1024` to `2^17 = 131072` (powers of 2). Larger `N` is obtained by tiling.
 - **Dimension:** `D = 2` to `16`, plus `D = 23` and `D = 32`. Other dimensions up to 32 are obtained by projection.
 
-### Reproducibility
-
-- Sampled on a single Google Colab **T4 GPU**.
-- Fully reproducible with the notebook [generate_all_samples_from_paper.ipynb](https://zenodo.org/records/23237510/files/generate_all_samples_from_paper.ipynb).
-- By default the notebook runs a mini configuration (about 2 minutes). The full sampling takes about 2 hours for `D = 2` to `16`, plus 2 extra hours for `D = 23, 32`.
-
 ## Sampling method
 
 **Spectral optimisation** (non-uniform Fourier transform): select all wave vectors within a ball, initialise with a random point cloud, then run a gradient descent on the Fourier loss.
