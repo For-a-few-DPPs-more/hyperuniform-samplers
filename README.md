@@ -77,9 +77,9 @@ sup_{‖k_t‖ ≤ Kmax_t(N_t, D, χ)} S_t(k_t)
 
 where `N` is the number of points in the original cloud, `N_t` the number of points after tiling, and the subscript `t` denotes the tiled dataset.
 
-In particular, if the original cloud has `N` points and satisfies `S(k) ≤ ε` in its stealthy region, a tiled cloud with `N_t` points satisfies the corresponding bound `S_t(k_t) ≤ ε × N_t/N`.
+The exact tiling procedure is described in TILING.md. It allows generating new datasets with up to N = 2^24 (~16 million) points while keeping the loss in stealthiness controlled. Exemple of a ×2 tiling step from number of points N = 8192 to new number of points N_t = 16384:
 
-The exact tiling procedure is described in TILING.md . It allows generating new datasets with up to N = 2^24 (~16 million) points while keeping the loss in stealthiness controlled, by tiling an initial sample of 2^17 points up to 128 times. Further tiling is theoretically possible, but whether it is appropriate depends on the application and should be considered carefully.
+![Tiling effect](https://github.com/For-a-few-DPPs-more/hyperuniform-samplers/blob/02c688c83d98b8b691ac16b9481dbcdd8c528472/src/tiling_effect.png)
 
 
 ## Stealthiness
