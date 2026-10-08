@@ -6,10 +6,6 @@ Hyperuniformity means the points are not independent, as in usual random point c
 
 **2D example** (the `N = 1024`, `D = 2` point clouds of this database):
 
-Chi 30:
-![2D example, N = 1024, chi30](https://zenodo.org/records/23244510/files/plot_2D_sample_chi43.png)
-
-Chi 43:
 ![2D example, N = 1024, chi43](https://zenodo.org/records/23244510/files/plot_2D_sample_chi43.png)
 
 ## Installation
