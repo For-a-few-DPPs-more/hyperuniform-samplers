@@ -1,6 +1,6 @@
 # Hyperuniform Point Clouds Database
 
-Hyperuniform point clouds (e.g. blue noise) on the unit hypercube `[0,1)^D`, sampled with the [`blue-sampler`](https://github.com/) Python package (TODO: fix link). Generated during a research internship on hyperuniformity.
+Hyperuniform point clouds (e.g. blue noise) on the unit hypercube `[0,1)^D`, sampled with the [`blue-sampler`](https://github.com/For-a-few-DPPs-more/Recursive-Gaussian-Blue-Noise) Python package. Generated during a research internship on hyperuniformity.
 
 Hyperuniformity means the points are not independent, as in usual random point clouds, but carefully correlated to cover the space more evenly, while remaining disordered.
 
