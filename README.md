@@ -48,7 +48,7 @@ pip install blue-sampler  # Optional: only needed for visualization
 
 ## Sampling method
 
-**Spectral optimisation** (non-uniform Fourier transform): select all wave vectors k within a ball ‖k‖ ≤ Kmax(N, D, χ) were χ is chosen slightly below 0.5 to ensure near maximal spectral coverage Kmax, initialise with a random point cloud, then run a gradient descent on the Fourier loss.
+**Spectral optimisation** (non-uniform Fourier transform): select all wave vectors k within a ball ‖k‖ ≤ Kmax(N, D, χ) were χ is chosen slightly below 0.5 to ensure near maximal spectral coverage, initialise with a random point cloud, then run a gradient descent on the Fourier loss.
 
 We mostly follow [Morse et al.](https://doi.org/10.1103/PhysRevResearch.5.033190) (DOI: 10.1103/PhysRevResearch.5.033190). Main differences:
 
