@@ -11,18 +11,12 @@ Hyperuniformity means the points are not independent, as in usual random point c
 ## Installation
 
 Install the required dependencies:
+- numpy (array library for python)
+- h5py (required to load datasets from the Zenodo database)
 
 ```bash
-pip install numpy h5py  # Required to load the datasets from Zenodo
+pip install numpy h5py
 ```
-
-For visualization, you can optionally install `blue-sampler`:
-
-```bash
-pip install blue-sampler  # Optional: only needed for visualization
-```
-
-> **Note:** `blue-sampler` is not required if you do not need the visualization features.
 
 ## Quick Start
 
