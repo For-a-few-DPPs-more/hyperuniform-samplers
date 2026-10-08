@@ -47,7 +47,7 @@ See following (N, D) coverage table:
 
 **Spectral optimisation** (non-uniform Fourier transform): select all wave vectors `k` within a ball `‖k‖ ≤ Kmax(N, D, χ)`, where `χ` is chosen slightly below 0.5 to ensure near-maximal spectral coverage, initialise with a random point cloud, then run a gradient descent on the Fourier loss. we sample two version of each point cloud: χ = 0.30 resp χ = 0.43, reaching a stealthy structure factor S(k) <= 10-10 resp S(k) <= 10-4 within the full spectral exclusion region.
 
-See all details in Sampling.md for reproducibility. 
+See all details in [SAMPLING.md](SAMPLING.md) for reproducibility. 
 
 ## Guarantees
 
@@ -77,7 +77,7 @@ sup_{‖k_t‖ ≤ Kmax_t(N_t, D, χ)} S_t(k_t)
 
 where `N` is the number of points in the original cloud, `N_t` the number of points after tiling, and the subscript `t` denotes the tiled dataset.
 
-The exact tiling procedure is described in TILING.md. It allows generating new datasets with up to N = 2^24 (~16 million) points while keeping the loss in stealthiness controlled. Exemple of a ×2 tiling step from number of points N = 8192 to new number of points N_t = 16384:
+The exact tiling procedure is described in [TILING.md](TILING.md). It allows generating new datasets with up to N = 2^24 (~16 million) points while keeping the loss in stealthiness controlled. Exemple of a ×2 tiling step from number of points N = 8192 to new number of points N_t = 16384:
 
 ![Tiling effect](https://github.com/For-a-few-DPPs-more/hyperuniform-samplers/blob/02c688c83d98b8b691ac16b9481dbcdd8c528472/src/tiling_effect.png)
 
