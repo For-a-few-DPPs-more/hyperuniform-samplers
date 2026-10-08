@@ -81,7 +81,7 @@ where `N` is the number of points in the original cloud, `N_t` the number of poi
 
 In particular, if the original cloud has `N` points and satisfies `S(k) ≤ ε` in its stealthy region, a tiled cloud with `N_t` points satisfies the corresponding bound `S_t(k_t) ≤ ε × N_t/N`.
 
-The tiling procedure below is described in Tiling.md
+The exact tiling procedure is described in TILING.md . It allows generating new datasets with up to N = 2^24 (~16 million) points while keeping the loss in stealthiness controlled, by tiling an initial sample of 2^17 points up to 128 times. Further tiling is theoretically possible, but whether it is appropriate depends on the application and should be considered carefully.
 
 
 ## Stealthiness
