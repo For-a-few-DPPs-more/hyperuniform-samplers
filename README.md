@@ -60,7 +60,7 @@ We mostly follow [Morse et al.](https://doi.org/10.1103/PhysRevResearch.5.033190
   | 0.30 | `S(k) ≤ 10⁻¹⁰`     |
   | 0.43 | `S(k) ≤ 10⁻⁴`      |
 
-  We retain the value `S(k) ≤ 10⁻⁴` as stealthy since it is enough for our application and probably for most use cases. It would be difficult to go beyond it at large `χ`. Regarding the `χ = 0.30` samples, going beyond `10⁻¹⁰` would be possible, but requires reimplementing the whole sampler with at least `float64` precision.
+  We retain the value `S(k) ≤ 10⁻⁴` as stealthy since it is enough for our application and probably for most use cases. It would be difficult to go beyond it at large `χ`. Regarding the χ = 0.30 samples, going beyond 10⁻¹⁰ would be possible, but requires reimplementing the whole sampler with at least float64 precision.
 
 * **Gradient descent:** Morse et al. use FIRE optimisation. We use a simple adaptive learning-rate scheme on the normalised gradient (only its direction matters): good steps boost the learning rate, bad steps slow it down. It works on any `(N, D)` out of the box, with no hyperparameter tuning. See the ![source code](https://github.com/For-a-few-DPPs-more/Recursive-Gaussian-Blue-Noise/blob/main/src/blue_sampler/run/run_nufft_keops.py) of the sampler for details.
 
@@ -106,20 +106,23 @@ Each elementary tiling step doubles the number of points. For a pair of axes `(a
 (u, v) ↦ ((u + v)/2, (u - v)/2) mod 1,
 ```
 
-and both points
+for each initial point, we retain its rotated version
 
 ```text
 (u, v) = (x_a, x_b)
 ```
 
-and
+and a shifted copy of it.
 
 ```text
 (u, v) = (x_a + 1, x_b)
 ```
 
-are included.
+Finally, the tiled dataset (now containing twice more points), is folded back to the unit torus 
 
+```text
+(u, v) = (u, v) mod 1.
+``` 
 Thus, each original point generates two points in the new periodic cell, so the total number of points is multiplied by two. In Fourier space, the structure factor is preserved up to the expected factor of two:
 
 ```text
