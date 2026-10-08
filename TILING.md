@@ -48,3 +48,5 @@ The transformation is applied to one pair of axes at a time.
 | `K > 2P`     | First perform ordinary periodic tiling: `2^k` copies along each axis, with `k = ⌊K/D⌋`, multiplying `N` by `2^(kD)`. Then apply the previous procedure to the remaining factor `2^(K-kD)`. |
 
 The pairings are drawn at random from the seed. The procedure slightly breaks isotropy, with no practical consequence.
+
+This procedure allows generating new datasets with up to N = 2^24 (~16 million) points while keeping the loss in stealthiness controlled, by tiling an initial sample of 2^17 points up to 128 times. Further tiling is theoretically possible, but whether it is appropriate depends on the application and should be considered carefully.
