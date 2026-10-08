@@ -53,7 +53,7 @@ We mostly follow [Morse et al.](https://doi.org/10.1103/PhysRevResearch.5.033190
 
 * **Slightly higher χ:** While Morse et al. initially recommended fixing χ = 0.4, the χ parameter plays a crucial role in the resulting sample. We provide two versions of the samples, `χ = 0.30` and `χ = 0.43`. This allows spectral optimisation up to the particle scale while staying isotropic and unordered (crystallisation empirically appears to start around χ ≈ 0.45).
 
-* **Weaker stealthy criterion:** `S(k)` is the structure factor. Morse et al. reach S(k) ≤ 10⁻⁵¹ using double-double (float128) precision. We use `float32`, much faster on GPU, and stop the descent when, for all targeted frequencies:
+* **Weaker stealthy criterion:** `S(k)` is the structure factor. Morse et al. reach S(k) ≤ 10⁻⁵¹ using double-double (float128) precision. We use float32, much faster on GPU, and stop the descent when, for all targeted frequencies:
 
   | χ    | Stopping criterion |
   | ---- | ------------------ |
