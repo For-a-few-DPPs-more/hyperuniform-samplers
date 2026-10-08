@@ -45,6 +45,10 @@ pip install blue-sampler  # Optional: only needed for visualization
 * **Number of points:** `N = 2^10 = 1024` to `2^17 = 131072` (powers of 2). Larger `N` is obtained by tiling.
 * **Dimension:** `D = 2` to `16`, plus `D = 23` and `D = 32`. Other dimensions up to 32 are obtained by projection.
 
+See following (N, D) coverage table:
+
+![ND_coverage](https://github.com/For-a-few-DPPs-more/hyperuniform-samplers/blob/5b6cd8a40a866b7ba1324e94577ce814b5fecdc0/src/coverage_table_ND.png)
+
 ## Sampling method
 
 **Spectral optimisation** (non-uniform Fourier transform): select all wave vectors `k` within a ball `‖k‖ ≤ Kmax(N, D, χ)`, where `χ` is chosen slightly below 0.5 to ensure near-maximal spectral coverage, initialise with a random point cloud, then run a gradient descent on the Fourier loss. we sample two version of each point cloud: χ = 0.30 resp χ = 0.43, reaching a stealthy structure factor S(k) <= 10-10 resp S(k) <= 10-4 within the full spectral exclusion region.
