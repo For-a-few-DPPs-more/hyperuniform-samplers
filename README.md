@@ -99,7 +99,7 @@ The tiling procedure below is described in Tiling.md
 
 ## Stealthiness
 
-`S(k) ≤ 10⁻⁴` for every wave vector with `‖k‖ ≤ Kmax(N, D, χ)`. For `χ = 0.43`, the ball of radius `Kmax` covers `2χ = 86%` of the spectral domain reachable with `N` points (this is what `χ = 0.43` means). The `χ = 0.30` dataset guarantees `S(k) ≤ 10⁻¹⁰`, with a coverage of `2χ = 60%`.
+`S(k) ≤ 10⁻⁴` for every wave vector with `‖k‖ ≤ Kmax(N, D, χ)`. For `χ = 0.43`, the ball of radius Kmax covers `2χ = 86%` of the spectral domain reachable with `N` points (this is what χ = 0.43 means). The `χ = 0.30` dataset guarantees `S(k) ≤ 10⁻¹⁰`, with a coverage of `2χ = 60%`.
 
 Here, for a wave vector `k = (k₁, ..., k_D)`,
 
@@ -107,11 +107,15 @@ Here, for a wave vector `k = (k₁, ..., k_D)`,
 S(k) = |Σⱼ exp(2iπ ⟨k, xⱼ⟩)|² / N
 ```
 
-so the Monte Carlo integration error of the Fourier test function `x ↦ exp(2iπ ⟨k, x⟩)` is `|Σⱼ exp(2iπ ⟨k, xⱼ⟩)| / N = sqrt(S(k) / N) ≤ 10⁻² / √N`.
+so the Monte Carlo integration error of the Fourier test function x ↦ exp(2iπ ⟨k, x⟩) is `|Σⱼ exp(2iπ ⟨k, xⱼ⟩)| / N = sqrt(S(k) / N) ≤ 10⁻² / √N`.
 
-The figure below shows the curve `k ↦ S(k)` for every dimension `D = 2` to `16`, at `N = 1024`. The norm `‖k‖` is normalised by the inverse interparticle distance `1/δ`, with `δ = N^(-1/D)`, so that the abscissa `k = 1` corresponds to wave vectors satisfying `k₁² + ... + k_D² ≈ 1/δ²`. The leftmost point of each curve corresponds to the smallest nonzero frequencies of the unit hypercube: vectors with a single nonzero component in `{-1, 1}`, such as `(±1, 0, ..., 0)`.
+The figure below shows the curve `k ↦ S(k)` for every dimension `D = 2` to `16`, at `N = 1024`. The norm `‖k‖` is normalised by the inverse interparticle distance 1/δ, with `δ = N^(-1/D)`, so that the abscissa `k = 1` corresponds to wave vectors satisfying `k₁² + ... + k_D² ≈ 1/δ²`. The leftmost point of each curve corresponds to the smallest nonzero frequencies of the unit hypercube: vectors with a single nonzero component in `{-1, 1}`, such as `(±1, 0, ..., 0)`.
 
+- Chi = 0.30 :
+  
 ![Structure factor S(k) for D = 2 to 16, N = 1024](https://zenodo.org/records/23244510/files/fouriererror_all_samples_from_paper_chi30.png)
+
+- Chi = 0.43 :
 ![Structure factor S(k) for D = 2 to 16, N = 1024](https://zenodo.org/records/23244510/files/fouriererror_all_samples_from_paper_chi43.png)
 
 ## Use cases
