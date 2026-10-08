@@ -43,7 +43,16 @@ See following (N, D) coverage table:
 
 ![ND_coverage](https://github.com/For-a-few-DPPs-more/hyperuniform-samplers/blob/5b6cd8a40a866b7ba1324e94577ce814b5fecdc0/src/coverage_table_ND.png)
 
-## Sampling method
+**Large storage**
+
+In low dimensions (D ≤ 4), the Zenodo database provides additional, much larger point clouds. These must be downloaded manually (see [`larges.zip`](https://zenodo.org/records/23244510?preview_file=larges.zip), ~3 GB). The archive contains samples up to:
+
+- **2D**: N = 2²⁷ ≈ 134 million points  
+- **3D**: N = 2²⁵ ≈ 34 million points  
+- **4D**: N = 2²¹ ≈ 2 million points 
+
+
+## Sampling method 
 
 **Spectral optimisation** (non-uniform Fourier transform): select all wave vectors `k` within a ball `‖k‖ ≤ Kmax(N, D, χ)`, where `χ` is chosen slightly below 0.5 to ensure near-maximal spectral coverage, initialise with a random point cloud, then run a gradient descent on the Fourier loss. we sample two version of each point cloud: χ = 0.30 resp χ = 0.43, reaching a stealthy structure factor S(k) <= 10-10 resp S(k) <= 10-4 within the full spectral exclusion region.
 
