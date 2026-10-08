@@ -60,7 +60,7 @@ We mostly follow [Morse et al.](https://doi.org/10.1103/PhysRevResearch.5.033190
   | 0.30 | `S(k) ≤ 10⁻¹⁰`     |
   | 0.43 | `S(k) ≤ 10⁻⁴`      |
 
-  We retain the value `S(k) ≤ 10⁻⁴` as stealthy since it is enough for our application and probably for most use cases. It would be difficult to go beyond it at large `χ`. Regarding the χ = 0.30 samples, going beyond 10⁻¹⁰ would be possible, but requires reimplementing the whole sampler with at least float64 precision.
+  We retain the value S(k) ≤ 10⁻⁴ as stealthy since it is enough for our application and probably for most use cases. It would be difficult to go beyond it at large χ. Regarding the χ = 0.30 samples, going beyond 10⁻¹⁰ would be possible, but requires reimplementing the whole sampler with at least float64 precision.
 
 * **Gradient descent:** Morse et al. use FIRE optimisation. We use a simple adaptive learning-rate scheme on the normalised gradient (only its direction matters): good steps boost the learning rate, bad steps slow it down. It works on any `(N, D)` out of the box, with no hyperparameter tuning. See the ![source code](https://github.com/For-a-few-DPPs-more/Recursive-Gaussian-Blue-Noise/blob/main/src/blue_sampler/run/run_nufft_keops.py) of the sampler for details.
 
@@ -109,7 +109,7 @@ S(k) = |Σⱼ exp(2iπ ⟨k, xⱼ⟩)|² / N
 
 so the Monte Carlo integration error of the Fourier test function x ↦ exp(2iπ ⟨k, x⟩) is `|Σⱼ exp(2iπ ⟨k, xⱼ⟩)| / N = sqrt(S(k) / N) ≤ 10⁻² / √N`.
 
-The figure below shows the curve `k ↦ S(k)` for every dimension `D = 2` to `16`, at `N = 1024`. The norm `‖k‖` is normalised by the inverse interparticle distance 1/δ, with `δ = N^(-1/D)`, so that the abscissa `k = 1` corresponds to wave vectors satisfying `k₁² + ... + k_D² ≈ 1/δ²`. The leftmost point of each curve corresponds to the smallest nonzero frequencies of the unit hypercube: vectors with a single nonzero component in `{-1, 1}`, such as `(±1, 0, ..., 0)`.
+The figure below shows the curve `k ↦ S(k)` for every dimension `D = 2` to `16`, at N = 1024. The norm `‖k‖` is normalised by the inverse interparticle distance 1/δ, with `δ = N^(-1/D)`, so that the abscissa `k = 1` corresponds to wave vectors satisfying `k₁² + ... + k_D² ≈ 1/δ²`. The leftmost point of each curve corresponds to the smallest nonzero frequencies of the unit hypercube: vectors with a single nonzero component in `{-1, 1}`, such as `(±1, 0, ..., 0)`.
 
 - Chi = 0.30 :
   
