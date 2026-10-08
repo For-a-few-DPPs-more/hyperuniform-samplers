@@ -43,13 +43,13 @@ See following (N, D) coverage table:
 
 ![ND_coverage](https://github.com/For-a-few-DPPs-more/hyperuniform-samplers/blob/5b6cd8a40a866b7ba1324e94577ce814b5fecdc0/src/coverage_table_ND.png)
 
-**Large storage**
-
-In low dimensions (D ≤ 4), the Zenodo database provides additional, much larger point clouds. These must be downloaded manually (see [`larges.zip`](https://zenodo.org/records/23244510?preview_file=larges.zip), ~3 GB). The archive contains samples up to:
-
-- **2D**: N = 2²⁷ ≈ 134 million points  
-- **3D**: N = 2²⁵ ≈ 34 million points  
-- **4D**: N = 2²¹ ≈ 2 million points 
+> **Note: Large storage**
+>
+> In low dimensions (D ≤ 4), the Zenodo database provides additional, much larger point clouds. These must be downloaded manually (see [`larges.zip`](https://zenodo.org/records/23244510?preview_file=larges.zip), ~3 GB). In 2D and 3D, sampling these massive clouds was made possible by the fast non-uniform FFT provided by the [`finufft`](https://github.com/flatironinstitute/finufft) library. The archive contains samples up to:
+>
+> - **2D**: N = 2²⁷ ≈ 134 million points  
+> - **3D**: N = 2²⁵ ≈ 34 million points  
+> - **4D**: N = 2²¹ ≈ 2 million points
 
 
 ## Sampling method 
@@ -127,6 +127,10 @@ The figure below shows the curve `k ↦ S(k)` for every dimension `D = 2` to `16
 The GPU acceleration of the kernel reductions used in the sampler relies on the [PyKeOps](https://www.kernel-operations.io) library:
 
 > Charlier, Feydy, Glaunès, Collin, Durif, "Kernel Operations on the GPU, with Autodiff, without Memory Overflows", *Journal of Machine Learning Research* 22(74), 2021, pp. 1-6.
+
+For the large 2D and 3D point clouds available on Zenodo in `larges.zip`, spectral optimisation is made possible by the [FINUFFT](https://github.com/flatironinstitute/finufft) library:
+
+> Barnett, Magland, af Klinteberg, "A parallel non-uniform fast Fourier transform library based on an “exponential of semicircle” kernel", *SIAM Journal on Scientific Computing* 41(5), C479–C504, 2019.
 
 ## Licence
 
