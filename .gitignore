@@ -2,5 +2,9 @@ __pycache__/
 *.pyc
 dist/
 build/
+data/*
+!data/README.md
+new_data/*
+!new_data/README.md
 *test.ipynb
 *.egg-info/

@@ -1,26 +1,134 @@
-here we implement and test different hyperunifrom sampler candidates from the litterature, mainly
--sobol
-https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.qmc.Sobol.html
+# Hyperuniform Point Clouds Database
 
--ccvt
-https://github.com/michaelbalzer/ccvt
+Hyperuniform point clouds (e.g. blue noise) on the unit hypercube `[0,1)^D`, sampled with the [`blue-sampler`](https://github.com/) Python package (TODO: fix link). Generated during a research internship on hyperuniformity.
 
--GBN and RGBN*
-https://arxiv.org/abs/2206.07798
+Hyperuniformity means the points are not independent, as in usual random point clouds, but carefully correlated to cover the space more evenly, while remaining disordered.
 
--fair tesselation (stit)
-https://arxiv.org/abs/2605.22803
+**2D example** (the `N = 1024`, `D = 2` point cloud of this database):
 
--void and clusters
-https://bartwronski.com/2021/04/21/superfast-void-and-cluster-blue-noise-in-python-numpy-jax/
+![2D example, N = 1024](https://zenodo.org/records/23237510/files/plot_2D_sample.png)
 
--fresco
-https://github.com/martiniani-lab/FReSCo
+## Quick start
 
--curl noise
-https://github.com/jonasmb/curlnoisejittering
+see `quick_start.ipynb` to download the datasets from zenodo, and build new randomised ones
 
--sinkhorn
-https://www.kernel-operations.io/geomloss/
 
-*RGBN is a custom recursive version of Gaussian Blue Noise, implemented here https://github.com/For-a-few-DPPs-more/rgbn
+## Data characteristics
+
+### Format
+
+- Hosted on Zenodo (DOI 10.5281/zenodo.23237509).
+- Stored in **HDF5** for interoperability (Python, C++, MATLAB, Julia, R, ...).
+- Each point cloud is an `(N, D)` tensor in `float32`.
+- `D[j].zip` contains all the samples of dimension `D = j`. Inside, the file `N[i]_D[j].h5` is a point cloud of shape `(N, D)` with `N = 2^i` points and `D = j`.
+
+### Coverage
+
+- **Number of points:** `N = 2^10 = 1024` to `2^17 = 131072` (powers of 2). Larger `N` is obtained by tiling.
+- **Dimension:** `D = 2` to `16`, plus `D = 23` and `D = 32`. Other dimensions up to 32 are obtained by projection.
+
+### Reproducibility
+
+- Sampled on a single Google Colab **T4 GPU**.
+- Fully reproducible with the notebook [generate_all_samples_from_paper.ipynb](https://zenodo.org/records/23237510/files/generate_all_samples_from_paper.ipynb).
+- By default the notebook runs a mini configuration (about 2 minutes). The full sampling takes about 2 hours for `D = 2` to `16`, plus 2 extra hours for `D = 23, 32`.
+
+## Sampling method
+
+**Spectral optimisation** (non-uniform Fourier transform): select all wave vectors within a ball, initialise with a random point cloud, then run a gradient descent on the Fourier loss.
+
+We mostly follow [Morse et al.](https://doi.org/10.1103/PhysRevResearch.5.033190) (DOI: 10.1103/PhysRevResearch.5.033190). Main differences:
+
+- **Slightly higher χ:** `χ = 0.43` instead of `χ = 0.40`. This allows spectral optimisation up to the particle scale while staying isotropic and unordered (crystallisation empirically appears to start around `χ ≈ 0.45`).
+
+- **Weaker stealthy criterion:** `S(k)` is the structure factor. Morse et al. reach `S(k) ≤ 10⁻⁵¹` using double-double (float128) precision. We use `float32`, much faster on GPU, and stop the descent when, for all targeted frequencies:
+
+  | χ    | Stopping criterion |
+  |------|--------------------|
+  | 0.40 | `S(k) ≤ 10⁻¹⁰`     |
+  | 0.43 | `S(k) ≤ 10⁻⁴`      |
+
+  Only the samples with `χ = 0.43`, `S(k) ≤ 10⁻⁴` are provided, since this is stealthy enough for our application and probably for most use cases. The `χ = 0.40`, `S(k) ≤ 10⁻¹⁰` samples must be regenerated with the notebook. Going beyond `10⁻¹⁰` requires reimplementing the sampler with at least `float64` precision.
+
+- **Gradient descent:** Morse et al. use FIRE optimisation. We use a simple adaptive learning-rate scheme on the normalised gradient (only its direction matters): good steps boost the learning rate, bad steps slow it down. It works on any `(N, D)` out of the box, with no hyperparameter tuning. See the source code for details.
+
+## Guarantees
+
+By construction, the provided samples guarantee:
+
+### Randomisability
+
+Spectral optimisation result enforces periodic boundary conditions on the hypercube, so a sample can be randomised by a simple shift (and by flips, which preserve the structure factor):
+
+```
+X_new = (X - s) mod 1,    s drawn uniformly in [0,1]^D
+```
+
+The full randomisation procedure exploit all possible symetries (shift, flip axis, swap axis) of the distribution.
+
+### Tilability
+
+Thanks to the periodic boundary conditions, samples can be tiled to generate millions of points. The price is a loss of stealthiness proportional to the increase in the number of points:
+
+```
+sup_{‖k_t‖ ≤ Kmax_t(N_t, D, χ)} S_t(k_t)  =  [ sup_{‖k‖ ≤ Kmax(N, D, χ)} S(k) ]  ×  N_t / N
+```
+
+where `N` is the number of points, `D` the dimension, `k` the wave vectors within the ball of radius `Kmax`, and the subscript `t` denotes the tiled dataset (`N_t` points).
+
+### Stealthiness
+
+`S(k) ≤ 10⁻⁴` for every wave vector with `‖k‖ ≤ Kmax(N, D, χ)`. For `χ = 0.43`, the ball of radius `Kmax` covers `2χ = 86%` of the spectral domain reachable with `N` points (this is what `χ = 0.43` means).
+
+Here, for a wave vector `k = (k₁, ..., k_D)`,
+
+```
+S(k) = |Σⱼ exp(2iπ ⟨k, xⱼ⟩)|² / N
+```
+
+so the Monte Carlo integration error of the Fourier test function `x ↦ exp(2iπ ⟨k, x⟩)` is `|Σⱼ exp(2iπ ⟨k, xⱼ⟩)| / N = sqrt(S(k) / N) ≤ 10⁻² / √N`.
+
+The figure below shows the curve `k ↦ S(k)` for every dimension `D = 2` to `16`, at `N = 1024`. The norm `‖k‖` is normalised by the inverse interparticle distance `1/δ`, with `δ = N^(-1/D)`, so that the abscissa `k = 1` corresponds to wave vectors satisfying `k₁² + ... + k_D² ≈ 1/δ²`. The leftmost point of each curve corresponds to the smallest nonzero frequencies of the unit hypercube: vectors with a single nonzero component in `{-1, 1}`, such as `(±1, 0, ..., 0)`.
+
+![Structure factor S(k) for D = 2 to 16, N = 1024](https://zenodo.org/records/23237510/files/fouriererror_all_samples_from_paper.png)
+
+## Tiling
+
+Let `N_t = 2^K · N` with `N = 2^17` the largest stored cloud, and `P = ⌊D/2⌋` the number of pairs of dimensions.
+
+**Elementary step (doubles the number of points).** For a pair of axes `(a, b)`, the periodic pattern is cut along the lattice generated by `(1, 1)` and `(1, -1)`, i.e. rotated by 45° and rescaled by `1/√2`:
+
+```
+(u, v) ↦ ( (u + v)/2 , (u - v)/2 ) mod 1,   for (u, v) = (x_a, x_b) + {(0,0), (1,0)}
+```
+
+The result is still periodic on the unit hypercube, and the structure factor is preserved up to the factor `N_t / N` given above (`S_t(k) = 2 S(k')` with `k' = ((k_a + k_b)/2, (k_a - k_b)/2)`).
+
+**Procedure.**
+
+| Tiling `2^K`          | What is done                                                                                   |
+|-----------------------|------------------------------------------------------------------------------------------------|
+| `K ≤ P` (about `2^(D/2)`) | `K` elementary steps on `K` randomly chosen pairs of axes                                  |
+| `P < K ≤ 2P` (up to about `2^D`) | the same on `P` pairs, then again on the remaining `K - P` pairs of a second, shifted pairing of the axes |
+| `K > 2P`              | pure tiling first (`2^k` copies per axis, `k = ⌊K/D⌋`, multiplying `N` by `2^(kD)`), then the previous procedure for the remaining factor `2^(K - kD)` |
+
+The pairings are drawn at random from the seed. The procedure slightly breaks isotropy, with no practical consequence.
+
+## Use cases
+
+- **Monte Carlo / randomised QMC integration**, especially for periodic or compactly supported functions with smooth, low-frequency spectral content. Random shifts give independent replicas for reliable error bars. For other function spaces (e.g. discontinuous integrands, low-rank decomposition), other QMC methods will probably give lower discrepancy.
+- **Rendering and image synthesis:** pixel/sub-pixel anti-aliasing, path-tracing sample dimensions, dithering and halftoning, blue-noise textures for denoising.
+- **Spatial sampling:** homogeneous, isotropic particle initialisation for simulations (SPH, molecular dynamics), Poisson-disk-like placement, point sampling of geometry.
+- **Machine learning and design of experiments:** initial points for Bayesian or black-box optimisation, hyperparameter search, training-set sampling for surrogates and PINNs, uncertainty propagation.
+- **Hyperuniformity research:** a reproducible reference set to study structure-factor behaviour, the χ-dependent transition toward crystallisation, and dimension scaling (`D = 2` to `32`), or to benchmark new samplers.
+- **Large-scale sampling by tiling:** replicate a cloud to get millions of points, at the cost of stealthiness degrading proportionally to `N_t / N`.
+
+## Acknowledgements
+
+The GPU acceleration of the kernel reductions used in the sampler relies on the [PyKeOps](https://www.kernel-operations.io) library:
+
+> Charlier, Feydy, Glaunès, Collin, Durif, "Kernel Operations on the GPU, with Autodiff, without Memory Overflows", *Journal of Machine Learning Research* 22(74), 2021, pp. 1-6.
+
+## Licence
+
+The database and the corresponding source code are free to use under the **MIT licence**.
