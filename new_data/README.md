@@ -6,5 +6,5 @@ Supported: any (N, D) with N a power of 2 and 2^10 <= N <= 2^24, 2 <= D <= 32.
 
 
 ```bash
-python new_data.py --dim 2 --npoints 1024 --seed 42
+python src/new_data.py --dim 2 --npoints 1024 --seed 42
 ```
