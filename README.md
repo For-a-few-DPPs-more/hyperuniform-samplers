@@ -19,8 +19,6 @@ see `quick_start.ipynb` to download the datasets from zenodo, and build new rand
 
 - Hosted on Zenodo (DOI 10.5281/zenodo.23237509).
 - Stored in **HDF5** for interoperability (Python, C++, MATLAB, Julia, R, ...).
-- Each point cloud is an `(N, D)` tensor in `float32`.
-- `D[j].zip` contains all the samples of dimension `D = j`. Inside, the file `N[i]_D[j].h5` is a point cloud of shape `(N, D)` with `N = 2^i` points and `D = j`.
 
 ### Coverage
 
