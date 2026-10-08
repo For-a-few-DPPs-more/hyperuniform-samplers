@@ -8,7 +8,7 @@ Once the `data/` folder contains the datasets downloaded from Zenodo, new point 
 
 **The `--chi` parameter** (required) selects the dataset the cloud is built from. Two values are available, with different spectral properties:
 
-| `--chi` | χ    | Stealthiness within the spectral exclusion region |
+| `chi` | χ    | Stealthiness within the spectral exclusion region |
 |---------|------|---------------------------------------------------|
 | `30`    | 0.30 | `S(k) <= 1e-10` (smaller exclusion region)        |
 | `43`    | 0.43 | `S(k) <= 1e-4` (larger exclusion region)          |
