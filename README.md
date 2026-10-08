@@ -42,7 +42,7 @@ We mostly follow [Morse et al.](https://doi.org/10.1103/PhysRevResearch.5.033190
   | 0.40 | `S(k) ≤ 10⁻¹⁰`     |
   | 0.43 | `S(k) ≤ 10⁻⁴`      |
 
-  Only the samples with `χ = 0.43`, `S(k) ≤ 10⁻⁴` are provided, since this is stealthy enough for our application and probably for most use cases. The `χ = 0.40`, `S(k) ≤ 10⁻¹⁰` samples must be regenerated with the notebook. Going beyond `10⁻¹⁰` requires reimplementing the sampler with at least `float64` precision.
+  Only the samples with `χ = 0.43`, `S(k) ≤ 10⁻⁴` are provided, since this is stealthy enough for our application and probably for most use cases. The `χ = 0.40`, `S(k) ≤ 10⁻¹⁰` samples must be regenerated as detailed in the Zenodo archive. Going beyond `10⁻¹⁰` is possible, but requires reimplementing the whole sampler with at least `float64` precision.
 
 - **Gradient descent:** Morse et al. use FIRE optimisation. We use a simple adaptive learning-rate scheme on the normalised gradient (only its direction matters): good steps boost the learning rate, bad steps slow it down. It works on any `(N, D)` out of the box, with no hyperparameter tuning. See the source code for details.
 
