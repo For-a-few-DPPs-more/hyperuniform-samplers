@@ -93,9 +93,11 @@ The exact tiling procedure is described in [TILING.md](TILING.md). It allows gen
 
 ## Stealthiness
 
-`S(k) ≤ 10⁻⁴` for every wave vector with `‖k‖ ≤ Kmax(N, D, χ)`. For `χ = 0.43`, the ball of radius Kmax covers `2χ = 86%` of the spectral domain reachable with `N` points (this is what χ = 0.43 means). The `χ = 0.30` dataset guarantees `S(k) ≤ 10⁻¹⁰`, with a coverage of `2χ = 60%`.
+- For `χ = 0.43`, the ball of radius Kmax covers `2χ = 86%` of the spectral domain reachable with N points (this is what χ = 0.43 means),
+  with a controlled `S(k) ≤ 10⁻⁴` for every wave vector k with ‖k‖ ≤ Kmax(N, D, χ);
+- For `χ = 0.30`, coverage is slightly weaker `2χ = 60%` but the S(k) control much finer: `S(k) ≤ 10⁻¹⁰`
 
-Here, for a wave vector `k = (k₁, ..., k_D)`,
+Recal that, for a wave vector `k = (k₁, ..., k_D)` with integer components in Z^D,
 
 ```text
 S(k) = |Σⱼ exp(2iπ ⟨k, xⱼ⟩)|² / N
