@@ -45,7 +45,7 @@ See following (N, D) coverage table:
 
 > **Note: Large storage**
 >
-> In low dimensions (D ≤ 4), the Zenodo database provides additional, much larger point clouds. These must be downloaded manually (see [`larges.zip`](https://zenodo.org/records/23244510?preview_file=larges.zip), ~3 GB). In 2D and 3D, sampling these massive clouds was made possible by the fast non-uniform FFT provided by the [`finufft`](https://github.com/flatironinstitute/finufft) library. The archive contains samples up to:
+> In low dimensions (D ≤ 4), the Zenodo database provides additional, much larger point clouds. These must be downloaded manually (see [`larges.zip`](https://zenodo.org/records/23244510?preview_file=larges.zip), ~3 GB). In 2D and 3D, sampling these massive clouds was made possible by the fast non-uniform FFT provided by the `finufft` library. The archive contains samples up to:
 >
 > - **2D**: N = 2²⁷ ≈ 134 million points  
 > - **3D**: N = 2²⁵ ≈ 34 million points  
