@@ -12,7 +12,7 @@ Hyperuniformity means the points are not independent, as in usual random point c
 
 Install the required dependencies:
 - numpy (array library for python)
-- h5py (required to load datasets from the Zenodo database)
+- h5py (required to read hdf5 files format)
 
 ```bash
 pip install numpy h5py
@@ -20,12 +20,21 @@ pip install numpy h5py
 
 ## Quick Start
 
-1. Clone this GitHub repository.
-2. Open `quick_start.ipynb`.
-3. Follow the notebook to:
+- First Clone this GitHub repository.
 
-   * download the datasets from Zenodo;
-   * build new randomized datasets.
+- Quick start from a notebook:
+   Open `quick_start.ipynb` and follow the notebook to:
+   * download the database from Zenodo;
+   * build new randomized point clouds.
+
+- Quick start from the terminal insteed :
+   This script load the full database and generate a new randomized point cloud
+```bash
+python src/load_data.py --dim all --chi all
+python src/new_data.py --dim 2 --npoints 1024 --chi 30 --seed 42
+```
+
+
 
 ## Data characteristics
 
@@ -86,7 +95,7 @@ sup_{‖k_t‖ ≤ Kmax_t(N_t, D, χ)} S_t(k_t)
 
 where `N` is the number of points in the original cloud, `N_t` the number of points after tiling, and the subscript `t` denotes the tiled dataset.
 
-The exact tiling procedure is described in [TILING.md](TILING.md). It allows generating new datasets with up to N = 2^24 (~16 million) points while keeping the loss in stealthiness controlled. Exemple of a ×2 tiling step from number of points N = 8192 to new number of points N_t = 16384:
+The exact tiling procedure is described in [TILING.md](TILING.md). It allows generating new point clouds with up to N = 2^24 (~16 million) points while keeping the loss in stealthiness controlled. Exemple of a ×2 tiling step from number of points N = 8192 to new number of points N_t = 16384:
 
 ![Tiling effect](https://github.com/For-a-few-DPPs-more/hyperuniform-samplers/blob/02c688c83d98b8b691ac16b9481dbcdd8c528472/src/tiling_effect.png)
 

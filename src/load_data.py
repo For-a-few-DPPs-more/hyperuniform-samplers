@@ -4,7 +4,7 @@
 Usage
 -----
     python load_data.py --dim all --chi all     # D = 2..16, 23, 32 ; chi = 0.30 and 0.43
-    python load_data.py --dim 2 --chi 43        # only D = 2, chi = 0.43
+
     python load_data.py --dim 2 3 4 --chi 30    # several dimensions
 
 Each `chi{X}_D{j}.zip` is extracted to `<out>/chi{X}/D{j}/`, which gives files
