@@ -22,3 +22,7 @@ We mostly follow [Morse et al.](https://doi.org/10.1103/PhysRevResearch.5.033190
 The samples were collected by running the notebook in `src/generate_all_samples_from_the_paper.ipynb` on a Google Colab T4 GPU. The optimisation algorithm has O(N²·D²) complexity per single (N,D) point cloud and thus requires intensive computation, making a GPU nearly mandatory for large point clouds. We ran χ = 0.30 and χ = 0.43, looping over all numbers of points N = 2¹⁰, …, 2¹⁷ and over dimensions D = 2 to 16, plus D = 23 and D = 32, which took 5 hours in total.
 
 Note: using the `pykeops` Lazytensor framework make the spectral loss computation significantly faster. Pykeops is a high performance library for efficient kernel reduction.
+
+## Large point clouds
+
+We used the `finufft` python library to sample additional massive point clouds in 2d / 3d. They can be downloaded manually from the Zenodo database. finufft essentially allow to replace the O(N^2) complexity of the gradient descent to O(N log N) using a fast fourier transform. Here is the [source code](https://github.com/For-a-few-DPPs-more/Recursive-Gaussian-Blue-Noise/blob/main/src/blue_sampler/run/run_nufft.py) to run the finufft based pipeline.
