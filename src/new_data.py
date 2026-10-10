@@ -38,7 +38,8 @@ from pathlib import Path
 import h5py
 import numpy as np
 
-from load_data import AVAILABLE_CHIS, AVAILABLE_DIMS
+AVAILABLE_DIMS = list(range(2, 17)) + [23, 32]
+AVAILABLE_CHIS = [30, 43]  # chi = 0.30 and chi = 0.43
 
 MIN_LOG2 = 10          # smallest N stored: 2**10 = 1024
 MAX_BASE_LOG2 = 17     # largest N stored:  2**17 = 131072
@@ -77,8 +78,13 @@ def rotate_pair(X, a, b):
     return Y
 
 
-def tile(X, K, rng):
-    """Multiply the number of points of X by 2**K (see module docstring)."""
+def tile(X, K, rng = None):
+    """Multiply the number of points of X by 2**K by tiling it.
+    One can  choose the random generator by passing one e.g. as
+        rng = numpy.random.default_rng(42)
+    """
+    if rng is None:
+        rng = np.random.default_rng(42)
     D = X.shape[1]
     P = D // 2
     k = K // D if K > 2 * P else 0

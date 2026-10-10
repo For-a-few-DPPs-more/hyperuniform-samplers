@@ -126,9 +126,9 @@ The figure below shows the curve `k ↦ S(k)` for every dimension `D = 2` to `16
 
 ## Use cases
 
-* **Monte Carlo / randomised QMC integration**, especially for periodic or compactly supported functions with smooth, low-frequency spectral content. Random shifts give independent replicas for reliable error bars. For other function spaces (e.g. discontinuous integrands, low-rank decomposition), other QMC methods will probably give lower discrepancy.
 * **Rendering and image synthesis:** pixel/sub-pixel anti-aliasing, path-tracing sample dimensions, dithering and halftoning, blue-noise textures for denoising.
 * **Spatial sampling:** homogeneous, isotropic particle initialisation for simulations (SPH, molecular dynamics), Poisson-disk-like placement, point sampling of geometry.
+* **Monte Carlo / QMC integration** For usual function spaces (e.g. discontinuous integrands, low effective dimension, axis based decomposition), Sobol or other QMC methods will give lower discrepancy, but stealthy hyperuniform samples are pertinent for periodic or compactly supported functions with smooth, low-frequency spectral content. Random shifts give independent replicas for unbiased error bars.
 * **Machine learning and design of experiments:** initial points for Bayesian or black-box optimisation, hyperparameter search, training-set sampling for surrogates and PINNs, uncertainty propagation.
 * **Hyperuniformity research:** a reproducible reference set to study structure-factor behaviour, the χ-dependent transition toward crystallisation, and dimension scaling (`D = 2` to `32`), or to benchmark new samplers.
 * **Large-scale sampling by tiling:** replicate a cloud to get millions of points, at the cost of stealthiness degrading proportionally to `N_t / N`.
