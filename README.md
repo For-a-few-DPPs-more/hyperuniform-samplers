@@ -19,9 +19,14 @@ pip install numpy h5py
 
 ## Quick Start
 
-First clone this GitHub repository. then:
+- First clone this GitHub repository:
 
-- Quick start from the `terminal` :
+```
+git clone https://github.com/For-a-few-DPPs-more/hyperuniform-samplers.git
+cd hyperuniform-samplers
+```
+
+- Then, from the `terminal` :
 This script loads the full database and generates a new randomized point cloud
 
 ```
