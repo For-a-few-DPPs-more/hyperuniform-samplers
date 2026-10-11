@@ -43,6 +43,7 @@ Open `quick_start.ipynb` and follow the instructions to load and use the databas
 
 - Hosted on Zenodo [DOI 10.5281/zenodo.23244510](https://doi.org/10.5281/zenodo.23244510).
 - Stored in **HDF5** for interoperability (Python, C++, MATLAB, Julia, R, ...).
+- Size : default 357 MB, full (see Note: Large storage) 3.1GB
 
 ### Coverage
 
@@ -55,7 +56,7 @@ See following (N, D) coverage table:
 
 > **Note: Large storage**
 >
-> In low dimensions (D ≤ 4), the Zenodo database provides additional, much larger point clouds. These must be downloaded manually (see [`larges.zip`](https://zenodo.org/records/23244510?preview_file=larges.zip), ~3 GB). In 2D and 3D, sampling these massive clouds was made possible by the fast non-uniform FFT provided by the `finufft` library. The archive contains samples up to:
+> In low dimensions (D ≤ 4), the Zenodo database provides additional, much larger point clouds. These must be downloaded manually (see [`larges.zip`](https://zenodo.org/records/23244510?preview_file=larges.zip), 2.7 GB). In 2D and 3D, sampling these massive clouds was made possible by the fast non-uniform FFT provided by the `finufft` library. The archive contains samples up to:
 >
 > - **2D**: N = 2²⁷ ≈ 134 million points
 > - **3D**: N = 2²⁵ ≈ 34 million points
