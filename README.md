@@ -112,7 +112,7 @@ Recal that, for a wave vector k = (k₁, ..., k_D) with integer components in Z^
 S(k) = |Σⱼ exp(2iπ ⟨k, xⱼ⟩)|² / N
 ```
 
-So having a near-zero S(k) essentially means that one control the Monte Carlo integration error of all the Fourier test function x ↦ exp(2iπ ⟨k, x⟩) for any wave vector k in the exclusion region.
+So having a near-zero S(k) essentially means that one control the Monte Carlo integration error of the low frequencies Fourier test function x ↦ exp(2iπ ⟨k, x⟩).
 
 The figure below shows the curve `k ↦ S(k)` for every dimension D = 2 to 16, at N = 1024.
 
