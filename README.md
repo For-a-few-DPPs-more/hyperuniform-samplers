@@ -29,7 +29,7 @@ python src/load_data.py --dim all --chi all
 python src/new_data.py --dim 2 --npoints 1024 --chi 30 --seed 42
 ```
 
-- or Quick start from a `notebook` :
+- or Quick start from a notebook :
    Open `quick_start.ipynb` and follow the notebook to:
    * download the database from Zenodo;
    * build new randomized point clouds.
@@ -45,8 +45,8 @@ python src/new_data.py --dim 2 --npoints 1024 --chi 30 --seed 42
 
 ### Coverage
 
-* **Number of points:** `N = 2^10 = 1024` to `2^17 = 131072` (powers of 2). Larger `N` is obtained by tiling.
-* **Dimension:** `D = 2` to `16`, plus `D = 23` and `D = 32`. Other dimensions up to 32 are obtained by projection.
+* **Number of points:** N = 2^10 = 1024 to 2^17 = 131072 (powers of 2). Larger N is obtained by tiling.
+* **Dimension:** D = 2 to 16, plus D = 23 and D = 32. Other dimensions up to 32 are obtained by projection.
 
 See following (N, D) coverage table:
 
