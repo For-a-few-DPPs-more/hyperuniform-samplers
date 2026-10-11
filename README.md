@@ -112,9 +112,9 @@ Recal that, for a wave vector k = (k₁, ..., k_D) with integer components in Z^
 S(k) = |Σⱼ exp(2iπ ⟨k, xⱼ⟩)|² / N
 ```
 
-so the Monte Carlo integration error of the Fourier test function x ↦ exp(2iπ ⟨k, x⟩) is |Σⱼ exp(2iπ ⟨k, xⱼ⟩)| / N = sqrt(S(k) / N) ≤ 10⁻² / √N.
+So having a near-zero S(k) essentially means that one control the Monte Carlo integration error of all the Fourier test function x ↦ exp(2iπ ⟨k, x⟩) for any wave vector k in the exclusion region  ‖k‖ ≤ Kmax.
 
-The figure below shows the curve k ↦ S(k) for every dimension D = 2 to 16, at N = 1024. The norm ‖k‖ is normalised by the inverse interparticle distance 1/δ, with `δ = N^(-1/D)`, so that the abscissa k = 1 corresponds to wave vectors satisfying k₁² + ... + k_D² ≈ 1/δ². The leftmost point of each curve corresponds to the smallest nonzero frequencies of the unit hypercube: vectors with a single nonzero component in {-1, 1}, such as (±1, 0, ..., 0).
+The figure below shows the curve k ↦ S(k) for every dimension D = 2 to 16, at N = 1024.
 
 - Chi = 0.30, D = 2, 3, ..., 16 :
   
