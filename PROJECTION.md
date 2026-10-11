@@ -9,7 +9,7 @@ In practice, the table below shows the impact of the projection applied when a p
 
 
 
-## χ = 0.3 (initial coverage 2·χ = 30%)
+## χ = 0.3 (initial coverage 2·χ = 60%)
 
 Effective coverage = 2·χ_eff (in %):
 
