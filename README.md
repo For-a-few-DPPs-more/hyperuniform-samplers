@@ -27,7 +27,7 @@ python src/load_data.py --dim all --chi all
 python src/new_data.py --dim 2 --npoints 1024 --chi 30 --seed 42
 ```
 
-- or Quick start from a notebook :
+- or from a notebook :
    Open `quick_start.ipynb` and follow the instructions to load and use the database.
 
 ## Data characteristics
