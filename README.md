@@ -106,9 +106,17 @@ X_new = (X - s) mod 1,    s drawn uniformly in [0,1]^D
 
 The full randomisation procedure exploits all possible symmetries (shift, axis flip, axis swap) of the distribution.
 
-### Tilability
+### Extensibility
 
-Thanks to the periodic boundary conditions, a sample can be tiled to generate millions of points. Tiling consists of combining several copies of the same periodic point cloud into a larger periodic cloud. The price is a loss of stealthiness proportional to the increase in the number of points:
+The materialised database only contains samples with 2^10 ≤ N ≤ 2^17 and 2 ≤ D ≤ 16, plus D = 23 and D = 32 
+Other shapes (see the Coverage section) are produced on the fly: when a point cloud is requested with `new_data(N, D)`, if needed the script converts a materialised sample to the requested size and dimension. This is possible because stealthy point clouds can be extended in two ways, at the cost of a controlled loss of quality:
+
+- **Tiling**: more points, up to N = 2^24
+- **Projection**: lower dimension, any 2 ≤ D ≤ 32
+
+#### Tiling
+
+Thanks to the periodic boundary conditions, a sample can be tiled: several copies of the same periodic point cloud are combined into a larger periodic one. This makes it possible to generate millions of points. The cost is a loss of stealthiness proportional to the increase in the number of points:
 
 ```
 sup_{‖k_t‖ ≤ Kmax_t(N_t, D, χ)} S_t(k_t)
@@ -116,11 +124,28 @@ sup_{‖k_t‖ ≤ Kmax_t(N_t, D, χ)} S_t(k_t)
 [ sup_{‖k‖ ≤ Kmax(N, D, χ)} S(k) ] × N_t / N
 ```
 
-where N is the number of points in the original cloud, N_t the number of points after tiling, and the subscript t denotes the tiled dataset.
+where N is the number of points of the original cloud, N_t the number of points after tiling, and the subscript t denotes the tiled dataset.
 
-The exact tiling procedure is described in [TILING.md](https://github.com/For-a-few-DPPs-more/hyperuniform-samplers/blob/main/TILING.md). Example of a ×2 tiling step from number of points N = 8192 to new number of points N_t = 16384:
+The procedure is described in [TILING.md](https://github.com/For-a-few-DPPs-more/hyperuniform-samplers/blob/main/TILING.md).
+Example of a ×2 tiling, from N = 8192 to N_t = 16384:
 
-[![Tiling effect](https://github.com/For-a-few-DPPs-more/hyperuniform-samplers/raw/02c688c83d98b8b691ac16b9481dbcdd8c528472/src/tiling_effect.png)](https://github.com/For-a-few-DPPs-more/hyperuniform-samplers/blob/02c688c83d98b8b691ac16b9481dbcdd8c528472/src/tiling_effect.png)
+[
+
+![Tiling effect](https://github.com/For-a-few-DPPs-more/hyperuniform-samplers/raw/02c688c83d98b8b691ac16b9481dbcdd8c528472/src/tiling_effect.png)
+
+](https://github.com/For-a-few-DPPs-more/hyperuniform-samplers/blob/02c688c83d98b8b691ac16b9481dbcdd8c528472/src/tiling_effect.png)
+
+#### Projection
+
+Dimensions that are not materialised are obtained by projecting a
+higher-dimensional point cloud:
+
+- 17 ≤ D_proj ≤ 22 is projected from D = 23
+- 24 ≤ D_proj ≤ 31 is projected from D = 32
+
+The procedure and its
+impact are described in
+[PROJECTION.md](https://github.com/For-a-few-DPPs-more/hyperuniform-samplers/blob/main/PROJECTION.md).
 
 ## Use cases
 
