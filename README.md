@@ -128,12 +128,7 @@ where N is the number of points of the original cloud, N_t the number of points 
 
 The procedure is described in [TILING.md](https://github.com/For-a-few-DPPs-more/hyperuniform-samplers/blob/main/TILING.md).
 Example of a ×2 tiling, from N = 8192 to N_t = 16384:
-
-[
-
 ![Tiling effect](https://github.com/For-a-few-DPPs-more/hyperuniform-samplers/raw/02c688c83d98b8b691ac16b9481dbcdd8c528472/src/tiling_effect.png)
-
-](https://github.com/For-a-few-DPPs-more/hyperuniform-samplers/blob/02c688c83d98b8b691ac16b9481dbcdd8c528472/src/tiling_effect.png)
 
 **Projection**:
 
