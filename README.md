@@ -85,7 +85,7 @@ S(k) = |Σⱼ exp(2iπ ⟨k, xⱼ⟩)|² / N
 
 So having a near-zero S(k) essentially means that one controls the Monte Carlo integration error of the low frequencies Fourier test function x ↦ exp(2iπ ⟨k, x⟩).
 
-The figure below shows the curve `k ↦ S(k)` for every dimension D = 2 to 16, at N = 1024.
+The figure below shows the curve `k ↦ S(k)` for every dimension `D = 2` to `16`, at N = 1024. To make the plots comparable across dimensions, the norm `‖k‖` is normalised by the inverse interparticle distance `1/δ`, where `δ = N^(-1/D)`.
 
 - Chi = 0.30, D = 2, 3, ..., 16 :
 
