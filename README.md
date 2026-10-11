@@ -22,7 +22,7 @@ pip install numpy h5py
 - First clone this GitHub repository.
 
 - Quick start from the `terminal` :
-This script loads the full database and generates a new randomized point cloud (`--chi 30` stands for χ = 0.30, `--chi 43` for χ = 0.43)
+This script loads the full database and generates a new randomized point cloud
 
 ```
 python src/load_data.py --dim all --chi all
