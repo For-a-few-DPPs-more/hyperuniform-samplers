@@ -39,7 +39,7 @@ python src/new_data.py --dim 2 --npoints 1024 --chi 30 --seed 42
 
 ### Coverage
 
-* **Number of points:** Native: N = 2^10 = 1024 to 2^17 = 131072 (powers of 2). Including tiling: up to N = 2^24.
+* **Number of points:** Native: N = 2^10 to 2^17 (powers of 2). Including tiling: up to N = 2^24.
 * **Dimension:** Native: D = 2 to 16, plus D = 23 and D = 32. Including projection: any 2 ≤ D ≤ 32. 
 
 See following (N, D) coverage table:
