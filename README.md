@@ -28,11 +28,7 @@ python src/new_data.py --dim 2 --npoints 1024 --chi 30 --seed 42
 ```
 
 - or Quick start from a notebook :
-   Open `quick_start.ipynb` and follow the notebook to:
-   * download the database from Zenodo;
-   * build new randomized point clouds.
-
-
+   Open `quick_start.ipynb` and follow the notebook.
 
 ## Data characteristics
 
