@@ -65,34 +65,7 @@ See all details in [SAMPLING.md](SAMPLING.md) for reproducibility.
 
 By construction, the provided samples guarantee:
 
-### Randomisability
-
-Spectral optimisation enforces periodic boundary conditions on the hypercube, so a sample can be randomised by a simple shift:
-
-```text
-X_new = (X - s) mod 1,    s drawn uniformly in [0,1]^D
-```
-
-The full randomisation procedure exploits all possible symmetries (shift, axis flip, axis swap) of the distribution.
-
-### Tilability
-
-Thanks to the periodic boundary conditions, a sample can be tiled to generate millions of points. Tiling consists of combining several copies of the same periodic point cloud into a larger periodic cloud. The price is a loss of stealthiness proportional to the increase in the number of points:
-
-```text
-sup_{‖k_t‖ ≤ Kmax_t(N_t, D, χ)} S_t(k_t)
-=
-[ sup_{‖k‖ ≤ Kmax(N, D, χ)} S(k) ] × N_t / N
-```
-
-where N is the number of points in the original cloud, N_t the number of points after tiling, and the subscript t denotes the tiled dataset.
-
-The exact tiling procedure is described in [TILING.md](TILING.md). It allows generating new point clouds with up to N = 2^24 (~16 million) points while keeping the loss in stealthiness controlled. Exemple of a ×2 tiling step from number of points N = 8192 to new number of points N_t = 16384:
-
-![Tiling effect](https://github.com/For-a-few-DPPs-more/hyperuniform-samplers/blob/02c688c83d98b8b691ac16b9481dbcdd8c528472/src/tiling_effect.png)
-
-
-## Stealthiness
+### Stealthiness
 
 - For `χ = 0.43`, the ball of radius Kmax covers `2χ = 86%` of the spectral domain reachable with N points (this is what χ = 0.43 means),
   with a controlled `S(k) ≤ 10⁻⁴` for every wave vector k with ‖k‖ ≤ Kmax(N, D, χ);
@@ -115,6 +88,33 @@ The figure below shows the curve `k ↦ S(k)` for every dimension D = 2 to 16, a
 - Chi = 0.43, D = 2, 3, ..., 16 :
 
 ![Structure factor S(k) for D = 2 to 16, N = 1024](https://zenodo.org/records/23244510/files/fouriererror_all_samples_from_paper_chi43.png)
+
+### Randomisability
+
+Spectral optimisation enforces periodic boundary conditions on the hypercube, so a sample can be randomised by a simple shift:
+
+```text
+X_new = (X - s) mod 1,    s drawn uniformly in [0,1]^D
+```
+
+The full randomisation procedure exploits all possible symmetries (shift, axis flip, axis swap) of the distribution.
+
+### Tilability
+
+Thanks to the periodic boundary conditions, a sample can be tiled to generate millions of points. Tiling consists of combining several copies of the same periodic point cloud into a larger periodic cloud. The price is a loss of stealthiness proportional to the increase in the number of points:
+
+```text
+sup_{‖k_t‖ ≤ Kmax_t(N_t, D, χ)} S_t(k_t)
+=
+[ sup_{‖k‖ ≤ Kmax(N, D, χ)} S(k) ] × N_t / N
+```
+
+where N is the number of points in the original cloud, N_t the number of points after tiling, and the subscript t denotes the tiled dataset.
+
+The exact tiling procedure is described in [TILING.md](TILING.md). Exemple of a ×2 tiling step from number of points N = 8192 to new number of points N_t = 16384:
+
+![Tiling effect](https://github.com/For-a-few-DPPs-more/hyperuniform-samplers/blob/02c688c83d98b8b691ac16b9481dbcdd8c528472/src/tiling_effect.png)
+
 
 ## Use cases
 
