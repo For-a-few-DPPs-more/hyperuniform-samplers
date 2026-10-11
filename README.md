@@ -116,7 +116,7 @@ The database  which is downloaded by the `load_data` command contains only sampl
 
 **Tiling**:
 
-Thanks to the periodic boundary conditions, a sample can be tiled: several copies of the same periodic point cloud are combined into a larger periodic one. This makes it possible to generate millions of points. The cost is a loss of stealthiness proportional to the increase in the number of points:
+Thanks to the periodic boundary conditions, a sample can be tiled: several copies of the same periodic point cloud are combined into a larger periodic one. This makes it possible to generate millions of points on the fly. The cost is a loss of stealthiness proportional to the increase in the number of points:
 
 ```
 sup_{‖k_t‖ ≤ Kmax_t(N_t, D, χ)} S_t(k_t)
