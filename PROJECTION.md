@@ -5,7 +5,7 @@ Projecting a D-dimensional point cloud to a lower dimension D_proj degrades its 
 the exclusion region shrinks, which results in χ → χ_eff < χ. \
 This quality loss is moderate as long as the difference D − D_proj is not too large.
 
-In practice, the table below shows the impact of the projection applied when a point cloud with dimension 17 ≤ D_proj ≤ 22 or 24 ≤ D_proj ≤ 31 is requested. \
+In practice, the table below shows the impact of the projection applied when a point cloud with dimension 17 ≤ D_proj ≤ 22 or 24 ≤ D_proj ≤ 31 is requested.
 
 
 
