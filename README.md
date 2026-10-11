@@ -114,7 +114,7 @@ Other shapes (see the Coverage section) are produced on the fly: when a point cl
 - **Tiling**: more points, up to N = 2^24
 - **Projection**: lower dimension, any 2 ≤ D ≤ 32
 
-#### Tiling
+**Tiling**:
 
 Thanks to the periodic boundary conditions, a sample can be tiled: several copies of the same periodic point cloud are combined into a larger periodic one. This makes it possible to generate millions of points. The cost is a loss of stealthiness proportional to the increase in the number of points:
 
@@ -135,7 +135,7 @@ Example of a ×2 tiling, from N = 8192 to N_t = 16384:
 
 ](https://github.com/For-a-few-DPPs-more/hyperuniform-samplers/blob/02c688c83d98b8b691ac16b9481dbcdd8c528472/src/tiling_effect.png)
 
-#### Projection
+**Projection**:
 
 Dimensions that are not materialised are obtained by projecting a
 higher-dimensional point cloud:
