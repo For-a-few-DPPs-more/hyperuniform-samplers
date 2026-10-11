@@ -63,7 +63,7 @@ See following (N, D) coverage table:
 
 ## Sampling method 
 
-**Spectral optimisation** (non-uniform Fourier transform): select all wave vectors `k` within a ball `‖k‖ ≤ Kmax(N, D, χ)`, where `χ` is chosen slightly below 0.5 to ensure near-maximal spectral coverage, initialise with a random point cloud, then run a gradient descent on the Fourier loss. we sample two version of each point cloud: χ = 0.30 resp χ = 0.43, reaching a stealthy structure factor S(k) <= 10-10 resp S(k) <= 10-4 within the full spectral exclusion region.
+**Spectral optimisation** (non-uniform Fourier transform): select all wave vectors k within a ball `‖k‖ ≤ Kmax(N, D, χ)`, where `χ` is chosen slightly below 0.5 to ensure near-maximal spectral coverage, initialise with a random point cloud, then run a gradient descent on the Fourier loss. we sample two version of each point cloud: χ = 0.30 resp χ = 0.43, reaching a stealthy structure factor S(k) <= 10-10 resp S(k) <= 10-4 within the full spectral exclusion region.
 
 See all details in [SAMPLING.md](SAMPLING.md) for reproducibility. 
 
@@ -93,7 +93,7 @@ sup_{‖k_t‖ ≤ Kmax_t(N_t, D, χ)} S_t(k_t)
 [ sup_{‖k‖ ≤ Kmax(N, D, χ)} S(k) ] × N_t / N
 ```
 
-where `N` is the number of points in the original cloud, `N_t` the number of points after tiling, and the subscript `t` denotes the tiled dataset.
+where N is the number of points in the original cloud, N_t the number of points after tiling, and the subscript t denotes the tiled dataset.
 
 The exact tiling procedure is described in [TILING.md](TILING.md). It allows generating new point clouds with up to N = 2^24 (~16 million) points while keeping the loss in stealthiness controlled. Exemple of a ×2 tiling step from number of points N = 8192 to new number of points N_t = 16384:
 
@@ -106,7 +106,7 @@ The exact tiling procedure is described in [TILING.md](TILING.md). It allows gen
   with a controlled `S(k) ≤ 10⁻⁴` for every wave vector k with ‖k‖ ≤ Kmax(N, D, χ);
 - For `χ = 0.30`, coverage is slightly weaker `2χ = 60%` but the S(k) control much finer: `S(k) ≤ 10⁻¹⁰`
 
-Recal that, for a wave vector `k = (k₁, ..., k_D)` with integer components in Z^D,
+Recal that, for a wave vector k = (k₁, ..., k_D) with integer components in Z^D,
 
 ```text
 S(k) = |Σⱼ exp(2iπ ⟨k, xⱼ⟩)|² / N
@@ -114,7 +114,7 @@ S(k) = |Σⱼ exp(2iπ ⟨k, xⱼ⟩)|² / N
 
 so the Monte Carlo integration error of the Fourier test function x ↦ exp(2iπ ⟨k, x⟩) is `|Σⱼ exp(2iπ ⟨k, xⱼ⟩)| / N = sqrt(S(k) / N) ≤ 10⁻² / √N`.
 
-The figure below shows the curve `k ↦ S(k)` for every dimension `D = 2` to `16`, at N = 1024. The norm `‖k‖` is normalised by the inverse interparticle distance 1/δ, with `δ = N^(-1/D)`, so that the abscissa `k = 1` corresponds to wave vectors satisfying `k₁² + ... + k_D² ≈ 1/δ²`. The leftmost point of each curve corresponds to the smallest nonzero frequencies of the unit hypercube: vectors with a single nonzero component in `{-1, 1}`, such as `(±1, 0, ..., 0)`.
+The figure below shows the curve `k ↦ S(k)` for every dimension D = 2 to 16, at N = 1024. The norm ‖k‖ is normalised by the inverse interparticle distance 1/δ, with δ = N^(-1/D), so that the abscissa k = 1 corresponds to wave vectors satisfying `k₁² + ... + k_D² ≈ 1/δ²`. The leftmost point of each curve corresponds to the smallest nonzero frequencies of the unit hypercube: vectors with a single nonzero component in {-1, 1}, such as `(±1, 0, ..., 0)`.
 
 - Chi = 0.30, D = 2, 3, ..., 16 :
   
