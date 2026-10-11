@@ -19,7 +19,7 @@ pip install numpy h5py
 
 ## Quick Start
 
-- First clone this GitHub repository.
+First clone this GitHub repository. then:
 
 - Quick start from the `terminal` :
 This script loads the full database and generates a new randomized point cloud
