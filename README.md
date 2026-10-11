@@ -22,17 +22,17 @@ pip install numpy h5py
 
 - First Clone this GitHub repository.
 
-- Quick start from a notebook:
-   Open `quick_start.ipynb` and follow the notebook to:
-   * download the database from Zenodo;
-   * build new randomized point clouds.
-
-- Quick start from the terminal insteed :
+- Quick start from the `terminal` :
    This script load the full database and generate a new randomized point cloud
 ```bash
 python src/load_data.py --dim all --chi all
 python src/new_data.py --dim 2 --npoints 1024 --chi 30 --seed 42
 ```
+
+- or Quick start from a `notebook` :
+   Open `quick_start.ipynb` and follow the notebook to:
+   * download the database from Zenodo;
+   * build new randomized point clouds.
 
 
 
