@@ -83,9 +83,7 @@ The full randomisation procedure exploits all possible symmetries (shift, axis f
 
 ### Tilability
 
-Thanks to the periodic boundary conditions, a sample can be tiled to generate millions of points. Tiling consists of combining several copies of the same periodic point cloud into a larger periodic cloud. Because the copies are exact translations of the original cloud, the resulting structure factor is directly related to the original one.
-
-The price is a loss of stealthiness proportional to the increase in the number of points:
+Thanks to the periodic boundary conditions, a sample can be tiled to generate millions of points. Tiling consists of combining several copies of the same periodic point cloud into a larger periodic cloud. The price is a loss of stealthiness proportional to the increase in the number of points:
 
 ```text
 sup_{‖k_t‖ ≤ Kmax_t(N_t, D, χ)} S_t(k_t)
