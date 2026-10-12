@@ -82,11 +82,14 @@ See following (N, D) coverage table:
 
 ## Sampling method
 
-**Spectral optimisation** (non-uniform Fourier transform): select the most important wave vectors k according to a weight function (Euclidean ball, L1 ball, or star-ball product weight), where `χ` is chosen slightly below or equal to 0.5 to ensure near-maximal spectral coverage, initialise with a random point cloud, then run a gradient descent on the Fourier loss. We sample four versions of each point cloud:
+**Spectral optimisation** (non-uniform Fourier transform): select an exclusion region (see figure below) composed of the most important wave vectors k according to a weight function (Euclidean ball, L1 ball, or star-ball product weight), where `χ` is chosen slightly below or equal to 0.5 to ensure near-maximal spectral coverage, initialise with a random point cloud, then run a gradient descent on the Fourier loss. We sample four versions of each point cloud:
 
 - χ = 0.30 and χ = 0.43, reaching a stealthy structure factor S(k) ≤ 10⁻¹⁰ and S(k) ≤ 10⁻⁴ respectively within a Euclidean (L2) exclusion region;
 - χ = L1-0.50, reaching S(k) ≤ 10⁻² inside an L1 ball (`‖k‖₁ = Σ|kᵢ|`);
 - χ = WD-0.50, minimise the WD (wrap around) discrepancy as a fourier serie (no stealthiness consideration).
+
+Exclusion region for all four types of ball, with N = 1024, D = 2:
+[!exclusion ball](https://github.com/For-a-few-DPPs-more/hyperuniform-samplers/blob/fa0f202e2dbb3f7f8e25f8f9f0ee3b9aeab1efb0/src/exclusion_balls.png)
 
 See all details in [SAMPLING.md](https://github.com/For-a-few-DPPs-more/hyperuniform-samplers/blob/main/SAMPLING.md) for reproducibility.
 
