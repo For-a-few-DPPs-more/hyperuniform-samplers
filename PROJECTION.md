@@ -5,7 +5,9 @@ Projecting a D-dimensional point cloud to a lower dimension D_proj degrades its 
 the exclusion region shrinks, which results in χ → χ_eff < χ. \
 This quality loss is moderate as long as the difference D − D_proj is not too large.
 
-In practice, the table below shows the impact of the projection applied when a point cloud with dimension 17 ≤ D_proj ≤ 22 or 24 ≤ D_proj ≤ 31 is requested.
+In practice, the tables below show the impact of the projection applied when a point cloud with dimension 17 ≤ D_proj ≤ 22 or 24 ≤ D_proj ≤ 31 is requested, for each of the three dataset families (`30`, `43` and `L1-50`). 
+
+>Note for QMC integration (L1-50 family only). If the coverage loss due to projection is considered too big for an application, all unprojected L1-50 samples, for 2 ≤ D ≤ 32, are available in the Zenodo database. We recommend replacing the default AVAILABLE_DIMS = list(range(2, 17)) + [23, 32] by AVAILABLE_DIMS = list(range(2, 33)) in src/load_data.py before running it, and making the same replacement in src/new_data.py so that the unprojected clouds are used. This setting only makes sense for the L1-50 family: the 30 and 43 families are not available for the other dimensions.
 
 ## χ = 0.3 (initial coverage 2·χ = 60%)
 
@@ -54,3 +56,42 @@ Effective coverage = 2·χ_eff (in %):
 | | 26 | 57 | 46 | 37 | 29 |
 | | 25 | 52 | 41 | 31 | 24 |
 | | 24 | 48 | 36 | 27 | 19 |
+
+## χ = L1-0.50 (initial coverage 2·χ = 100%, L1 ball)
+
+Effective coverage = 2·χ_eff (in %):
+
+| D | D_proj | N = 1 000 | N = 10 000 | N = 100 000 | N = 1 000 000 |
+|---|---|---|---|---|---|
+| 23 | 23 | 100 | 100 | 100 | 100 |
+| | 22 | 91 | 87 | 84 | 79 |
+| | 21 | 82 | 76 | 69 | 62 |
+| | 20 | 74 | 66 | 57 | 49 |
+| | 19 | 66 | 56 | 46 | 37 |
+| | 18 | 59 | 48 | 37 | 28 |
+| | 17 | 52 | 41 | 30 | 21 |
+| | | | | | |
+| 32 | 32 | 100 | 100 | 100 | 100 |
+| | 31 | 94 | 91 | 89 | 86 |
+| | 30 | 88 | 83 | 79 | 74 |
+| | 29 | 83 | 76 | 69 | 63 |
+| | 28 | 77 | 68 | 61 | 54 |
+| | 27 | 72 | 62 | 53 | 46 |
+| | 26 | 67 | 56 | 46 | 38 |
+| | 25 | 62 | 50 | 40 | 32 |
+| | 24 | 58 | 44 | 34 | 27 |
+
+## How the effective coverage is computed
+
+Projecting a D-dimensional cloud to D_proj dimensions keeps D_proj of its coordinates (chosen at random). The structure factor of the projected cloud at `k' ∈ Z^D_proj` is the structure factor of the original cloud at `k = (k', 0, …, 0)`. Hence only the wave vectors of the exclusion region whose components on the removed coordinates are zero remain controlled.
+
+Let `M = round(χ · D · (N − 1))` be the number of wave vectors (counted up to `k ↦ -k`) of the original exclusion region, and `M_proj` the number of those that survive the projection. Then
+
+```text
+χ_eff = M_proj / (D_proj · (N − 1)),        effective coverage = 2 · χ_eff.
+```
+
+* **L2 versions (`30`, `43`):** the exclusion region is made of the `M` wave vectors of smallest Euclidean norm. The surviving ones are those lying in the D_proj-dimensional Euclidean ball of the same radius.
+* **L1 version (`L1-50`):** the exclusion region is made of all wave vectors with `‖k‖₁ < r`, plus a random subset of the shell `‖k‖₁ = r`, where `r` is the smallest integer such that the ball contains at least `M` wave vectors. The slice of an L1 ball by a coordinate subspace is again an L1 ball, of dimension D_proj and the same radius `r`, so the surviving wave vectors are counted in this smaller ball (the shell `r` being counted with the same random fraction as in dimension D). The number of integer points in an L1 ball of dimension `d` and radius `r` is `Σⱼ 2ʲ · C(d, j) · C(r, j)`.
+
+Values are rounded to the nearest percent; because the last shell is chosen at random, small variations of ±1 are expected between two runs.
