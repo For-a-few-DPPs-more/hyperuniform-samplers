@@ -12,14 +12,13 @@ Two additional versions, built with an L1 ball (`χ = 0.50`) and a star ball (`�
 
 * **Weaker stealthy criterion:** `S(k)` is the structure factor. Morse et al. reach S(k) ≤ 10⁻⁵¹ using double-double (float128) precision. We use float32, much faster on GPU, and stop the descent when, for all targeted frequencies:
 
-```
 | χ                | Exclusion region     | Stopping criterion      |
 | ---------------- | -------------------- | ----------------------- |
 | 0.30             | L2 ball (Euclidean)  | `S(k) ≤ 10⁻¹⁰`          |
 | 0.43             | L2 ball (Euclidean)  | `S(k) ≤ 10⁻⁴`           |
 | 0.50 (L1 ball)   | L1 ball              | `S(k) ≤ 10⁻²`           |
 | 0.50 (WD star)   | star ball (product)  | 150 iterations          |
-```
+
 
 We retain the value S(k) ≤ 10⁻⁴ as stealthy since it is enough for our application and probably for most use cases. It would be difficult to go beyond it at large χ. Regarding the χ = 0.30 samples, going beyond 10⁻¹⁰ would be possible, but requires reimplementing the whole sampler with at least float64 precision.
 

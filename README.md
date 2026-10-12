@@ -58,14 +58,14 @@ Open `quick_start.ipynb` and follow the instructions to load and use the databas
 - **Number of points:** Native: N = 2^10 to 2^17 (powers of 2). Including tiling: up to N = 2^24.
 - **Dimension:** Native: D = 2 to 16, plus D = 23 and D = 32. Including projection: any 2 ≤ D ≤ 32.
 
-```
+
 | `--chi` | Exclusion region                          | χ    | Coverage `2χ` | Stealthiness `S(k) ≤` | Typical use                                      |
 | ------- | ----------------------------------------- | ---- | ------------- | --------------------- | ------------------------------------------------ |
 | `30`    | L2 ball (Euclidean)                       | 0.30 | 60%           | 10⁻¹⁰                 | blue noise, very strong stealthiness             |
 | `43`    | L2 ball (Euclidean)                       | 0.43 | 86%           | 10⁻⁴                  | blue noise, larger exclusion region              |
 | `L1-50` | L1 ball (`‖k‖₁ = Σ\|kᵢ\|`)                | 0.50 | 100%          | 10⁻²                  | QMC integration                                  |
 | `WD-50` | star ball (`r(k) = ∏ 1/kᵢ²`)              | 0.50 | 100%          | minimal WD                  | QMC (worst-case irregular integrands)            |
-```
+
 
 All four families are available for the same (N, D) values.
 See following (N, D) coverage table:
