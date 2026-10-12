@@ -110,7 +110,7 @@ The full randomisation procedure exploits all possible symmetries (shift, axis f
 ### Extensibility
 
 Large point clouds can be found directly in the Zenodo archive (see note: large storage) but are not included in the download script. 
-The database  which is downloaded by the `load_data` command contains only samples with 2^10 ≤ N ≤ 2^17 and 2 ≤ D ≤ 16, plus D = 23 and D = 32. Other shapes (see the Coverage section) are produced on the fly when a point cloud is requested with `new_data(N, D)`. This is possible because stealthy point clouds can be extended in two ways, at the cost of a controlled loss of quality:
+The database  which is downloaded by the `load_data` command contains only samples with 2^10 ≤ N ≤ 2^17 and 2 ≤ D ≤ 16, plus D = 23 and D = 32. Other shapes (see the Coverage section) are produced on the fly when a point cloud is requested with `new_data`. This is possible because stealthy point clouds can be extended in two ways, at the cost of a controlled loss of quality:
 
 - **Tiling**: more points, up to N = 2^24
 - **Projection**: lower dimension, any 2 ≤ D ≤ 32
