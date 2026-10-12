@@ -90,7 +90,7 @@ See following (N, D) coverage table:
 
 Exclusion region for all four types of ball, with N = 1024, D = 2:
 
-[<img src="https://github.com/For-a-few-DPPs-more/hyperuniform-samplers/blob/fa0f202e2dbb3f7f8e25f8f9f0ee3b9aeab1efb0/src/exclusion_balls.png?raw=true" alt="exclusion ball" width="200">](https://github.com/For-a-few-DPPs-more/hyperuniform-samplers/blob/fa0f202e2dbb3f7f8f9f0ee3b9aeab1efb0/src/exclusion_balls.png)
+[<img src="https://github.com/For-a-few-DPPs-more/hyperuniform-samplers/blob/fa0f202e2dbb3f7f8e25f8f9f0ee3b9aeab1efb0/src/exclusion_balls.png?raw=true" alt="exclusion ball" width="400">](https://github.com/For-a-few-DPPs-more/hyperuniform-samplers/blob/fa0f202e2dbb3f7f8f9f0ee3b9aeab1efb0/src/exclusion_balls.png)
 
 See all details in [SAMPLING.md](https://github.com/For-a-few-DPPs-more/hyperuniform-samplers/blob/main/SAMPLING.md) for reproducibility.
 
