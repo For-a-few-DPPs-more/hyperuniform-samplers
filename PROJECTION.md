@@ -7,8 +7,6 @@ This quality loss is moderate as long as the difference D − D_proj is not too 
 
 In practice, the tables below show the impact of the projection applied when a point cloud with dimension 17 ≤ D_proj ≤ 22 or 24 ≤ D_proj ≤ 31 is requested, for each of the three dataset families (`30`, `43` and `L1-50`). 
 
->Note for QMC integration (L1-50 family only). If the coverage loss due to projection is considered too big for an application, all unprojected L1-50 samples, for 2 ≤ D ≤ 32, are available in the Zenodo database. We recommend replacing the default AVAILABLE_DIMS = list(range(2, 17)) + [23, 32] by AVAILABLE_DIMS = list(range(2, 33)) in src/load_data.py before running it, and making the same replacement in src/new_data.py so that the unprojected clouds are used. This setting only makes sense for the L1-50 family: the 30 and 43 families are not available for the other dimensions.
-
 ## χ = 0.3 (initial coverage 2·χ = 60%)
 
 Effective coverage = 2·χ_eff (in %):

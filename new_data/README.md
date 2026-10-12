@@ -13,6 +13,7 @@ Once the `data/` folder contains the datasets downloaded from Zenodo, new point 
 | `30`    | 0.30 | `S(k) <= 1e-10`, 60% coverage of the reachable spectral domain (smaller exclusion region)        |
 | `43`    | 0.43 | `S(k) <= 1e-4`, 86% coverage (larger exclusion region)          |
 | `L1-50`    | 0.50 | `S(k) <= 1e-2`, 100% coverage (maximal exclusion region). Intended for quasi monte carlo methods   |
+| `WD-50`    | 0.50 | minimised `WD discrepancy`,  no stealthiness consideration. Worst case quasi monte carlo methods with irregular integrands  |
 
 The matching samples must be present in `data/`. 
 

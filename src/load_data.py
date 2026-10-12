@@ -14,9 +14,13 @@ Dataset families
     30     -> chi30_D{j}.zip     -> <out>/chi30/D{j}/
     43     -> chi43_D{j}.zip     -> <out>/chi43/D{j}/
     L1-50  -> L1chi50_D{j}.zip   -> <out>/L1chi50/D{j}/
+    WD-50  -> WDchi50_D{j}.zip   -> <out>/WDchi50/D{j}/
 
 L1-50 denotes chi = 0.50 with the L1 norm. It is a distinct
 dataset family and must not be confused with chi50.
+
+WD-50 uses the stars norm, which is the natural norm used
+when dealing with the wrap-around discrepancy (see scipy.stats.qmc.discrepancy)
 
 Archives are downloaded from GitHub Releases by default, with
 Zenodo as an alternative source.
@@ -35,10 +39,10 @@ from pathlib import Path
 # Dataset mirrors
 GITHUB_URL = (
     "https://github.com/For-a-few-DPPs-more/"
-    "hyperuniform-samplers/releases/download/dataset-v2.0.0" #v2 includes the L1-50
+    "hyperuniform-samplers/releases/download/dataset-v3.0.0" #v3 includes the L1-50 and WD-50
 )
 
-ZENODO_URL = "https://zenodo.org/records/23321838/files"
+ZENODO_URL = "https://zenodo.org/records/23327095/files"
 
 AVAILABLE_DIMS = list(range(2, 17)) + [23, 32]
 
@@ -56,6 +60,10 @@ DATASET_FAMILIES = {
     "L1-50": {
         "archive_prefix": "L1chi50",
         "output_dir": "L1chi50",
+    },
+    "WD-50": {
+        "archive_prefix": "WDchi50",
+        "output_dir": "WDchi50",
     },
 }
 
@@ -130,7 +138,7 @@ def main():
         "--chi",
         nargs="+",
         required=True,
-        help="dataset family: 30, 43, L1-50, or all",
+        help="dataset family: 30, 43, L1-50, WD-50 or all",
     )
     p.add_argument(
         "--out",

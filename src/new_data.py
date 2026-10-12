@@ -10,12 +10,16 @@ Usage
 
 Dataset families
 ----------------
-    30     -> data/chi30/D{D_src}/N{i}_D{D_src}.h5
-    43     -> data/chi43/D{D_src}/N{i}_D{D_src}.h5
-    L1-50  -> data/L1chi50/D{D_src}/N{i}_D{D_src}.h5
+    30     -> chi30_D{j}.zip     -> <out>/chi30/D{j}/
+    43     -> chi43_D{j}.zip     -> <out>/chi43/D{j}/
+    L1-50  -> L1chi50_D{j}.zip   -> <out>/L1chi50/D{j}/
+    WD-50  -> WDchi50_D{j}.zip   -> <out>/WDchi50/D{j}/
 
-L1-50 denotes chi = 0.50 with the L1 norm. It is a distinct dataset
-family and must not be confused with chi50.
+L1-50 denotes chi = 0.50 with the L1 norm. It is a distinct
+dataset family and must not be confused with chi50.
+
+WD-50 uses the stars norm, which is the natural norm used
+when dealing with the wrap-around discrepancy (see scipy.stats.qmc.discrepancy)
 
 Pipeline
 --------
@@ -49,6 +53,10 @@ DATASET_FAMILIES = {
     "L1-50": {
         "directory": "L1chi50",
         "label": "L1chi50",
+    },
+    "WD-50": {
+        "archive_prefix": "WDchi50",
+        "output_dir": "WDchi50",
     },
 }
 
@@ -227,7 +235,7 @@ def main():
         type=str,
         required=True,
         choices=list(DATASET_FAMILIES),
-        help="dataset family: 30, 43 or L1-50",
+        help="dataset family: 30, 43, L1-50 or WD-50",
     )
     p.add_argument(
         "--seed",
