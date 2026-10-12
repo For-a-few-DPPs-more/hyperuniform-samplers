@@ -47,9 +47,9 @@ Open `quick_start.ipynb` and follow the instructions to load and use the databas
 
 ### Coverage
 
+- **χ parameter:** χ = 0.30 (-- chi 30) and χ = 0.43 (--chi 43).
 - **Number of points:** Native: N = 2^10 to 2^17 (powers of 2). Including tiling: up to N = 2^24.
 - **Dimension:** Native: D = 2 to 16, plus D = 23 and D = 32. Including projection: any 2 ≤ D ≤ 32.
-- **χ parameter:** χ = 0.30 (-- chi 30) and χ = 0.43 (--chi 43).
 
 See following (N, D) coverage table:
 
