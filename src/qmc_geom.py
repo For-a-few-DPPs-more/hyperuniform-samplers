@@ -9,41 +9,31 @@ Provides:
   - classical L1-ball construction
   - unified get_wave_vectors interface
 """
-
 from __future__ import annotations
-
 from collections import Counter
-from itertools import permutations, product
+from itertools import combinations, permutations, product
 from math import comb, factorial, pi
-from typing import Optional, Tuple
-
+from typing import Optional, Tuple, List, Iterator
+import heapq
 import numpy as np
 
-# ------------------------------------------------------------------
-# Constants
-# ------------------------------------------------------------------
 CHI     = 0.5
 EPSILON = 1e-12
-
 TWO_PI2     = 2.0 * pi * pi
 INV_TWO_PI2 = 1.0 / TWO_PI2
 
+_HATK = [1.0] + [INV_TWO_PI2 / (m * m) for m in range(1, 16384)]
+
+def _hatK(m: int) -> float:
+    m = abs(int(m))
+    if m < len(_HATK):
+        return _HATK[m]
+    return INV_TWO_PI2 / (m * m)
 
 def _n_modes_target(N: int, D: int, chi: float = CHI) -> int:
-    """Number of independent Fourier modes to keep."""
     return max(0, int(round(chi * D * (N - 1))))
 
-
-# ------------------------------------------------------------------
-# 1-D Fourier coefficient of the wrap-around kernel
-# ------------------------------------------------------------------
-def hatK(m: int) -> float:
-    m = abs(int(m))
-    return 1.0 if m == 0 else INV_TWO_PI2 / (m * m)
-
-
 def star_weight(K: np.ndarray) -> np.ndarray:
-    """Exact product weight r(k) = ∏_d hatK(k_d) for a batch of multi-indices."""
     absK = np.abs(K).astype(np.float64)
     w = np.ones(len(K), dtype=np.float64)
     nz = absK > 0
@@ -52,149 +42,121 @@ def star_weight(K: np.ndarray) -> np.ndarray:
         w = factors.prod(axis=1)
     return w
 
-
-# ------------------------------------------------------------------
-# Combinatorial helpers for signed-permutation orbits
-# ------------------------------------------------------------------
-def _orbit_card(k: Tuple[int, ...]) -> int:
-    """Full signed-permutation orbit size of a non-negative multi-index."""
-    cnt = Counter(k)
-    denom = 1
+def _half_orbit_card(k_pos: Tuple[int, ...], D: int) -> int:
+    s = len(k_pos)
+    if s == 0 or s > D:
+        return 0
+    cnt = Counter(k_pos)
+    denom = factorial(D - s)
     for v in cnt.values():
         denom *= factorial(v)
-    n_nz = sum(1 for v in k if v != 0)
-    return (factorial(len(k)) // denom) * (1 << n_nz)
+    return (factorial(D) // denom * (1 << s)) // 2
 
-
-def _half_orbit_card(k: Tuple[int, ...]) -> int:
-    """Number of independent modes (half-space) produced by the orbit."""
-    return _orbit_card(k) // 2
-
-
-# ------------------------------------------------------------------
-# Generation of non-increasing non-negative multi-indices
-# ------------------------------------------------------------------
-def _fundamentals(D: int, max_freq: int):
-    """
-    Return all non-increasing multi-indices k1 ≥ k2 ≥ … ≥ kD ≥ 0
-    (origin excluded), ordered by decreasing product weight.
-    Each item is (weight, k_tuple, half_orbit_card).
-    """
+def _positive_fundamentals(s: int, max_freq: int) -> List[Tuple[float, Tuple[int, ...]]]:
     items = []
-
     def rec(prefix, last, remaining):
         if remaining == 0:
             k = tuple(prefix)
             w = 1.0
             for v in k:
-                w *= hatK(v)
-            items.append((w, k, _half_orbit_card(k)))
+                w *= _hatK(v)
+            items.append((w, k))
             return
-        for v in range(last, -1, -1):
+        for v in range(min(last, max_freq), 0, -1):
             rec(prefix + [v], v, remaining - 1)
-
     for first in range(max_freq, 0, -1):
-        rec([first], first, D - 1)
-
-    items.sort(key=lambda t: -t[0])
+        rec([first], first, s - 1)
     return items
 
+# decreasing max_freq with support – keeps generation cheap
+_S_MAX_FREQ = {1: 256, 2: 64, 3: 32, 4: 16, 5: 10, 6: 6, 7: 4, 8: 3}
 
-# ------------------------------------------------------------------
-# Deterministic expansion of an orbit (lazy)
-# ------------------------------------------------------------------
-def _expand_half_orbit(k: Tuple[int, ...], max_needed: Optional[int] = None):
-    """
-    Yield the half-space representatives of the signed-permutation orbit of k
-    in a deterministic order. Stops after `max_needed` elements if given.
-    """
-    vals = list(k)
-    unique_perms = set(permutations(vals))
-    count = 0
+def _select_orbits(D: int, M: int):
+    s_max = min(8, D)
+    heap: List[Tuple[float, int, Tuple[int, ...]]] = []
+    counter = 0
+    for s in range(1, s_max + 1):
+        mf = _S_MAX_FREQ.get(s, 3)
+        for w, k in _positive_fundamentals(s, mf):
+            heapq.heappush(heap, (-w, counter, k))
+            counter += 1
 
-    for p in unique_perms:
-        nonzero_idx = [i for i, v in enumerate(p) if v != 0]
-        n_nz = len(nonzero_idx)
-
-        for signs in product([-1, 1], repeat=n_nz):
-            q = list(p)
-            for i, s in zip(nonzero_idx, signs):
-                q[i] *= s
-
-            # half-space convention: first non-zero coordinate > 0
-            first = next((i for i, v in enumerate(q) if v != 0), None)
-            if first is not None and q[first] > 0:
-                yield tuple(q)
-                count += 1
-                if max_needed is not None and count >= max_needed:
-                    return
-
-
-# ------------------------------------------------------------------
-# Star-ball construction
-# ------------------------------------------------------------------
-def half_star_ball(D: int, M: int, max_freq: int = 64):
-    """
-    Exact top-M independent modes according to the product weight r(k).
-
-    1. Enumerate fundamental representatives ordered by decreasing weight.
-    2. Accumulate orbit cardinalities until the cumulative size exceeds M.
-    3. Expand every complete orbit fully.
-    4. Expand only the first (M - previous) representatives of the last orbital
-       (deterministic order, no full materialisation).
-    """
-    if M <= 0:
-        return np.empty((0, D), dtype=np.int32), np.empty(0, dtype=np.float64)
-
-    fund = _fundamentals(D, max_freq)
-
-    # find the last orbital
     selected = []
     cum = 0
-    last_orbital = None
-    for w, k, hsize in fund:
+    last = None
+    while heap and cum < M:
+        neg_w, _, k = heapq.heappop(heap)
+        w = -neg_w
+        hsize = _half_orbit_card(k, D)
+        if hsize == 0:
+            continue
         if cum + hsize >= M:
-            last_orbital = (w, k, hsize)
+            last = (w, k, hsize)
             break
         selected.append((w, k, hsize))
         cum += hsize
-    else:
-        last_orbital = None
+    return selected, last
 
-    # expand complete layers
-    K_list = []
-    r_list = []
+def _expand_half_orbit_pos(k_pos: Tuple[int, ...], D: int,
+                           max_needed: Optional[int] = None) -> Iterator[Tuple[int, ...]]:
+    s = len(k_pos)
+    if s == 0:
+        return
+    count = 0
+    unique_vals = list(set(permutations(k_pos)))
+    # combinations in lex order → deterministic
+    for pos in combinations(range(D), s):
+        for vals in unique_vals:
+            for signs in product((-1, 1), repeat=s):
+                q = [0] * D
+                for p, v, sg in zip(pos, vals, signs):
+                    q[p] = v * sg
+                first = next((i for i, v in enumerate(q) if v != 0), None)
+                if first is not None and q[first] > 0:
+                    yield tuple(q)
+                    count += 1
+                    if max_needed is not None and count >= max_needed:
+                        return
+
+def half_star_ball(D: int, M: int, max_freq: int = 128):
+    """max_freq is accepted for API compatibility but ignored (internal table used)."""
+    if M <= 0:
+        return np.empty((0, D), dtype=np.int32), np.empty(0, dtype=np.float64)
+    if D == 1:
+        K = np.arange(1, M + 1, dtype=np.int32)[:, None]
+        r = np.array([_hatK(m) for m in range(1, M + 1)], dtype=np.float64)
+        return K, r
+
+    selected, last = _select_orbits(D, M)
+
+    K_list: List[Tuple[int, ...]] = []
+    r_list: List[float] = []
 
     for w, k, _ in selected:
-        for q in _expand_half_orbit(k):
+        for q in _expand_half_orbit_pos(k, D):
             K_list.append(q)
             r_list.append(w)
 
-    # expand (possibly partial) last orbital
-    if last_orbital is not None:
-        w, k, hsize = last_orbital
+    if last is not None:
+        w, k, _ = last
         needed = M - len(K_list)
-        for q in _expand_half_orbit(k, max_needed=needed):
+        for q in _expand_half_orbit_pos(k, D, max_needed=needed):
             K_list.append(q)
             r_list.append(w)
 
     K = np.asarray(K_list, dtype=np.int32)
     r = np.asarray(r_list, dtype=np.float64)
-
     if len(K) > M:
         K = K[:M]
         r = r[:M]
-
     return K, r
 
-
 # ------------------------------------------------------------------
-# Classical L1-ball helpers
+# L1 helpers (unchanged)
 # ------------------------------------------------------------------
 def _count_l1_ball(D, radius):
     return sum((2 ** j) * comb(D, j) * comb(radius, j)
                for j in range(min(D, radius) + 1))
-
 
 def _full_l1_ball(D, radius):
     if D == 1:
@@ -209,7 +171,6 @@ def _full_l1_ball(D, radius):
     z = np.arange(total, dtype=np.int64) - np.repeat(starts, counts)
     z -= np.repeat(remaining, counts)
     return np.concatenate([prev[row_ids], z.astype(np.int32)[:, None]], 1)
-
 
 def _half_l1_ball(D, radius):
     if radius <= 0:
@@ -234,10 +195,6 @@ def _half_l1_ball(D, radius):
         [previous_half, np.zeros((len(previous_half), 1), dtype=np.int32)], 1)
     return np.concatenate([positive_part, zero_part], 0)
 
-
-# ------------------------------------------------------------------
-# Unified interface
-# ------------------------------------------------------------------
 def get_wave_vectors(
     N: int,
     D: int,
@@ -246,35 +203,14 @@ def get_wave_vectors(
     rng: Optional[np.random.Generator] = None,
     epsilon: float = EPSILON,
 ):
-    """
-    Select the M most important Fourier modes.
-
-    Parameters
-    ----------
-    mode : {"star", "l1"}
-        "star" – exact WD product weights (recommended)
-        "l1"   – classical L1 ball
-    chi : float
-        Fraction of degrees of freedom (M ≈ chi * D * (N-1))
-
-    Returns
-    -------
-    K       : (M, D) int32
-    kl1     : (M,)   int64
-    weights : (M,)   float64  (normalised to max = 1)
-    M       : int
-    """
     rng = np.random.default_rng() if rng is None else rng
     M_target = _n_modes_target(N, D, chi)
-
     if M_target == 0:
         empty = np.empty((0, D), dtype=np.int32)
         return empty, np.empty(0, dtype=np.int64), np.empty(0), 0
-
     if mode == "star":
         K, r = half_star_ball(D, M_target)
         weights = r / (r.max() + epsilon)
-
     elif mode == "l1":
         radius = 1
         while (_count_l1_ball(D, radius) - 1) // 2 < M_target:
@@ -287,17 +223,14 @@ def get_wave_vectors(
             else:
                 low = mid + 1
         radius = low
-
         K = _half_l1_ball(D, radius)
         score = np.abs(K).sum(1)
         order = np.lexsort((rng.random(len(score)), score))[:M_target]
         K = K[order]
         raw = 1.0 / (score[order].astype(np.float64) ** 2 + epsilon)
         weights = raw / raw.max()
-
     else:
         raise ValueError(f"Unknown mode '{mode}'. Choose 'star' or 'l1'.")
-
     K = np.ascontiguousarray(K.astype(np.int32))
     kl1 = np.abs(K).sum(1).astype(np.int64)
     return K, kl1, weights.astype(np.float64), len(K)
