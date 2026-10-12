@@ -8,5 +8,6 @@ new_data/*
 !new_data/README.md
 mirror_data/*
 !mirror_data/README.md
+!mirror_data/SHA256SUMS.txt
 *test.ipynb
 *.egg-info/

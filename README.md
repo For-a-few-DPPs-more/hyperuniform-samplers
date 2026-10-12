@@ -2,9 +2,9 @@
 
 This is the GitHub companion repository of the `Hyperuniform samples` database stored on Zenodo. The database contains hyperuniform point clouds (e.g. blue noise) on the unit hypercube [0,1)^D, sampled with the [`blue-sampler`](https://pypi.org/project/blue-sampler/) Python package.
 
-**2D example** (the N = 1024, D = 2 point clouds of this database):
+**2D example** (the N = 1024, D = 2, Chi43 point clouds of this database):
 
-![2D example, N = 1024, chi43](https://zenodo.org/records/23244510/files/plot_2D_sample_chi43.png)
+![2D example, N = 1024, chi43](https://zenodo.org/records/23321838/files/plot_2D_sample_chi43.png) 
 
 ## Installation
 
@@ -41,13 +41,13 @@ Open `quick_start.ipynb` and follow the instructions to load and use the databas
 
 ### Format
 
-- Hosted on Zenodo [DOI 10.5281/zenodo.23244510](https://doi.org/10.5281/zenodo.23244510).
+- Hosted on Zenodo [DOI 10.5281/zenodo.23321838](https://doi.org/10.5281/zenodo.23321838).
 - Stored in **HDF5** for interoperability (Python, C++, MATLAB, Julia, R, ...).
 - Size : default 357 MB, full (see Note: Large storage) 3.1GB
 
 ### Coverage
 
-- **χ parameter:** χ = 0.30 (-- chi 30) and χ = 0.43 (--chi 43).
+- **χ parameter:** χ = 0.30 (-- chi 30), χ = 0.43 (--chi 43) and  χ = L1-0.50 (--chi L1-50).
 - **Number of points:** Native: N = 2^10 to 2^17 (powers of 2). Including tiling: up to N = 2^24.
 - **Dimension:** Native: D = 2 to 16, plus D = 23 and D = 32. Including projection: any 2 ≤ D ≤ 32.
 
@@ -57,7 +57,7 @@ See following (N, D) coverage table:
 
 > **Note: Large storage**
 >
-> In low dimensions (D ≤ 4), the Zenodo database provides additional, much larger point clouds. These must be downloaded manually (see [`larges.zip`](https://zenodo.org/records/23244510?preview_file=larges.zip), 2.7 GB).  The archive contains samples up to:
+> In low dimensions (D ≤ 4), the Zenodo database provides additional, much larger point clouds. These must be downloaded manually (see [`larges.zip`](https://zenodo.org/records/23321838?preview_file=larges.zip), 2.7 GB).  The archive contains samples up to:
 >
 > - **2D**: N = 2²⁷ ≈ 134 million points
 > - **3D**: N = 2²⁵ ≈ 34 million points
@@ -65,7 +65,7 @@ See following (N, D) coverage table:
 
 ## Sampling method
 
-**Spectral optimisation** (non-uniform Fourier transform): select all wave vectors k within a ball `‖k‖ ≤ Kmax(N, D, χ)`, where `χ` is chosen slightly below 0.5 to ensure near-maximal spectral coverage, initialise with a random point cloud, then run a gradient descent on the Fourier loss. We sample two versions of each point cloud: χ = 0.30 and χ = 0.43, reaching a stealthy structure factor S(k) ≤ 10⁻¹⁰ and S(k) ≤ 10⁻⁴ respectively, within the full spectral exclusion region.
+**Spectral optimisation** (non-uniform Fourier transform): select all wave vectors k within a ball `‖k‖ ≤ Kmax(N, D, χ)`, where `χ` is chosen slightly below 0.5 to ensure near-maximal spectral coverage, initialise with a random point cloud, then run a gradient descent on the Fourier loss. We sample three versions of each point cloud: χ = 0.30 and χ = 0.43, reaching a stealthy structure factor S(k) ≤ 10⁻¹⁰ and S(k) ≤ 10⁻⁴ respectively within the full spectral exclusion region, and a special χ = L1-0.50 version which reaches S(k) ≤ 10⁻2 in an exclusion region which is a L1-ball, eg a ball for the L1 norm instead of the standard L2 scalar product.
 
 See all details in [SAMPLING.md](https://github.com/For-a-few-DPPs-more/hyperuniform-samplers/blob/main/SAMPLING.md) for reproducibility.
 
@@ -75,9 +75,14 @@ By construction, the provided samples guarantee:
 
 ### Stealthiness
 
-- For `χ = 0.43`, the ball of radius Kmax covers `2χ = 86%` of the spectral domain reachable with N points (this is what χ = 0.43 means),
-with a controlled `S(k) ≤ 10⁻⁴` for every wave vector k with ‖k‖ ≤ Kmax(N, D, χ);
+- For `χ = L1-0.50`, the ball of radius Kmax covers all the spectral domain reachable with N points,  `2χ = 100%`
+with a controlled `S(k) ≤ 10⁻2` for every wave vector k with ‖k‖ ≤ Kmax(N, D, χ); Note that the norm || || here refer to the L1-norm.
+
+- For `χ = 0.43`, the ball of radius Kmax covers `2χ = 86%` with a controlled `S(k) ≤ 10⁻⁴` for every wave vector k with ‖k‖ ≤ Kmax(N, D, χ), this time with the usual L2-norm.
+
 - For `χ = 0.30`, coverage is slightly weaker `2χ = 60%` but the S(k) control much finer: `S(k) ≤ 10⁻¹⁰`
+
+
 
 Recall that, for a wave vector k = (k₁, ..., k_D) with integer components in Z^D,
 
@@ -91,11 +96,15 @@ The figure below shows the curve `k ↦ S(k)` for every dimension D = 2 to 16, a
 
 - Chi = 0.30, D = 2, 3, ..., 16 :
 
-![Structure factor S(k) for D = 2 to 16, N = 1024, chi 0.30](https://zenodo.org/records/23244510/files/fouriererror_all_samples_from_paper_chi30.png)
+![Structure factor S(k) for D = 2 to 16, N = 1024, chi 0.30](https://zenodo.org/records/23321838/files/fouriererror_all_samples_from_paper_chi30.png)
 
 - Chi = 0.43, D = 2, 3, ..., 16 :
 
-![Structure factor S(k) for D = 2 to 16, N = 1024, chi 0.43](https://zenodo.org/records/23244510/files/fouriererror_all_samples_from_paper_chi43.png)
+![Structure factor S(k) for D = 2 to 16, N = 1024, chi 0.43](https://zenodo.org/records/23321838/files/fouriererror_all_samples_from_paper_chi43.png)
+
+- Chi = 0.50 (L1-norm), D = 2, 3, ..., 16 :
+
+![Structure factor S(k) for D = 2 to 16, N = 1024, chi L1-0.50](https://zenodo.org/records/23321838/files/fouriererror_all_samples_from_paper_L1chi50.png)
 
 ### Randomisability
 
@@ -147,7 +156,7 @@ impact are described in
 
 - **Rendering and image synthesis:** pixel/sub-pixel anti-aliasing, path-tracing sample dimensions, dithering and halftoning, blue-noise textures for denoising.
 - **Spatial sampling:** homogeneous, isotropic particle initialisation for simulations (SPH, molecular dynamics), Poisson-disk-like placement, point sampling of geometry.
-- **Monte Carlo / QMC integration:** for usual function spaces (e.g. discontinuous integrands, low effective dimension, axis based decomposition), Sobol or other QMC methods will give lower discrepancy, but stealthy hyperuniform samples are pertinent for periodic or compactly supported functions with smooth, low-frequency spectral content. Random shifts give independent replicas for unbiased error bars.
+- **Monte Carlo / QMC integration:** Stealthy hyperuniform samples are by nature pertinent for periodic or compactly supported functions with smooth, low-frequency spectral content, but the X = L1-50 dataset is suitable even for non smooth integrands, with a discrepency similar to Sobol sequences. Random shifts give independent replicas for unbiased error bars.
 - **Machine learning and design of experiments:** initial points for Bayesian or black-box optimisation, hyperparameter search, training-set sampling for surrogates and PINNs, uncertainty propagation.
 - **Hyperuniformity research:** a reproducible reference set to study structure-factor behaviour, the χ-dependent transition toward crystallisation, and dimension scaling (`D = 2` to `32`), or to benchmark new samplers.
 - **Large-scale sampling by tiling:** replicate a cloud to get millions of points, at the cost of stealthiness degrading proportionally to `N_t / N`.
@@ -162,9 +171,9 @@ If you use this database, please cite:
   title     = {Hyperuniform samples (stealthy point clouds)},
   year      = {2026},
   publisher = {Zenodo},
-  version   = {v1},
-  doi       = {10.5281/zenodo.23244510},
-  url       = {https://doi.org/10.5281/zenodo.23244510}
+  version   = {v2},
+  doi       = {10.5281/zenodo.23321838},
+  url       = {https://doi.org/10.5281/zenodo.23321838}
 }
 ```
 
