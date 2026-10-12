@@ -13,7 +13,7 @@ from typing import Optional
 
 import numpy as np
 
-from .qmc_geom import CHI, get_wave_vectors
+from qmc_geom import CHI, get_wave_vectors
 
 try:
     from pykeops.numpy import LazyTensor
