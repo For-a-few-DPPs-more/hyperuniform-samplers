@@ -89,6 +89,7 @@ See following (N, D) coverage table:
 - χ = WD-0.50, minimise the WD (wrap around) discrepancy as a fourier serie (no stealthiness consideration).
 
 Exclusion region for all four types of ball, with N = 1024, D = 2:
+
 [!exclusion ball](https://github.com/For-a-few-DPPs-more/hyperuniform-samplers/blob/fa0f202e2dbb3f7f8e25f8f9f0ee3b9aeab1efb0/src/exclusion_balls.png)
 
 See all details in [SAMPLING.md](https://github.com/For-a-few-DPPs-more/hyperuniform-samplers/blob/main/SAMPLING.md) for reproducibility.
