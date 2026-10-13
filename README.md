@@ -99,7 +99,7 @@ X_new = (X - s) mod 1, s drawn uniformly in [0,1]^D
 
 ### Extensibility
 
-`load_data` downloads the samples with 2¹⁰ ≤ N ≤ 2¹⁷ and D = 2 to 16 plus 23, 32. Other (N, D) shapes are produced on the fly by `new_data`, at a controlled loss of quality:
+`src/load_data.py` downloads the samples with 2¹⁰ ≤ N ≤ 2¹⁷ and D = 2 to 16 plus 23, 32. Other (N, D) shapes are produced on the fly by `src/new_data.py`, at a controlled loss of quality:
 
 - **Tiling** (more points): copies of the periodic point cloud are combined into a larger one, up to N = 2²⁴. The stealthiness degrades proportionally to the increase in points:
 
