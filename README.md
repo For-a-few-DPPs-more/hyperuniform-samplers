@@ -1,8 +1,6 @@
 # Hyperuniform Point Clouds Database
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23327095.svg)](https://doi.org/10.5281/zenodo.23327095)
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23327095.svg)](https://doi.org/10.5281/zenodo.23327095) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 This is the GitHub companion repository of the `Hyperuniform samples` database stored on Zenodo. The database contains hyperuniform point clouds (e.g. blue noise) on the unit hypercube [0,1)^D, sampled with the [`blue-sampler`](https://pypi.org/project/blue-sampler/) Python package.
 
