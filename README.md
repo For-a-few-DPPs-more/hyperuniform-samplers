@@ -69,7 +69,7 @@ S(k) = |Σⱼ exp(2iπ ⟨k, xⱼ⟩)|² / N
 A near-zero S(k) means that the Monte Carlo integration error is controlled for the low-frequency test function x ↦ exp(2iπ ⟨k, x⟩).
 
 <details>
-<summary>Show the S(k) curves (at N = 1024 for χ = 0.30, 0.43, L1-0.50, WD-0.50), for D = 2 to 16 </summary>
+<summary>Show the k ↦ S(k) curves (at N = 1024 for χ = 0.30, 0.43, L1-0.50, WD-0.50), for D = 2 to 16 </summary>
 
 ![chi 0.30](https://zenodo.org/records/23327095/files/fouriererror_all_samples_from_paper_chi30.png)
 ![chi 0.43](https://zenodo.org/records/23327095/files/fouriererror_all_samples_from_paper_chi43.png)
