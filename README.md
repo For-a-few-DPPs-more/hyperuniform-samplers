@@ -1,5 +1,9 @@
 # Hyperuniform Point Clouds Database
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23327095.svg)](https://doi.org/10.5281/zenodo.23327095)
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 This is the GitHub companion repository of the `Hyperuniform samples` database stored on Zenodo. The database contains hyperuniform point clouds (e.g. blue noise) on the unit hypercube [0,1)^D, sampled with the [`blue-sampler`](https://pypi.org/project/blue-sampler/) Python package.
 
 **2D example** (the N = 1024, D = 2, Chi43 point clouds of this database):
@@ -191,7 +195,3 @@ The GPU acceleration of the kernel reductions used in the sampler relies on the 
 
 For the large 2D and 3D point clouds available on Zenodo in `larges.zip`, spectral optimisation is made possible by the [FINUFFT](https://github.com/flatironinstitute/finufft) library:
 > Barnett, Magland, af Klinteberg, "A parallel non-uniform fast Fourier transform library based on an “exponential of semicircle” kernel", *SIAM Journal on Scientific Computing* 41(5), C479–C504, 2019.
-
-## Licence
-
-The database and the corresponding source code are free to use under the **MIT licence**.
