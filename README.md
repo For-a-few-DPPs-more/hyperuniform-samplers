@@ -66,7 +66,8 @@ See following (N, D) coverage table:
 
 **Spectral optimisation** (non-uniform Fourier transform): select a spectral exclusion region, initialise with a random point cloud, then run a gradient descent on the Fourier loss. We sample four versions of each point cloud:
 
-- χ = 0.30, reaching a stealthy structure factor S(k) ≤ 10⁻¹⁰ in a standard euclidian ball and χ = 0.43, reaching S(k) ≤ 10⁻⁴ but in a bigger ball;  
+- χ = 0.30, reaching a stealthy structure factor S(k) ≤ 10⁻¹⁰ in a standard euclidian ball
+- χ = 0.43, reaching S(k) ≤ 10⁻⁴ but in a 1.5x bigger ball;  
 - χ = L1-0.50, reaching S(k) ≤ 10⁻² inside an L1 ball (`‖k‖₁ = Σ|kᵢ|`);
 - χ = WD-0.50, minimise the WD (wrap around) discrepancy as a fourier serie (no stealthiness consideration).
 
