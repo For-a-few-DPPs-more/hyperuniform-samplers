@@ -74,9 +74,9 @@ See following (N, D) coverage table:
 
 ## Sampling method
 
-**Spectral optimisation** (non-uniform Fourier transform): select an exclusion region (see figure below) composed of the most important wave vectors k according to a weight function (Euclidean ball, L1 ball, or star-ball product weight), where `χ` is chosen slightly below or equal to 0.5 to ensure near-maximal spectral coverage, initialise with a random point cloud, then run a gradient descent on the Fourier loss. We sample four versions of each point cloud:
+**Spectral optimisation** (non-uniform Fourier transform): select a spectral exclusion region, initialise with a random point cloud, then run a gradient descent on the Fourier loss. We sample four versions of each point cloud:
 
-- χ = 0.30 and χ = 0.43, reaching a stealthy structure factor S(k) ≤ 10⁻¹⁰ and S(k) ≤ 10⁻⁴ respectively within a Euclidean (L2) exclusion region;
+- χ = 0.30, reaching a stealthy structure factor S(k) ≤ 10⁻¹⁰ in a standard euclidian ball and χ = 0.43, reaching S(k) ≤ 10⁻⁴ but in a bigger ball;  
 - χ = L1-0.50, reaching S(k) ≤ 10⁻² inside an L1 ball (`‖k‖₁ = Σ|kᵢ|`);
 - χ = WD-0.50, minimise the WD (wrap around) discrepancy as a fourier serie (no stealthiness consideration).
 
@@ -92,9 +92,9 @@ By construction, the provided samples guarantee:
 
 ### Stealthiness
 
-- For `χ = WD-0.50`, the star ball of product weight covers all the spectral domain reachable with N points, `2χ = 100%`, with a minimised WD disrepancy truncated on the wave vector k belonging to the top-M modes ordered by \( r(k) = \prod_i \hat{K}(k_i) \). This exclusion region is the one that appears in the  wrap-around kernel discrepancy.
+- For `χ = WD-0.50`, the star ball covers all the spectral domain reachable with N points, `2χ = 100%`, with a minimised WD disrepancy truncated on the wave vector k belonging to the top-M modes ordered by \( r(k) = \prod_i \hat{K}(k_i) \). This exclusion region is the one that appears in the  wrap-around kernel discrepancy.
 
-- For `χ = L1-0.50`, the ball of radius Kmax covers all the spectral domain reachable with N points, `2χ = 100%`, with a controlled `S(k) ≤ 10⁻²` for every wave vector k with ‖k‖₁ ≤ Kmax(N, D, χ). Note that the norm ‖ ‖₁ here is the L1 norm (see [SAMPLING.md](https://github.com/For-a-few-DPPs-more/hyperuniform-samplers/blob/main/SAMPLING.md)).
+- For `χ = L1-0.50`, the ball of radius Kmax covers all the spectral domain reachable with N points, `2χ = 100%`, with a controlled `S(k) ≤ 10⁻²` for every wave vector k with ‖k‖₁ ≤ Kmax(N, D, χ). Note that the norm ‖ ‖₁ here is the L1 norm.
 
 - For `χ = 0.43`, the ball of radius Kmax covers `2χ = 86%` with a controlled `S(k) ≤ 10⁻⁴` for every wave vector k with ‖k‖ ≤ Kmax(N, D, χ), this time for a usual L2-ball region.
 
