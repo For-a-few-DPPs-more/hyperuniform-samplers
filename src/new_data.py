@@ -56,7 +56,7 @@ DATASET_FAMILIES = {
     },
     "WD-50": {
         "directory": "WDchi50",
-        "output_dir": "WDchi50",
+        "label": "WDchi50",
     },
 }
 
