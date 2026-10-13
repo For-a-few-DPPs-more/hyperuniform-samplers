@@ -50,23 +50,13 @@ Open `quick_start.ipynb` and follow the instructions to load and use the databas
 - **Number of points:** Native: N = 2^10 to 2^17 (powers of 2). Including tiling: up to N = 2^24.
 - **Dimension:** Native: D = 2 to 16, plus D = 23 and D = 32. Including projection: any 2 ≤ D ≤ 32.
 
-
-| `--chi` | Exclusion region                          | χ    | Coverage `2χ` | Stealthiness `S(k) ≤` | Typical use                                      |
-| ------- | ----------------------------------------- | ---- | ------------- | --------------------- | ------------------------------------------------ |
-| `30`    | L2 ball (Euclidean)                       | 0.30 | 60%           | 10⁻¹⁰                 | blue noise, very strong stealthiness             |
-| `43`    | L2 ball (Euclidean)                       | 0.43 | 86%           | 10⁻⁴                  | blue noise, larger exclusion region              |
-| `L1-50` | L1 ball (`‖k‖₁ = Σ\|kᵢ\|`)                | 0.50 | 100%          | 10⁻²                  | QMC integration                                  |
-| `WD-50` | star ball (`r(k) = ∏ 1/kᵢ²`)              | 0.50 | 100%          | low WD                  | QMC (worst-case irregular integrands)            |
-
-
-All four families are available for the same (N, D) values.
 See following (N, D) coverage table:
 
 [![ND_coverage](https://github.com/For-a-few-DPPs-more/hyperuniform-samplers/raw/5b6cd8a40a866b7ba1324e94577ce814b5fecdc0/src/coverage_table_ND.png)](https://github.com/For-a-few-DPPs-more/hyperuniform-samplers/blob/5b6cd8a40a866b7ba1324e94577ce814b5fecdc0/src/coverage_table_ND.png)
 
 > **Note: Large storage**
 >
-> In low dimensions (D ≤ 4), the Zenodo database provides additional, much larger point clouds. These must be downloaded manually (see [`larges.zip`](https://zenodo.org/records/23327095?preview_file=larges.zip), 2.7 GB). The archive contains χ = 0.30 samples up to:
+> In low dimensions (D ≤ 4), the Zenodo database provides additional, much larger point clouds. These must be downloaded manually (see [`larges.zip`](https://zenodo.org/records/23327095?preview_file=larges.zip), 2.7 GB). The archive samples up to:
 >
 > - **2D**: N = 2²⁷ ≈ 134 million points
 > - **3D**: N = 2²⁵ ≈ 34 million points
