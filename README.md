@@ -33,7 +33,7 @@ Or from a notebook: open `quick_start.ipynb` and follow the instructions.
 ## Data characteristics
 
 - **Format:** HDF5 (Python, C++, MATLAB, Julia, R, ...).
-- **Size:** ≈ 712 MB by default, ≈ 3.2 GB with the large point clouds (see note below).
+- **Size:** ≈ 712 MB by default, ≈ 3.4 GB with the large point clouds (see note below).
 - **Number of points:** native N = 2¹⁰ to 2¹⁷ (powers of 2); up to N = 2²⁴ with tiling.
 - **Dimension:** native D = 2 to 16, plus D = 23 and D = 32; any 2 ≤ D ≤ 32 with projection.
 
