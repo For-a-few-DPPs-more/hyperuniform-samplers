@@ -102,7 +102,7 @@ The figure below shows the curve `k ↦ S(k)` for every dimension D = 2 to 16, a
 
 ![Structure factor S(k) for D = 2 to 16, N = 1024, chi 0.43](https://zenodo.org/records/23327095/files/fouriererror_all_samples_from_paper_chi43.png)
 
-- Chi = 0.50 (L1-norm), D = 2, 3, ..., 16 :
+- Chi = 0.50 (L1-ball), D = 2, 3, ..., 16 :
 
 ![Structure factor S(k) for D = 2 to 16, N = 1024, chi L1-0.50](https://zenodo.org/records/23327095/files/fouriererror_all_samples_from_paper_L1chi50.png)
 
