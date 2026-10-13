@@ -170,6 +170,14 @@ impact are described in
 
 - **Large-scale sampling by tiling:** scaling up a point cloud to millions of points through periodic replication, at the cost of reduced stealthiness as the number of tiles, \(N_t\), increases relative to the original number of points, \(N\).
 
+## Acknowledgements
+
+The GPU acceleration of the kernel reductions used in the sampler relies on the [PyKeOps](https://www.kernel-operations.io) library:
+> Charlier, Feydy, Glaunès, Collin, Durif, "Kernel Operations on the GPU, with Autodiff, without Memory Overflows", *Journal of Machine Learning Research* 22(74), 2021, pp. 1-6.
+
+For the large 2D and 3D point clouds available on Zenodo in `larges.zip`, spectral optimisation is made possible by the [FINUFFT](https://github.com/flatironinstitute/finufft) library:
+> Barnett, Magland, af Klinteberg, "A parallel non-uniform fast Fourier transform library based on an “exponential of semicircle” kernel", *SIAM Journal on Scientific Computing* 41(5), C479–C504, 2019.
+
 ## Citation
 
 If you use this database, please cite:
@@ -185,11 +193,3 @@ doi = {10.5281/zenodo.23327095},
 url = {https://doi.org/10.5281/zenodo.23327095}
 }
 ```
-
-## Acknowledgements
-
-The GPU acceleration of the kernel reductions used in the sampler relies on the [PyKeOps](https://www.kernel-operations.io) library:
-> Charlier, Feydy, Glaunès, Collin, Durif, "Kernel Operations on the GPU, with Autodiff, without Memory Overflows", *Journal of Machine Learning Research* 22(74), 2021, pp. 1-6.
-
-For the large 2D and 3D point clouds available on Zenodo in `larges.zip`, spectral optimisation is made possible by the [FINUFFT](https://github.com/flatironinstitute/finufft) library:
-> Barnett, Magland, af Klinteberg, "A parallel non-uniform fast Fourier transform library based on an “exponential of semicircle” kernel", *SIAM Journal on Scientific Computing* 41(5), C479–C504, 2019.
