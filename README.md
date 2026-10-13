@@ -82,15 +82,7 @@ By construction, the provided samples guarantee:
 
 ### Stealthiness
 
-- For `χ = WD-0.50`, the star ball covers all the spectral domain reachable with N points, `2χ = 100%`, with a minimised WD disrepancy truncated on the wave vector k belonging to the top-M modes ordered by \( r(k) = \prod_i \hat{K}(k_i) \). This exclusion region is the one that appears in the  wrap-around kernel discrepancy.
-
-- For `χ = L1-0.50`, the ball of radius Kmax covers all the spectral domain reachable with N points, `2χ = 100%`, with a controlled `S(k) ≤ 10⁻²` for every wave vector k with ‖k‖₁ ≤ Kmax(N, D, χ). Note that the norm ‖ ‖₁ here is the L1 norm.
-
-- For `χ = 0.43`, the ball of radius Kmax covers `2χ = 86%` with a controlled `S(k) ≤ 10⁻⁴` for every wave vector k with ‖k‖ ≤ Kmax(N, D, χ), this time for a usual L2-ball region.
-
-- For `χ = 0.30`, coverage is slightly weaker `2χ = 60%` but the S(k) control much finer: `S(k) ≤ 10⁻¹⁰`.
-
-Recall that, for a wave vector k = (k₁, ..., k_D) with integer components in Z^D,
+For a wave vector k = (k₁, ..., k_D) with integer components in Z^D,
 
 ```
 S(k) = |Σⱼ exp(2iπ ⟨k, xⱼ⟩)|² / N
