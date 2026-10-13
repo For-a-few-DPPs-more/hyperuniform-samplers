@@ -32,7 +32,6 @@ This script loads the full database and generates a new randomized point cloud
 ```
 python src/load_data.py --dim all --chi all
 python src/new_data.py --dim 2 --npoints 1024 --chi 30 --seed 42
-# other families: --chi 43, --chi L1-50 or --chi WD-50 (for QMC integration)
 ```
 
 - or from a notebook :
@@ -44,15 +43,15 @@ Open `quick_start.ipynb` and follow the instructions to load and use the databas
 
 - Hosted on Zenodo [DOI 10.5281/zenodo.23327095](https://doi.org/10.5281/zenodo.23327095).
 - Stored in **HDF5** for interoperability (Python, C++, MATLAB, Julia, R, ...).
-- Size : default ≈ 712 MB (≈ 178 MB per chi family), full (see Note: Large storage) ≈ 3.2 GB
+- Size : default ≈ 712 MB, full (see Note: Large storage) ≈ 3.2 GB
 
 ### Coverage
 
 - **χ parameter:** four dataset families:
-  Stealthy blue noise
+  Stealthy blue noise \
   - χ = 0.30 (`--chi 30`)
   - χ = 0.43 (`--chi 43`) 
-  QMC integration
+  QMC integration \
   - χ = L1-0.50 (`--chi L1-50`)
   - χ = WD-0.50 (`--chi WD-50`)
 - **Number of points:** Native: N = 2^10 to 2^17 (powers of 2). Including tiling: up to N = 2^24.
