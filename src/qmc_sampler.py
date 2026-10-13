@@ -1,57 +1,37 @@
 """
 see https://github.com/For-a-few-DPPs-more/Recursive-Gaussian-Blue-Noise/blob/main/src/blue_sampler/run/run_nufft.py:
 same but:
-  - L1 ball or star ball instead of L2 ball
+  - L1 ball instead of L2 ball
   - keops backend instead of finufft
+
+  -for wd (wrap arround discrepancy): exact brute-force computation of the O(N^2*D) kernel
 """
 
 from __future__ import annotations
 
 import time
-from math import pi
 from typing import Optional
 
 import numpy as np
 
-from qmc_geom import CHI, get_wave_vectors
-
-try:
-    from pykeops.numpy import LazyTensor
-except ImportError:
-    class LazyTensor:
-        def __init__(self, *args, **kwargs):
-            raise ImportError("pykeops is required for the KeOps backend")
+from qmc_geom import loss_and_grad_l1, loss_and_grad_wd, real_dtype
 
 
 # ------------------------------------------------------------------
 # Global defaults
 # ------------------------------------------------------------------
-EPSILON   = 1e-12
-PRECISION = "float32"
 NITER     = 150
 LR        = 1.0
-
-real_dtype    = np.float32 if PRECISION == "float32" else np.float64
-complex_dtype = np.complex64 if PRECISION == "float32" else np.complex128
-two_pi        = 2.0 * pi
-
-
-# ------------------------------------------------------------------
-# Wrapers (for conveniance)
-# ------------------------------------------------------------------
-def sample_l1(N, D):
-    return sample(N, D, "l1", verbose = 0)
-
-def sample_star(N, D):
-    return sample(N, D, "star", verbose = 0)
+CHI = 0.3
 
 # ------------------------------------------------------------------
 # Main KeOps optimisation pipeline
 # ------------------------------------------------------------------
+
 def sample(
     N,
     D,
-    mode,
+    mode = "l1",
     chi: float = CHI,
     target: Optional[np.ndarray] = None,
     seed: Optional[int] = None,
@@ -66,7 +46,6 @@ def sample(
     ----------
     N        : number of points
     D        : dimension
-    mode     : "star" (WD product weights) or "l1"
     chi      : fraction of degrees of freedom kept as Fourier modes
     target   : optional target point cloud (for non-uniform densities)
     seed     : random seed
@@ -81,55 +60,16 @@ def sample(
     rng = np.random.default_rng(seed)
     x = rng.uniform(size=(N, D)).astype(real_dtype)
 
-    K, kl1, w, M = get_wave_vectors(N, D, mode=mode, chi=chi, rng=rng)
-    k_coords = np.ascontiguousarray(K.astype(real_dtype))
-    norm = float(max(M, 1))
-
-    # optional target spectrum
-    if target is not None:
-        tx = LazyTensor(target[:, None, :])
-        tk = LazyTensor(k_coords[None, :, :])
-        phase = two_pi * (tx * tk).sum(-1)
-        tr = np.asarray(phase.cos().sum_reduction(0)).ravel()
-        ti = -np.asarray(phase.sin().sum_reduction(0)).ravel()
-        fk_target = ((tr + 1j * ti) / target.shape[0]).astype(complex_dtype)
+    if mode == "l1":
+        loss_and_grad = loss_and_grad_l1(N, D, chi, rng, target)
     else:
-        fk_target = np.zeros(M, dtype=complex_dtype)
-
-    fk_tr = np.ascontiguousarray(fk_target.real.astype(real_dtype))
-    fk_ti = np.ascontiguousarray(fk_target.imag.astype(real_dtype))
-    k_j   = LazyTensor(k_coords[None, :, :])
-
-    def fourier_modes(pts):
-        xi = LazyTensor(pts[:, None, :])
-        phase = two_pi * (xi * k_j).sum(-1)
-        fr = np.asarray(phase.cos().sum_reduction(0)).ravel() / N
-        fi = -np.asarray(phase.sin().sum_reduction(0)).ravel() / N
-        return fr.astype(real_dtype), fi.astype(real_dtype)
-
-    def loss_and_grad(pts):
-        fr, fi = fourier_modes(pts)
-        dr = fr - fk_tr
-        di = fi - fk_ti
-        loss = float(np.sum(w * (dr ** 2 + di ** 2)) / norm)
-
-        pref = 2.0 / norm * (-two_pi) / N
-        cr = np.ascontiguousarray((pref * w * dr).astype(real_dtype))
-        ci = np.ascontiguousarray((pref * w * di).astype(real_dtype))
-
-        xi  = LazyTensor(pts[:, None, :])
-        crj = LazyTensor(cr[None, :, None])
-        cij = LazyTensor(ci[None, :, None])
-        phase = two_pi * (xi * k_j).sum(-1)
-        scalar = crj * phase.sin() + cij * phase.cos()
-        grad = (scalar * k_j).sum_reduction(1)
-        return loss, np.asarray(grad).astype(real_dtype)
+        loss_and_grad = loss_and_grad_wd()
 
     adaptive = lr * 0.1 * N ** (-1.0 / D)
     prev_loss = np.inf
 
     if verbose:
-        print(f"[keops-{mode}] N={N}  D={D}  modes={M}  chi={chi:.3f}")
+        print(f"[keops] N={N}  D={D}")
 
     t0 = time.time()
     for it in range(n_iter):
@@ -138,14 +78,13 @@ def sample(
         step = (grad / rms) * adaptive
         x_new = np.mod(x - step, 1.0).astype(real_dtype)
 
-        # bold-driver: accept only if loss decreases
         if loss < prev_loss:
             x = x_new
             adaptive *= 1.05
             prev_loss = loss
         else:
             adaptive *= 0.8
-            x = x_new   # still move (comment this line for strict rejection)
+            x = x_new   
 
         if verbose and (it % 20 == 0 or it == n_iter - 1):
             print(f"  iter {it:4d} | loss {loss:.3e}")

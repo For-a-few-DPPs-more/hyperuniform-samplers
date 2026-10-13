@@ -55,7 +55,7 @@ DATASET_FAMILIES = {
         "label": "L1chi50",
     },
     "WD-50": {
-        "archive_prefix": "WDchi50",
+        "directory": "WDchi50",
         "output_dir": "WDchi50",
     },
 }

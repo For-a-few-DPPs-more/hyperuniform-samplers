@@ -2,154 +2,29 @@
 qmc_geom.py
 -----------
 Geometric utilities for Fourier mode selection on the unit torus.
-
-Provides:
-  - exact product weights of the wrap-around kernel (star discrepancy)
-  - half-space star-ball construction via signed-permutation orbits
-  - classical L1-ball construction
-  - unified get_wave_vectors interface
+select a L1 half-ball with given number of modes
 """
 from __future__ import annotations
-from collections import Counter
-from itertools import combinations, permutations, product
-from math import comb, factorial, pi
-from typing import Optional, Tuple, List, Iterator
-import heapq
+
+from math import comb, pi
+from typing import Optional
+
 import numpy as np
 
+# ------------------------------------------------------------------
+# Global defaults
+# ------------------------------------------------------------------
+EPSILON   = 1e-12
+PRECISION = "float32"
+
 CHI     = 0.5
-EPSILON = 1e-12
-TWO_PI2     = 2.0 * pi * pi
-INV_TWO_PI2 = 1.0 / TWO_PI2
 
-_HATK = [1.0] + [INV_TWO_PI2 / (m * m) for m in range(1, 16384)]
-
-def _hatK(m: int) -> float:
-    m = abs(int(m))
-    if m < len(_HATK):
-        return _HATK[m]
-    return INV_TWO_PI2 / (m * m)
+real_dtype    = np.float32 if PRECISION == "float32" else np.float64
+complex_dtype = np.complex64 if PRECISION == "float32" else np.complex128
+two_pi        = 2.0 * pi
 
 def _n_modes_target(N: int, D: int, chi: float = CHI) -> int:
     return max(0, int(round(chi * D * (N - 1))))
-
-def star_weight(K: np.ndarray) -> np.ndarray:
-    absK = np.abs(K).astype(np.float64)
-    w = np.ones(len(K), dtype=np.float64)
-    nz = absK > 0
-    if nz.any():
-        factors = np.where(nz, INV_TWO_PI2 / (absK ** 2), 1.0)
-        w = factors.prod(axis=1)
-    return w
-
-def _half_orbit_card(k_pos: Tuple[int, ...], D: int) -> int:
-    s = len(k_pos)
-    if s == 0 or s > D:
-        return 0
-    cnt = Counter(k_pos)
-    denom = factorial(D - s)
-    for v in cnt.values():
-        denom *= factorial(v)
-    return (factorial(D) // denom * (1 << s)) // 2
-
-def _positive_fundamentals(s: int, max_freq: int) -> List[Tuple[float, Tuple[int, ...]]]:
-    items = []
-    def rec(prefix, last, remaining):
-        if remaining == 0:
-            k = tuple(prefix)
-            w = 1.0
-            for v in k:
-                w *= _hatK(v)
-            items.append((w, k))
-            return
-        for v in range(min(last, max_freq), 0, -1):
-            rec(prefix + [v], v, remaining - 1)
-    for first in range(max_freq, 0, -1):
-        rec([first], first, s - 1)
-    return items
-
-# decreasing max_freq with support – keeps generation cheap
-_S_MAX_FREQ = {1: 256, 2: 64, 3: 32, 4: 16, 5: 10, 6: 6, 7: 4, 8: 3}
-
-def _select_orbits(D: int, M: int):
-    s_max = min(8, D)
-    heap: List[Tuple[float, int, Tuple[int, ...]]] = []
-    counter = 0
-    for s in range(1, s_max + 1):
-        mf = _S_MAX_FREQ.get(s, 3)
-        for w, k in _positive_fundamentals(s, mf):
-            heapq.heappush(heap, (-w, counter, k))
-            counter += 1
-
-    selected = []
-    cum = 0
-    last = None
-    while heap and cum < M:
-        neg_w, _, k = heapq.heappop(heap)
-        w = -neg_w
-        hsize = _half_orbit_card(k, D)
-        if hsize == 0:
-            continue
-        if cum + hsize >= M:
-            last = (w, k, hsize)
-            break
-        selected.append((w, k, hsize))
-        cum += hsize
-    return selected, last
-
-def _expand_half_orbit_pos(k_pos: Tuple[int, ...], D: int,
-                           max_needed: Optional[int] = None) -> Iterator[Tuple[int, ...]]:
-    s = len(k_pos)
-    if s == 0:
-        return
-    count = 0
-    unique_vals = list(set(permutations(k_pos)))
-    # combinations in lex order → deterministic
-    for pos in combinations(range(D), s):
-        for vals in unique_vals:
-            for signs in product((-1, 1), repeat=s):
-                q = [0] * D
-                for p, v, sg in zip(pos, vals, signs):
-                    q[p] = v * sg
-                first = next((i for i, v in enumerate(q) if v != 0), None)
-                if first is not None and q[first] > 0:
-                    yield tuple(q)
-                    count += 1
-                    if max_needed is not None and count >= max_needed:
-                        return
-
-def half_star_ball(D: int, M: int, max_freq: int = 128):
-    """max_freq is accepted for API compatibility but ignored (internal table used)."""
-    if M <= 0:
-        return np.empty((0, D), dtype=np.int32), np.empty(0, dtype=np.float64)
-    if D == 1:
-        K = np.arange(1, M + 1, dtype=np.int32)[:, None]
-        r = np.array([_hatK(m) for m in range(1, M + 1)], dtype=np.float64)
-        return K, r
-
-    selected, last = _select_orbits(D, M)
-
-    K_list: List[Tuple[int, ...]] = []
-    r_list: List[float] = []
-
-    for w, k, _ in selected:
-        for q in _expand_half_orbit_pos(k, D):
-            K_list.append(q)
-            r_list.append(w)
-
-    if last is not None:
-        w, k, _ = last
-        needed = M - len(K_list)
-        for q in _expand_half_orbit_pos(k, D, max_needed=needed):
-            K_list.append(q)
-            r_list.append(w)
-
-    K = np.asarray(K_list, dtype=np.int32)
-    r = np.asarray(r_list, dtype=np.float64)
-    if len(K) > M:
-        K = K[:M]
-        r = r[:M]
-    return K, r
 
 # ------------------------------------------------------------------
 # L1 helpers (unchanged)
@@ -198,7 +73,6 @@ def _half_l1_ball(D, radius):
 def get_wave_vectors(
     N: int,
     D: int,
-    mode: str = "star",
     chi: float = CHI,
     rng: Optional[np.random.Generator] = None,
     epsilon: float = EPSILON,
@@ -208,29 +82,99 @@ def get_wave_vectors(
     if M_target == 0:
         empty = np.empty((0, D), dtype=np.int32)
         return empty, np.empty(0, dtype=np.int64), np.empty(0), 0
-    if mode == "star":
-        K, r = half_star_ball(D, M_target)
-        weights = r / (r.max() + epsilon)
-    elif mode == "l1":
-        radius = 1
-        while (_count_l1_ball(D, radius) - 1) // 2 < M_target:
-            radius *= 2
-        low, high = max(1, radius // 2), radius
-        while low < high:
-            mid = (low + high) // 2
-            if (_count_l1_ball(D, mid) - 1) // 2 >= M_target:
-                high = mid
-            else:
-                low = mid + 1
-        radius = low
-        K = _half_l1_ball(D, radius)
-        score = np.abs(K).sum(1)
-        order = np.lexsort((rng.random(len(score)), score))[:M_target]
-        K = K[order]
-        raw = 1.0 / (score[order].astype(np.float64) ** 2 + epsilon)
-        weights = raw / raw.max()
-    else:
-        raise ValueError(f"Unknown mode '{mode}'. Choose 'star' or 'l1'.")
+
+    radius = 1
+    while (_count_l1_ball(D, radius) - 1) // 2 < M_target:
+        radius *= 2
+    low, high = max(1, radius // 2), radius
+    while low < high:
+        mid = (low + high) // 2
+        if (_count_l1_ball(D, mid) - 1) // 2 >= M_target:
+            high = mid
+        else:
+            low = mid + 1
+    radius = low
+    K = _half_l1_ball(D, radius)
+    score = np.abs(K).sum(1)
+    order = np.lexsort((rng.random(len(score)), score))[:M_target]
+    K = K[order]
+    raw = 1.0 / (score[order].astype(np.float64) ** 2 + epsilon)
+    weights = raw / raw.max()
     K = np.ascontiguousarray(K.astype(np.int32))
     kl1 = np.abs(K).sum(1).astype(np.int64)
     return K, kl1, weights.astype(np.float64), len(K)
+
+def loss_and_grad_l1(N, D, chi, rng, target):
+    from pykeops.numpy import LazyTensor
+
+    K, kl1, w, M = get_wave_vectors(N, D, chi=chi, rng=rng)
+    k_coords = np.ascontiguousarray(K.astype(real_dtype))
+    norm = float(max(M, 1))
+
+    # optional target spectrum
+    if target is not None:
+        tx = LazyTensor(target[:, None, :])
+        tk = LazyTensor(k_coords[None, :, :])
+        phase = two_pi * (tx * tk).sum(-1)
+        tr = np.asarray(phase.cos().sum_reduction(0)).ravel()
+        ti = -np.asarray(phase.sin().sum_reduction(0)).ravel()
+        fk_target = ((tr + 1j * ti) / target.shape[0]).astype(complex_dtype)
+    else:
+        fk_target = np.zeros(M, dtype=complex_dtype)
+
+    fk_tr = np.ascontiguousarray(fk_target.real.astype(real_dtype))
+    fk_ti = np.ascontiguousarray(fk_target.imag.astype(real_dtype))
+    k_j   = LazyTensor(k_coords[None, :, :])
+
+    def fourier_modes(pts):
+        xi = LazyTensor(pts[:, None, :])
+        phase = two_pi * (xi * k_j).sum(-1)
+        fr = np.asarray(phase.cos().sum_reduction(0)).ravel() / N
+        fi = -np.asarray(phase.sin().sum_reduction(0)).ravel() / N
+        return fr.astype(real_dtype), fi.astype(real_dtype)
+
+    def loss_and_grad(pts):
+        fr, fi = fourier_modes(pts)
+        dr = fr - fk_tr
+        di = fi - fk_ti
+        loss = float(np.sum(w * (dr ** 2 + di ** 2)) / norm)
+
+        pref = 2.0 / norm * (-two_pi) / N
+        cr = np.ascontiguousarray((pref * w * dr).astype(real_dtype))
+        ci = np.ascontiguousarray((pref * w * di).astype(real_dtype))
+
+        xi  = LazyTensor(pts[:, None, :])
+        crj = LazyTensor(cr[None, :, None])
+        cij = LazyTensor(ci[None, :, None])
+        phase = two_pi * (xi * k_j).sum(-1)
+        scalar = crj * phase.sin() + cij * phase.cos()
+        grad = (scalar * k_j).sum_reduction(1)
+        return loss, np.asarray(grad).astype(real_dtype)
+    return loss_and_grad
+
+def loss_and_grad_wd():
+    import torch
+    from pykeops.torch import LazyTensor 
+
+    def loss_and_grad(x):
+        xj = torch.as_tensor(
+            x, dtype=torch.float32
+        ).detach()
+
+        xi = torch.as_tensor(
+            x, dtype=torch.float32
+        ).detach().requires_grad_(True)
+        
+
+        xi = LazyTensor(xi[:, None, :])
+        xj = LazyTensor(xj[None, :, :])
+
+        delta = (xi - xj).abs()
+        loss_val = (1.5 - delta * (1.0 - delta)).prod(-1).sum()
+
+        loss = loss_val.sum()
+        loss.backward()
+
+        return loss.item(), xi.grad.detach().cpu().numpy()
+
+    return loss_and_grad
