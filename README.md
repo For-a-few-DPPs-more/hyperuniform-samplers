@@ -153,12 +153,19 @@ impact are described in
 
 ## Use cases
 
-- **Rendering and image synthesis:** pixel/sub-pixel anti-aliasing, path-tracing sample dimensions, dithering and halftoning, blue-noise textures for denoising.
-- **Spatial sampling:** homogeneous, isotropic particle initialisation for simulations (SPH, molecular dynamics), Poisson-disk-like placement, point sampling of geometry.
-- **Monte Carlo / QMC integration:** Stealthy hyperuniform samples are by nature pertinent for periodic or compactly supported functions with smooth, low-frequency spectral content. The `L1-50` dataset is suitable for non-smooth integrands. The `WD-50` dataset is specifically designed for the worst-case error bound induced by the wrap-around kernel (star discrepancy) and is therefore recommended when the integrand can be irregular. Random shifts give independent replicas for unbiased error bars.
-- **Machine learning and design of experiments:** initial points for Bayesian or black-box optimisation, hyperparameter search, training-set sampling for surrogates and PINNs, uncertainty propagation.
-- **Hyperuniformity research:** a reproducible reference set to study structure-factor behaviour, the χ-dependent transition toward crystallisation, and dimension scaling (`D = 2` to `32`), or to benchmark new samplers.
-- **Large-scale sampling by tiling:** replicate a cloud to get millions of points, at the cost of stealthiness degrading proportionally to `N_t / N`.
+- **Rendering and image synthesis:** pixel and subpixel anti-aliasing, path-tracing sample generation, dithering and halftoning, and blue-noise-like textures for denoising.
+
+- **Spatial sampling:** homogeneous and isotropic particle initialisation for simulations (e.g., SPH and molecular dynamics), especially with peridoic boundary conditions.
+
+- **Monte Carlo / QMC integration:** For periodic integrands or compactly supported functions with smooth, low-frequency spectral content. The `L1-50` dataset is suited to integrands with **axial anisotropy**, as it allocates more suppression to high-frequency modes along the coordinate axes. The `WD-50` dataset is designed around the worst-case error bound associated with the wrap-around kernel (for less regular integrands). Random shifts can be used to generate independent replicas and error bars.
+
+> **Note:** `L1-50` and `WD-50` are not drop-in replacements for standard QMC methods such as Sobol or Halton sequences. In particular, they exhibit slightly weaker discrepancy performance according to `scipy.spatial.discrepancy`. They should instead be viewed as complementary sampling strategies worth exploring when the integrand has favourable low-frequency spectral properties.
+
+- **Machine learning and design of experiments:** initial design points for Bayesian and black-box optimisation, hyperparameter search, training-set generation for surrogate models and physics-informed neural networks (PINNs), and uncertainty quantification.
+
+- **Hyperuniformity research:** reproducible reference datasets for studying structure-factor behaviour, the \(\chi\)-dependent transition towards crystallisation, dimensional scaling (\(D = 2\) to \(32\)), and benchmarking new sampling methods.
+
+- **Large-scale sampling by tiling:** scaling up a point cloud to millions of points through periodic replication, at the cost of reduced stealthiness as the number of tiles, \(N_t\), increases relative to the original number of points, \(N\).
 
 ## Citation
 
