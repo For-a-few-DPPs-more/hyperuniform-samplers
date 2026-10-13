@@ -48,10 +48,10 @@ Open `quick_start.ipynb` and follow the instructions to load and use the databas
 ### Coverage
 
 - **χ parameter:** four dataset families:
-  Stealthy blue noise \
+  Stealthy blue noise 
   - χ = 0.30 (`--chi 30`)
-  - χ = 0.43 (`--chi 43`) 
-  QMC integration \
+  - χ = 0.43 (`--chi 43`) \
+  QMC integration 
   - χ = L1-0.50 (`--chi L1-50`)
   - χ = WD-0.50 (`--chi WD-50`)
 - **Number of points:** Native: N = 2^10 to 2^17 (powers of 2). Including tiling: up to N = 2^24.
