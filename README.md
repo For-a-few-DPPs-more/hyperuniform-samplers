@@ -117,7 +117,7 @@ X_new = (X - s) mod 1, s drawn uniformly in [0,1]^D
 
 - **Rendering and blue noise:** anti-aliasing, path tracing, dithering, denoising textures.
 - **Spatial sampling:** isotropic particle initialisation (SPH, molecular dynamics) with periodic boundary conditions.
-- **Monte Carlo / QMC integration:** periodic or smooth integrands (`L1-50` for axial anisotropy, `WD-50` for less regular ones). Random shifts give independent replicas and error bars.
+- **Monte Carlo / QMC integration:** periodic or smooth integrands (`L1-50` by default, `WD-50` for low effective dimensionality). Random shifts give independent replicas and error bars.
 - **Machine learning and design of experiments:** initial designs, surrogate training sets, uncertainty quantification.
 - **Hyperuniformity research:** reference data to study structure factors and crystallisation, and to benchmark new samplers.
 
