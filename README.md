@@ -71,11 +71,12 @@ A near-zero S(k) means that the Monte Carlo integration error is controlled for 
 S(k) for D = 2 to 16 at N = 1024, with ‖k‖ normalised by 1/δ, δ = `N^(-1/D)`, to compare dimensions:
 
 <details>
-<summary>Show the curves (χ = 0.30, 0.43, L1-0.50)</summary>
+<summary>Show the curves</summary>
 
 ![chi 0.30](https://zenodo.org/records/23327095/files/fouriererror_all_samples_from_paper_chi30.png)
 ![chi 0.43](https://zenodo.org/records/23327095/files/fouriererror_all_samples_from_paper_chi43.png)
 ![chi L1-0.50](https://zenodo.org/records/23327095/files/fouriererror_all_samples_from_paper_L1chi50.png)
+![chi WD-0.50](https://zenodo.org/records/23327095/files/fouriererror_all_samples_from_paper_WDchi50.png)
 
 </details>
 
