@@ -32,7 +32,6 @@ This script loads the full database and generates a new randomized point cloud
 ```
 python src/load_data.py --dim all --chi all
 python src/new_data.py --dim 2 --npoints 1024 --chi 30 --seed 42
-# other families: --chi 43, --chi L1-50 or --chi WD-50 (for QMC integration)
 ```
 
 - or from a notebook :
@@ -44,37 +43,20 @@ Open `quick_start.ipynb` and follow the instructions to load and use the databas
 
 - Hosted on Zenodo [DOI 10.5281/zenodo.23327095](https://doi.org/10.5281/zenodo.23327095).
 - Stored in **HDF5** for interoperability (Python, C++, MATLAB, Julia, R, ...).
-- Size : default ≈ 712 MB (≈ 178 MB per chi family), full (see Note: Large storage) ≈ 3.2 GB
+- Size : default ≈ 712 MB, full (see Note: Large storage) ≈ 3.2 GB
 
 ### Coverage
 
-- **χ parameter:** four dataset families:
-  Stealthy blue noise
-  - χ = 0.30 (`--chi 30`)
-  - χ = 0.43 (`--chi 43`) 
-  QMC integration
-  - χ = L1-0.50 (`--chi L1-50`)
-  - χ = WD-0.50 (`--chi WD-50`)
 - **Number of points:** Native: N = 2^10 to 2^17 (powers of 2). Including tiling: up to N = 2^24.
 - **Dimension:** Native: D = 2 to 16, plus D = 23 and D = 32. Including projection: any 2 ≤ D ≤ 32.
 
-
-| `--chi` | Exclusion region                          | χ    | Coverage `2χ` | Stealthiness `S(k) ≤` | Typical use                                      |
-| ------- | ----------------------------------------- | ---- | ------------- | --------------------- | ------------------------------------------------ |
-| `30`    | L2 ball (Euclidean)                       | 0.30 | 60%           | 10⁻¹⁰                 | blue noise, very strong stealthiness             |
-| `43`    | L2 ball (Euclidean)                       | 0.43 | 86%           | 10⁻⁴                  | blue noise, larger exclusion region              |
-| `L1-50` | L1 ball (`‖k‖₁ = Σ\|kᵢ\|`)                | 0.50 | 100%          | 10⁻²                  | QMC integration                                  |
-| `WD-50` | star ball (`r(k) = ∏ 1/kᵢ²`)              | 0.50 | 100%          | minimal WD                  | QMC (worst-case irregular integrands)            |
-
-
-All four families are available for the same (N, D) values.
 See following (N, D) coverage table:
 
 [![ND_coverage](https://github.com/For-a-few-DPPs-more/hyperuniform-samplers/raw/5b6cd8a40a866b7ba1324e94577ce814b5fecdc0/src/coverage_table_ND.png)](https://github.com/For-a-few-DPPs-more/hyperuniform-samplers/blob/5b6cd8a40a866b7ba1324e94577ce814b5fecdc0/src/coverage_table_ND.png)
 
 > **Note: Large storage**
 >
-> In low dimensions (D ≤ 4), the Zenodo database provides additional, much larger point clouds. These must be downloaded manually (see [`larges.zip`](https://zenodo.org/records/23327095?preview_file=larges.zip), 2.7 GB). The archive contains χ = 0.30 samples up to:
+> In low dimensions (D ≤ 4), the Zenodo database provides additional, much larger point clouds. These must be downloaded manually (see [`larges.zip`](https://zenodo.org/records/23327095?preview_file=larges.zip), 2.7 GB). The archive samples up to:
 >
 > - **2D**: N = 2²⁷ ≈ 134 million points
 > - **3D**: N = 2²⁵ ≈ 34 million points
@@ -82,9 +64,10 @@ See following (N, D) coverage table:
 
 ## Sampling method
 
-**Spectral optimisation** (non-uniform Fourier transform): select an exclusion region (see figure below) composed of the most important wave vectors k according to a weight function (Euclidean ball, L1 ball, or star-ball product weight), where `χ` is chosen slightly below or equal to 0.5 to ensure near-maximal spectral coverage, initialise with a random point cloud, then run a gradient descent on the Fourier loss. We sample four versions of each point cloud:
+**Spectral optimisation** (non-uniform Fourier transform): select a spectral exclusion region, initialise with a random point cloud, then run a gradient descent on the Fourier loss. We sample four versions of each point cloud:
 
-- χ = 0.30 and χ = 0.43, reaching a stealthy structure factor S(k) ≤ 10⁻¹⁰ and S(k) ≤ 10⁻⁴ respectively within a Euclidean (L2) exclusion region;
+- χ = 0.30, reaching a stealthy structure factor S(k) ≤ 10⁻¹⁰ in a standard euclidian ball
+- χ = 0.43, reaching S(k) ≤ 10⁻⁴ but in a 1.5x bigger ball;  
 - χ = L1-0.50, reaching S(k) ≤ 10⁻² inside an L1 ball (`‖k‖₁ = Σ|kᵢ|`);
 - χ = WD-0.50, minimise the WD (wrap around) discrepancy as a fourier serie (no stealthiness consideration).
 
@@ -100,15 +83,7 @@ By construction, the provided samples guarantee:
 
 ### Stealthiness
 
-- For `χ = WD-0.50`, the star ball of product weight covers all the spectral domain reachable with N points, `2χ = 100%`, with a minimised WD disrepancy truncated on the wave vector k belonging to the top-M modes ordered by \( r(k) = \prod_i \hat{K}(k_i) \). This exclusion region is the one that appears in the exact worst-case error bound for the wrap-around kernel (star discrepancy).
-
-- For `χ = L1-0.50`, the ball of radius Kmax covers all the spectral domain reachable with N points, `2χ = 100%`, with a controlled `S(k) ≤ 10⁻²` for every wave vector k with ‖k‖₁ ≤ Kmax(N, D, χ). Note that the norm ‖ ‖₁ here is the L1 norm (see [SAMPLING.md](https://github.com/For-a-few-DPPs-more/hyperuniform-samplers/blob/main/SAMPLING.md)).
-
-- For `χ = 0.43`, the ball of radius Kmax covers `2χ = 86%` with a controlled `S(k) ≤ 10⁻⁴` for every wave vector k with ‖k‖ ≤ Kmax(N, D, χ), this time for a usual L2-ball region.
-
-- For `χ = 0.30`, coverage is slightly weaker `2χ = 60%` but the S(k) control much finer: `S(k) ≤ 10⁻¹⁰`.
-
-Recall that, for a wave vector k = (k₁, ..., k_D) with integer components in Z^D,
+For a wave vector k = (k₁, ..., k_D) with integer components in Z^D,
 
 ```
 S(k) = |Σⱼ exp(2iπ ⟨k, xⱼ⟩)|² / N
@@ -180,7 +155,7 @@ impact are described in
 
 - **Rendering and image synthesis:** pixel/sub-pixel anti-aliasing, path-tracing sample dimensions, dithering and halftoning, blue-noise textures for denoising.
 - **Spatial sampling:** homogeneous, isotropic particle initialisation for simulations (SPH, molecular dynamics), Poisson-disk-like placement, point sampling of geometry.
-- **Monte Carlo / QMC integration:** Stealthy hyperuniform samples are by nature pertinent for periodic or compactly supported functions with smooth, low-frequency spectral content. The `L1-50` dataset is suitable for non-smooth integrands (discrepancy comparable to Sobol sequences). The `WD-50` dataset is specifically designed for the worst-case error bound induced by the wrap-around kernel (star discrepancy) and is therefore recommended when the integrand can be irregular. Random shifts give independent replicas for unbiased error bars.
+- **Monte Carlo / QMC integration:** Stealthy hyperuniform samples are by nature pertinent for periodic or compactly supported functions with smooth, low-frequency spectral content. The `L1-50` dataset is suitable for non-smooth integrands. The `WD-50` dataset is specifically designed for the worst-case error bound induced by the wrap-around kernel (star discrepancy) and is therefore recommended when the integrand can be irregular. Random shifts give independent replicas for unbiased error bars.
 - **Machine learning and design of experiments:** initial points for Bayesian or black-box optimisation, hyperparameter search, training-set sampling for surrogates and PINNs, uncertainty propagation.
 - **Hyperuniformity research:** a reproducible reference set to study structure-factor behaviour, the χ-dependent transition toward crystallisation, and dimension scaling (`D = 2` to `32`), or to benchmark new samplers.
 - **Large-scale sampling by tiling:** replicate a cloud to get millions of points, at the cost of stealthiness degrading proportionally to `N_t / N`.
