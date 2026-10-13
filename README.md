@@ -64,7 +64,7 @@ Open `quick_start.ipynb` and follow the instructions to load and use the databas
 | `30`    | L2 ball (Euclidean)                       | 0.30 | 60%           | 10⁻¹⁰                 | blue noise, very strong stealthiness             |
 | `43`    | L2 ball (Euclidean)                       | 0.43 | 86%           | 10⁻⁴                  | blue noise, larger exclusion region              |
 | `L1-50` | L1 ball (`‖k‖₁ = Σ\|kᵢ\|`)                | 0.50 | 100%          | 10⁻²                  | QMC integration                                  |
-| `WD-50` | star ball (`r(k) = ∏ 1/kᵢ²`)              | 0.50 | 100%          | minimal WD                  | QMC (worst-case irregular integrands)            |
+| `WD-50` | star ball (`r(k) = ∏ 1/kᵢ²`)              | 0.50 | 100%          | low WD                  | QMC (worst-case irregular integrands)            |
 
 
 All four families are available for the same (N, D) values.
@@ -100,7 +100,7 @@ By construction, the provided samples guarantee:
 
 ### Stealthiness
 
-- For `χ = WD-0.50`, the star ball of product weight covers all the spectral domain reachable with N points, `2χ = 100%`, with a minimised WD disrepancy truncated on the wave vector k belonging to the top-M modes ordered by \( r(k) = \prod_i \hat{K}(k_i) \). This exclusion region is the one that appears in the exact worst-case error bound for the wrap-around kernel (star discrepancy).
+- For `χ = WD-0.50`, the star ball of product weight covers all the spectral domain reachable with N points, `2χ = 100%`, with a minimised WD disrepancy truncated on the wave vector k belonging to the top-M modes ordered by \( r(k) = \prod_i \hat{K}(k_i) \). This exclusion region is the one that appears in the  wrap-around kernel discrepancy.
 
 - For `χ = L1-0.50`, the ball of radius Kmax covers all the spectral domain reachable with N points, `2χ = 100%`, with a controlled `S(k) ≤ 10⁻²` for every wave vector k with ‖k‖₁ ≤ Kmax(N, D, χ). Note that the norm ‖ ‖₁ here is the L1 norm (see [SAMPLING.md](https://github.com/For-a-few-DPPs-more/hyperuniform-samplers/blob/main/SAMPLING.md)).
 
