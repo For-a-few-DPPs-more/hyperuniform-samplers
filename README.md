@@ -1,6 +1,6 @@
 # Hyperuniform Point Clouds Database
 
-This is the GitHub companion repository of the `Hyperuniform samples` database stored on Zenodo. The database contains hyperuniform point clouds (e.g. blue noise) on the unit hypercube [0,1)ᴰ, sampled with the [`blue-sampler`](https://pypi.org/project/blue-sampler/) Python package.
+This is the GitHub companion repository of the Hyperuniform samples database stored on [`Zenodo`](https://doi.org/10.5281/zenodo.23327095). The database contains hyperuniform point clouds (e.g. blue noise) on the unit hypercube [0,1)ᴰ, sampled with the [`blue-sampler`](https://pypi.org/project/blue-sampler/) Python package.
 
 **2D example** (the N = 1024, D = 2, Chi43 point clouds of this database):
 
@@ -32,7 +32,7 @@ Or from a notebook: open `quick_start.ipynb` and follow the instructions.
 
 ## Data characteristics
 
-- **Format:** HDF5 (Python, C++, MATLAB, Julia, R, ...), hosted on Zenodo [DOI 10.5281/zenodo.23327095](https://doi.org/10.5281/zenodo.23327095).
+- **Format:** HDF5 (Python, C++, MATLAB, Julia, R, ...), hosted on Zenodo.
 - **Size:** ≈ 712 MB by default, ≈ 3.2 GB with the large point clouds (see note below).
 - **Number of points:** native N = 2¹⁰ to 2¹⁷ (powers of 2); up to N = 2²⁴ with tiling.
 - **Dimension:** native D = 2 to 16, plus D = 23 and D = 32; any 2 ≤ D ≤ 32 with projection.
