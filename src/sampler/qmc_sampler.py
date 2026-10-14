@@ -1,7 +1,7 @@
 """
 see https://github.com/For-a-few-DPPs-more/Recursive-Gaussian-Blue-Noise/blob/main/src/blue_sampler/run/run_nufft.py:
 same but:
-  - L1 ball or star ball instead of L2 ball
+  - L1 ball or wd ball instead of L2 ball
   - keops backend instead of finufft
 """
 
@@ -13,15 +13,33 @@ from typing import Optional
 
 import numpy as np
 
-from qmc_geom import CHI, get_wave_vectors
+from src.sampler.qmc_geom import CHI, get_wave_vectors
+
 
 try:
     from pykeops.numpy import LazyTensor
-except ImportError:
-    class LazyTensor:
-        def __init__(self, *args, **kwargs):
-            raise ImportError("pykeops is required for the KeOps backend")
 
+    def to_numpy(x):
+        return np.asarray(x)
+
+except ImportError:
+    import torch
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+    def LazyTensor(x):
+        return torch.as_tensor(x, dtype=torch.float32, device=device)
+
+    def to_numpy(x):
+        if isinstance(x, torch.Tensor):
+            return x.detach().cpu().numpy()
+        return np.asarray(x)
+
+def sum0(x):
+    return to_numpy(x.sum(0))
+
+def sum1(x):
+    return to_numpy(x.sum(1))
 
 # ------------------------------------------------------------------
 # Global defaults
@@ -42,8 +60,8 @@ two_pi        = 2.0 * pi
 def sample_l1(N, D):
     return sample(N, D, "l1", verbose = 0)
 
-def sample_star(N, D):
-    return sample(N, D, "star", verbose = 0)
+def sample_wd(N, D):
+    return sample(N, D, "wd", verbose = 0)
 
 # ------------------------------------------------------------------
 # Main KeOps optimisation pipeline
@@ -58,6 +76,7 @@ def sample(
     n_iter: int = NITER,
     lr: float = LR,
     verbose: int = 1,
+    warmstart: Optional[np.ndarray] = None,
 ):
     """
     Generate a low-discrepancy point set on [0,1)^D by spectral optimisation.
@@ -66,20 +85,24 @@ def sample(
     ----------
     N        : number of points
     D        : dimension
-    mode     : "star" (WD product weights) or "l1"
+    mode     : "wd" (WD product weights) or "l1"
     chi      : fraction of degrees of freedom kept as Fourier modes
     target   : optional target point cloud (for non-uniform densities)
     seed     : random seed
     n_iter   : number of gradient steps
     lr       : base learning-rate scale
     verbose  : print progress
+    warmstart: optional warm start for the point cloud, eg a Sobol sequence
 
     Returns
     -------
     x : (N, D) array of points in [0,1)^D
     """
     rng = np.random.default_rng(seed)
-    x = rng.uniform(size=(N, D)).astype(real_dtype)
+    if warmstart is None and mode == "wd":
+        warmstart = sample(N, D, "l1", chi = 0.5, target = target, seed = seed, 
+                           n_iter = n_iter, lr = lr, verbose = verbose)
+    x = rng.uniform(size=(N, D)).astype(real_dtype) if warmstart is None else warmstart
 
     K, kl1, w, M = get_wave_vectors(N, D, mode=mode, chi=chi, rng=rng)
     k_coords = np.ascontiguousarray(K.astype(real_dtype))
@@ -90,8 +113,8 @@ def sample(
         tx = LazyTensor(target[:, None, :])
         tk = LazyTensor(k_coords[None, :, :])
         phase = two_pi * (tx * tk).sum(-1)
-        tr = np.asarray(phase.cos().sum_reduction(0)).ravel()
-        ti = -np.asarray(phase.sin().sum_reduction(0)).ravel()
+        tr = np.asarray(sum0(phase.cos())).ravel()
+        ti = -np.asarray(sum0(phase.sin())).ravel()
         fk_target = ((tr + 1j * ti) / target.shape[0]).astype(complex_dtype)
     else:
         fk_target = np.zeros(M, dtype=complex_dtype)
@@ -103,8 +126,8 @@ def sample(
     def fourier_modes(pts):
         xi = LazyTensor(pts[:, None, :])
         phase = two_pi * (xi * k_j).sum(-1)
-        fr = np.asarray(phase.cos().sum_reduction(0)).ravel() / N
-        fi = -np.asarray(phase.sin().sum_reduction(0)).ravel() / N
+        fr = np.asarray(sum0(phase.cos())).ravel() / N
+        fi = -np.asarray(sum0(phase.sin())).ravel() / N
         return fr.astype(real_dtype), fi.astype(real_dtype)
 
     def loss_and_grad(pts):
@@ -120,9 +143,9 @@ def sample(
         xi  = LazyTensor(pts[:, None, :])
         crj = LazyTensor(cr[None, :, None])
         cij = LazyTensor(ci[None, :, None])
-        phase = two_pi * (xi * k_j).sum(-1)
+        phase = two_pi * (xi * k_j).sum(-1, keepdim = True)
         scalar = crj * phase.sin() + cij * phase.cos()
-        grad = (scalar * k_j).sum_reduction(1)
+        grad = sum1(scalar * k_j)
         return loss, np.asarray(grad).astype(real_dtype)
 
     adaptive = lr * 0.1 * N ** (-1.0 / D)
