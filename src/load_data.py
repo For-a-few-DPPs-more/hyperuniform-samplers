@@ -6,20 +6,20 @@ Usage
 -----
     python load_data.py --dim all --chi all
     python load_data.py --dim 2 3 4 --chi 30
-    python load_data.py --dim all --chi L1-50
+    python load_data.py --dim all --chi L1-43
     python load_data.py --dim all --chi all --url zenodo
 
 Dataset families
 ----------------
     30     -> chi30_D{j}.zip     -> <out>/chi30/D{j}/
     43     -> chi43_D{j}.zip     -> <out>/chi43/D{j}/
-    L1-50  -> L1chi50_D{j}.zip   -> <out>/L1chi50/D{j}/
-    WD-50  -> WDchi50_D{j}.zip   -> <out>/WDchi50/D{j}/
+    L1-43  -> L1chi43_D{j}.zip   -> <out>/L1chi43/D{j}/
+    WD-43  -> WDchi43_D{j}.zip   -> <out>/WDchi43/D{j}/
 
-L1-50 denotes chi = 0.50 with the L1 norm. It is a distinct
-dataset family and must not be confused with chi50.
+L1-43 denotes chi = 0.43 with the L1 norm. It is a distinct
+dataset family and must not be confused with chi43.
 
-WD-50 uses the stars norm, which is the natural norm used
+WD-43 uses the stars norm, which is the natural norm used
 when dealing with the wrap-around discrepancy (see scipy.stats.qmc.discrepancy)
 
 Archives are downloaded from GitHub Releases by default, with
@@ -39,7 +39,7 @@ from pathlib import Path
 # Dataset mirrors
 GITHUB_URL = (
     "https://github.com/For-a-few-DPPs-more/"
-    "hyperuniform-samplers/releases/download/dataset-v3.0.0" #v3 includes the L1-50 and WD-50
+    "hyperuniform-samplers/releases/download/dataset-v3.0.0" #v3 includes the L1-43 and WD-43
 )
 
 ZENODO_URL = "https://zenodo.org/records/23327095/files"
@@ -57,13 +57,13 @@ DATASET_FAMILIES = {
         "archive_prefix": "chi43",
         "output_dir": "chi43",
     },
-    "L1-50": {
-        "archive_prefix": "L1chi50",
-        "output_dir": "L1chi50",
+    "L1-43": {
+        "archive_prefix": "L1chi43",
+        "output_dir": "L1chi43",
     },
-    "WD-50": {
-        "archive_prefix": "WDchi50",
-        "output_dir": "WDchi50",
+    "WD-43": {
+        "archive_prefix": "WDchi43",
+        "output_dir": "WDchi43",
     },
 }
 
@@ -91,7 +91,7 @@ def parse_dims(values):
 
 
 def parse_chis(values):
-    """Parse dataset family labels without conflating L1-50 and chi50."""
+    """Parse dataset family labels without conflating L1-43 and chi43."""
     if values == ["all"]:
         return list(DATASET_FAMILIES)
 
@@ -138,7 +138,7 @@ def main():
         "--chi",
         nargs="+",
         required=True,
-        help="dataset family: 30, 43, L1-50, WD-50 or all",
+        help="dataset family: 30, 43, L1-43, WD-43 or all",
     )
     p.add_argument(
         "--out",
@@ -185,7 +185,7 @@ def main():
             target.mkdir(parents=True, exist_ok=True)
             zpath = target.with_suffix(".zip")
 
-            # Examples: chi30_D2.zip, chi43_D2.zip, L1chi50_D2.zip
+            # Examples: chi30_D2.zip, chi43_D2.zip, L1chi43_D2.zip
             filename = f"{archive_prefix}_D{d}.zip"
 
             if args.url == "github":

@@ -6,19 +6,19 @@ Usage
 -----
     python new_data.py --dim 2 --npoints 1024 --chi 43 --seed 42
     python new_data.py --dim 20 --npoints 2**20 --chi 30 --seed 0
-    python new_data.py --dim 2 --npoints 1024 --chi L1-50 --seed 42
+    python new_data.py --dim 2 --npoints 1024 --chi L1-43 --seed 42
 
 Dataset families
 ----------------
     30     -> chi30_D{j}.zip     -> <out>/chi30/D{j}/
     43     -> chi43_D{j}.zip     -> <out>/chi43/D{j}/
-    L1-50  -> L1chi50_D{j}.zip   -> <out>/L1chi50/D{j}/
-    WD-50  -> WDchi50_D{j}.zip   -> <out>/WDchi50/D{j}/
+    L1-43  -> L1chi43_D{j}.zip   -> <out>/L1chi43/D{j}/
+    WD-43  -> WDchi43_D{j}.zip   -> <out>/WDchi43/D{j}/
 
-L1-50 denotes chi = 0.50 with the L1 norm. It is a distinct
-dataset family and must not be confused with chi50.
+L1-43 denotes chi = 0.43 with the L1 norm. It is a distinct
+dataset family and must not be confused with chi43.
 
-WD-50 uses the stars norm, which is the natural norm used
+WD-43 uses the stars norm, which is the natural norm used
 when dealing with the wrap-around discrepancy (see scipy.stats.qmc.discrepancy)
 
 Pipeline
@@ -50,13 +50,13 @@ DATASET_FAMILIES = {
         "directory": "chi43",
         "label": "chi43",
     },
-    "L1-50": {
-        "directory": "L1chi50",
-        "label": "L1chi50",
+    "L1-43": {
+        "directory": "L1chi43",
+        "label": "L1chi43",
     },
-    "WD-50": {
-        "directory": "WDchi50",
-        "label": "WDchi50",
+    "WD-43": {
+        "directory": "WDchi43",
+        "label": "WDchi43",
     },
 }
 
@@ -235,7 +235,7 @@ def main():
         type=str,
         required=True,
         choices=list(DATASET_FAMILIES),
-        help="dataset family: 30, 43, L1-50 or WD-50",
+        help="dataset family: 30, 43, L1-43 or WD-43",
     )
     p.add_argument(
         "--seed",
