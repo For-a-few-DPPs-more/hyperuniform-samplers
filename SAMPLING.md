@@ -16,8 +16,8 @@ We mostly follow [Morse et al. (2023)](https://doi.org/10.1103/PhysRevResearch.5
 | :--- | :--- | :--- |
 | 0.30 | L2 ball (Euclidean) | $S(k) \le 10^{-10}$ |
 | 0.43 | L2 ball (Euclidean) | $S(k) \le 10^{-4}$ |
-| 0.43 (L1 ball) | L1 ball | $q_{90\%} S(k) \le 10^{-4}$ (max $\le 10^{-3}$) |
-| 0.43 (WD star) | Star ball $r(k) \le \text{cst}$ | $q_{90\%} S(k) \le 10^{-4}$ (max $\le 10^{-2}$) |
+| 0.43 (L1 ball) | L1 ball | $q_{90} S(k) \le 10^{-4}$ (max $\le 10^{-3}$) |
+| 0.43 (WD star) | Star ball $r(k) \le \text{cst}$ | $q_{90} S(k) \le 10^{-4}$ (max $\le 10^{-2}$) |
 
   Here, $r(k)$ is the Fourier coefficient of the wrap-around discrepancy.
 
