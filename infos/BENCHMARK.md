@@ -6,7 +6,7 @@ Run the benchmark with:
 
 ```bash
 pip install scipy
-python .\src\benchmark_data.py
+python src/benchmark_data.py
 ```
 
 ### Global Mean Rank by Method

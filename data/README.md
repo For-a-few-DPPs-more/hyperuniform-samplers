@@ -1,6 +1,6 @@
 This `data/` folder is empty by default. It serves as a placeholder for the sample datasets.
 
-The datasets can be downloaded manually from [Zenodo](https://doi.org/10.5281/zenodo.23327095), or automatically from the root of the repository (open a new terminal and run this):
+The datasets can be downloaded manually from [Zenodo](https://doi.org/10.5281/zenodo.23405562), or automatically from the root of the repository (open a new terminal and run this):
 
 ```bash
 # all datasets: D = 2 to 16, plus 23 and 32, with chi = 0.30, chi = 0.43, chi = L1-43 and chi = WD-43

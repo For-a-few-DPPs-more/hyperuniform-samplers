@@ -11,10 +11,10 @@ authors:
     given-names: "Raphaël"
   - family-names: "de Cacqueray"
     given-names: "Armand"
-doi: "10.5281/zenodo.23327095"
-url: "https://doi.org/10.5281/zenodo.23327095"
+doi: "10.5281/zenodo.23405562"
+url: "https://doi.org/10.5281/zenodo.23405562"
 repository-code: "https://github.com/For-a-few-DPPs-more/hyperuniform-samplers"
-repository: "https://zenodo.org/records/23327095"
+repository: "https://zenodo.org/records/23405562"
 license: MIT
 abstract: >-
   Hyperuniform point clouds (stealthy blue noise, L1-ball and wrap-around

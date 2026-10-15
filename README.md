@@ -1,10 +1,10 @@
 # Hyperuniform Point Clouds Database
 
-This is the GitHub companion repository of the Hyperuniform samples database stored on [Zenodo](https://doi.org/10.5281/zenodo.23327095). The database contains hyperuniform point clouds (e.g. blue noise) on the unit hypercube [0,1)ᴰ, sampled with the [blue-sampler](https://pypi.org/project/blue-sampler/) Python package.
+This is the GitHub companion repository of the Hyperuniform samples database stored on [Zenodo](https://doi.org/10.5281/zenodo.23405562). The database contains hyperuniform point clouds (e.g. blue noise) on the unit hypercube [0,1)ᴰ, sampled with the [blue-sampler](https://pypi.org/project/blue-sampler/) Python package.
 
 **2D example** (the N = 1024, D = 2, Chi43 point clouds of this database):
 
-![2D example, N = 1024, chi43](https://zenodo.org/records/23327095/files/plot_2D_sample_chi43.png)
+![2D example, N = 1024, chi43](https://zenodo.org/records/23405562/files/plot_2D_sample_chi43.png)
 
 ## Installation
 
@@ -39,7 +39,7 @@ Or from a notebook: open `quick_start.ipynb` and follow the instructions.
 
 [![ND_coverage](./plots/coverage_table_ND.png)](./plots/coverage_table_ND.png)
 
-> **Note: Large storage.** In low dimensions (D ≤ 4), the Zenodo database provides additional, much larger point clouds, to be downloaded manually ([`larges.zip`](https://zenodo.org/records/23327095?preview_file=larges.zip), 2.7 GB). They go up to N = 2²⁷ ≈ 134 million points in 2D, 2²⁵ ≈ 34 million in 3D and 2²¹ ≈ 2 million in 4D.
+> **Note: Large storage.** In low dimensions (D ≤ 4), the Zenodo database provides additional, much larger point clouds, to be downloaded manually ([`larges.zip`](https://zenodo.org/records/23405562?preview_file=larges.zip), 2.7 GB). They go up to N = 2²⁷ ≈ 134 million points in 2D, 2²⁵ ≈ 34 million in 3D and 2²¹ ≈ 2 million in 4D.
 
 ## Sampling method
 
@@ -74,19 +74,19 @@ A near-zero S(k) means that the Monte Carlo integration error is controlled for 
 
 χ = 0.30, N = 1024, D = 2 to 16
 
-![chi 0.30](https://zenodo.org/records/23327095/files/fouriererror_all_samples_from_paper_chi30.png)
+![chi 0.30](https://zenodo.org/records/23405562/files/fouriererror_all_samples_from_paper_chi30.png)
 
 χ = 0.43
 
-![chi 0.43](https://zenodo.org/records/23327095/files/fouriererror_all_samples_from_paper_chi43.png)
+![chi 0.43](https://zenodo.org/records/23405562/files/fouriererror_all_samples_from_paper_chi43.png)
 
 χ = L1-0.43
 
-![chi L1-0.43](https://zenodo.org/records/23327095/files/fouriererror_all_samples_from_paper_L1chi43.png)
+![chi L1-0.43](https://zenodo.org/records/23405562/files/fouriererror_all_samples_from_paper_L1chi43.png)
 
 χ = WD-0.43
 
-![chi WD-0.43](https://zenodo.org/records/23327095/files/fouriererror_all_samples_from_paper_WDchi43.png)
+![chi WD-0.43](https://zenodo.org/records/23405562/files/fouriererror_all_samples_from_paper_WDchi43.png)
 
 </details>
 
@@ -144,9 +144,9 @@ If you use this database, please cite it (see also [`CITATION.cff`](CITATION.cff
   title     = {Hyperuniform samples (stealthy point clouds)},
   year      = {2026},
   publisher = {Zenodo},
-  version   = {v3},
-  doi       = {10.5281/zenodo.23327095},
-  url       = {https://doi.org/10.5281/zenodo.23327095}
+  version   = {v4},
+  doi       = {10.5281/zenodo.23405562},
+  url       = {https://doi.org/10.5281/zenodo.23405562}
 }
 ```
 

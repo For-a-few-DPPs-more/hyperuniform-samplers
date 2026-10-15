@@ -42,7 +42,7 @@ GITHUB_URL = (
     "hyperuniform-samplers/releases/download/dataset-v3.0.0" #v3 includes the L1-43 and WD-43
 )
 
-ZENODO_URL = "https://zenodo.org/records/23327095/files"
+ZENODO_URL = "https://zenodo.org/records/23405562/files"
 
 AVAILABLE_DIMS = list(range(2, 17)) + [23, 32]
 
