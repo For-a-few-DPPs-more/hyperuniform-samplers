@@ -2,22 +2,25 @@
 
 This file describes how the samples were generated, for reproducibility.
 
-The method is **spectral optimisation** (non-uniform Fourier transform): select the most important wave vectors `k` according to a chosen exclusion region (Euclidean ball, L1 ball, or star ball), where $\chi$ is chosen slightly below or equal to 0.5 to ensure near-maximal spectral coverage, initialise with a random point cloud, then run a gradient descent on the Fourier loss.
+The method is **spectral optimisation** (non-uniform Fourier transform): select the most important wave vectors `k` according to a chosen exclusion set (Euclidean ball, L1 ball, or star ball), where $\chi$ is chosen slightly below or equal to 0.5 to ensure near-maximal spectral coverage, initialise with a random point cloud, then run a gradient descent on the Fourier loss.
 
 We mostly follow [Morse et al. (2023)](https://doi.org/10.1103/PhysRevResearch.5.033190). Main differences:
 
 * **Slightly higher $\chi$:** While Morse et al. initially recommended fixing $\chi = 0.4$, the parameter plays a crucial role in the resulting sample. We provide two versions of the samples, $\chi = 0.30$ and $\chi = 0.43$. This allows spectral optimisation up to the particle scale while staying isotropic and unordered (crystallisation empirically appears to start around $\chi \approx 0.45$).
 
-  Two additional versions, built with an L1 ball and a star ball, serve a different purpose. They are not stealthy in the strict sense $S(k) \le 10^{-4}$ (although a quantile of 90% of the ball is) and not isotropic, because they are intended for QMC methods with low effective dimensional integrands where the optimal shape of an exclusion region is not a usual L2 ball. The WD (star-ball) version is specifically designed for worst-case QMC error bounds induced by the wrap-around discrepancy kernel and is recommended for highly low-dimensional integrands. The L1 version (rhombus-ball) is the intermediate option between WD and L2, recommended for usual smooth integrands.
+  Two additional versions, built with an L1 ball and a star ball, serve a different purpose. They are not stealthy in the strict sense $S(k) \le 10^{-4}$ and not isotropic, because they are intended for QMC methods with low effective dimensional integrands where the optimal shape of an exclusion set is not a usual L2 ball. The WD (star-ball) version is specifically designed for worst-case QMC error bounds induced by the wrap-around discrepancy kernel and is recommended for highly low-dimensional integrands. The L1 version (rhombus-ball) is the intermediate option between WD and L2, recommended for usual smooth integrands.
+
+
+* an important subtlety about what the exclusion set precisely is, which comes up in high dimensions: see [Exclusionsets.md](https://www.google.com/search?q=Exclusionsets.md). This note is important but technical, and can be read on a second reading.
 
 * **Weaker stealthy criterion:** $S(k)$ is the structure factor. Morse et al. reach $S(k) \le 10^{-51}$ using double-double (`float128`) precision. We use `float32`—which is much faster on GPU—and stop the descent after 150 iterations. For all targeted frequencies:
 
-| $\chi$ | Exclusion region | Criterion |
+| $\chi$ | Exclusion set | Criterion |
 | :--- | :--- | :--- |
 | 0.30 | L2 ball (Euclidean) | $S(k) \le 10^{-10}$ |
 | 0.43 | L2 ball (Euclidean) | $S(k) \le 10^{-4}$ |
-| 0.43 (L1 ball) | L1 ball | $q_{90} S(k) \le 10^{-4}$ (max $\le 10^{-3}$) |
-| 0.43 (WD star) | Star ball $r(k) \le \text{cst}$ | $q_{90} S(k) \le 10^{-4}$ (max $\le 10^{-2}$) |
+| 0.43 (L1 ball) | L1 ball | $S(k) \le 10^{-3}$ |
+| 0.43 (WD star) | Star ball $r(k) \le \text{cst}$ | $S(k) \le 10^{-2}$ |
 
   Here, $r(k)$ is the Fourier coefficient of the wrap-around discrepancy.
 
@@ -27,7 +30,7 @@ We mostly follow [Morse et al. (2023)](https://doi.org/10.1103/PhysRevResearch.5
 
 * **Star ball (WD) and $\chi = 0.43$ (`--chi WD-43`):** This version selects wave vectors according to the exact product weight of the wrap-around discrepancy kernel:
   $$r(k) = \prod_{i=1}^D \hat{K}(k_i),\qquad \hat{K}(m) = \begin{cases} 1 & \text{if } m = 0,\\ \dfrac{1}{2\pi^2 m^2} & \text{if } m \neq 0. \end{cases}$$
-  The top-$M$ modes ($M \approx \chi \cdot D \cdot (N-1)$) ordered by decreasing $r(k)$ form the **star ball**. This is the natural exclusion region that appears in the exact worst-case error bound for the star discrepancy. Consequently, the WD-43 samples are particularly well suited to QMC integration of irregular or non-smooth integrands.
+  The top-$M$ modes ($M \approx \chi \cdot D \cdot (N-1)$) ordered by decreasing $r(k)$ form the **star ball**. This is the natural exclusion set that appears in the exact worst-case error bound for the star discrepancy. Consequently, the WD-43 samples are particularly well suited to QMC integration of irregular or non-smooth integrands.
 
 * **Gradient descent:** Morse et al. use FIRE optimisation. We use a simple `bold driver` scheme on the normalised gradient (only its direction matters): good steps boost the learning rate, bad steps slow it down. We perform 150 iterations of this auto-scaled gradient step. It works on any $(N, D)$ out of the box, with no hyperparameter tuning.
 

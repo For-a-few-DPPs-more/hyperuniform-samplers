@@ -19,8 +19,8 @@ Dataset families
 L1-43 denotes chi = 0.43 with the L1 norm. It is a distinct
 dataset family and must not be confused with chi43.
 
-WD-43 uses the stars norm, which is the natural norm used
-when dealing with the wrap-around discrepancy (see scipy.stats.qmc.discrepancy)
+WD-43 uses a star shaped pseudo-norm based on the fourier coefficients
+of the wrap-around discrepancy (see scipy.stats.qmc.discrepancy)
 
 Archives are downloaded from GitHub Releases by default, with
 Zenodo as an alternative source.
