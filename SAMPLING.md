@@ -11,7 +11,7 @@ We mostly follow [Morse et al. (2023)](https://doi.org/10.1103/PhysRevResearch.5
   Two additional versions, built with an L1 ball and a star ball, serve a different purpose. They are not stealthy in the strict sense $S(k) \le 10^{-4}$ and not isotropic, because they are intended for QMC methods with low effective dimensional integrands where the optimal shape of an exclusion set is not a usual L2 ball. The WD (star-ball) version is specifically designed for worst-case QMC error bounds induced by the wrap-around discrepancy kernel and is recommended for highly low-dimensional integrands. The L1 version (rhombus-ball) is the intermediate option between WD and L2, recommended for usual smooth integrands.
 
 
-* an important subtlety about what the exclusion set precisely is, which comes up in high dimensions: see [Exclusionsets.md](https://www.google.com/search?q=Exclusionsets.md). This note is important but technical, and can be read on a second reading.
+* an **important subtlety** about what the exclusion set precisely is, which comes up in high dimensions: see [Exclusionsets.md](Exclusionsets.md). This note is important but technical, and can be read on a second reading.
 
 * **Weaker stealthy criterion:** $S(k)$ is the structure factor. Morse et al. reach $S(k) \le 10^{-51}$ using double-double (`float128`) precision. We use `float32`—which is much faster on GPU—and stop the descent after 150 iterations. For all targeted frequencies:
 
