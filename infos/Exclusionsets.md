@@ -21,8 +21,8 @@ Because the spectral bound $S(k) \le \varepsilon$ is only guaranteed on **comple
 
 | Chi version | Exclusion Region | Weight $w(k)$ | Orbit Definition (Modes of Equal Weight) |
 | --- | --- | --- | --- |
-| **`30`**, **`43`** | $L_2$ ball | Decreasing in $\Vert{}k\Vert{}_2^2$ | Shells where $\Vert{}k\Vert{}_2^2 = \text{const}$ |
-| **`L1-43`** | $L_1$ ball | Decreasing in $\Vert{}k\Vert{}_1$ | Shells where $\Vert{}k\Vert{}_1 = \text{const}$ |
+| **`30`**, **`43`** | $L_2$ ball | $\Vert{}k\Vert{}_2^2$ | Shells where $\Vert{}k\Vert{}_2^2 = \text{const}$ |
+| **`L1-43`** | $L_1$ ball | $\Vert{}k\Vert{}_1$ | Shells where $\Vert{}k\Vert{}_1 = \text{const}$ |
 | **`WD-43`** | Star ball | $r(k) = \prod \hat{K}(k_i)$ (fourier coef of the wrap around disrepancy) | Shells where $r(k) = \text{const}$  |
 
 ---
