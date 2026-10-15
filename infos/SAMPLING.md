@@ -2,11 +2,11 @@
 
 This file describes how the samples were generated, for reproducibility.
 
-The method is **spectral optimisation** (non-uniform Fourier transform): select the $(N-1) \cdot D \cdot \chi$ most important wave vectors `k` according to a chosen exclusion set $\Omega$ (Euclidean ball, L1 ball, or star ball), were we take only one represantant among (k, -k) per symetry and $\chi$ chosen slightly below or equal to 0.5 to ensure near-maximal spectral coverae, initialise with a random (N, D) point cloud, then run a gradient descent on the Fourier loss:
+The method is **spectral optimisation** (non-uniform Fourier transform): select the $(N-1) \cdot D \cdot \chi$ most important wave vectors `k` according to a chosen exclusion set $\Omega$ (Euclidean ball, L1 ball, or star ball), were we take only one representant among (k, -k) per symetry and $\chi$ chosen slightly below or equal to 0.5 to ensure near-maximal spectral coverage, initialise with a random (N, D) point cloud, then run a gradient descent on the Fourier loss:
 
 $$\text{loss} = \sum_{k \in \Omega} \text{weight}(k) \left\vert{} \sum_{\text{point} \in \text{points}} e^{2i\pi \langle k, \text{point}\rangle} \right\vert{}^2$$
 
-The heuristic to determine that $\chi$ should be <= 0.5 is: "a bit less indepandant equations than free parameters of the point clouds", were each $S(k) \ sim = 0$  internaly counts twice, for the real and imaginary part.
+The heuristic to determine that $\chi$ should be <= 0.5 is: "a bit less indepandant equations than free parameters of the point clouds", were each k constraint internaly counts two constraints, for the real and imaginary part.
 
 We mostly follow [Morse et al. (2023)](https://doi.org/10.1103/PhysRevResearch.5.033190). Main differences:
 
