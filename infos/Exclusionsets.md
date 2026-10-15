@@ -46,7 +46,7 @@ $\chi_{\text{eff}} / \chi$ table, in percent (the higher the better, as $\chi -\
 
 ### 3. Black, gray and light gray lists
 
-these are the points cloud with lowest $\chi_{\text{eff}} \le \chi$, and thus not so good as the rest.
+these are the points cloud with lowest $\chi_{\text{eff}} \le \chi$, and thus not so good as the rest of the database.
 
 **Black: 5 – 10%** (5 point clouds, all with D ≥ 23)
 
