@@ -2,7 +2,7 @@
 
 This file describes how the samples were generated, for reproducibility.
 
-The method is **spectral optimisation** (non-uniform Fourier transform): select the $N-1 \cdot (D) \cdot \chi$ most important wave vectors `k` according to a chosen exclusion set $\Omega$ (Euclidean ball, L1 ball, or star ball), with $\chi$ chosen slightly below or equal to 0.5 to ensure near-maximal spectral coverage (0.5 comes from the k -> -k symetry of the loss), initialise with a random (N, D) point cloud, then run a gradient descent on the Fourier loss:
+The method is **spectral optimisation** (non-uniform Fourier transform): select the $(N-1) \cdot D \cdot \chi$ most important wave vectors `k` according to a chosen exclusion set $\Omega$ (Euclidean ball, L1 ball, or star ball), with $\chi$ chosen slightly below or equal to 0.5 to ensure near-maximal spectral coverage (0.5 comes from the k -> -k symetry of the loss), initialise with a random (N, D) point cloud, then run a gradient descent on the Fourier loss:
 
 $$\text{loss} = \sum_{k \in \Omega} \text{weight}(k) \left\vert{} \sum_{\text{point} \in \text{points}} e^{2i\pi \langle k, \text{point}\rangle} \right\vert{}^2$$
 
