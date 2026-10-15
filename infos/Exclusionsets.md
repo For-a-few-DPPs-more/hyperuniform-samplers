@@ -32,6 +32,8 @@ Because the spectral bound $S(k) \le \varepsilon$ is only guaranteed on **comple
 Analysis across the whole database (544 point clouds, $N = 2^{10}$ to $2^{17}$, D = 2 to 16 plus D = 23, 32).
 Note that the analysis for 17 <= D <= 22 point clouds, which are obtained by projecting D = 23 and 24 <= D <= 31, obtained from D = 32, is not presented but can be deduced from the unprojected point clouds.
 
+$\chi_{\text{eff}} / \chi$ table, in percent (the higher the better, as $\chi -\chi_{\text{eff}}$ represents the number of wave vectors in the last, incomplete, orbit):
+
 | Dimension ($D$) | `30` ($L_2$) | `43` ($L_2$) | `L1-43` ($L_1$) | `WD-43` (Star) |
 | --- | --- | --- | --- | --- |
 | **2 – 3** | 97–100% | 98–100% | 93–97% | 94% |
