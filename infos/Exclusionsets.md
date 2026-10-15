@@ -9,7 +9,7 @@ $$\text{loss} = \sum_{k \in \Omega} 1/\left\vert{}k\right\vert{}^2 \left\vert{} 
 
 * This is what typical exclusion set looks like, for 2D wave vectors (the geometrical constructions also generalises to > 2 dimensions) and geometry L2- Chi 0.30, L2 - Chi 0.43, L1 -Chi 0.43, WD - Chi 0.43:
 
-[![exclusion_regions](./plots/exclusion_balls.png)](./plots/exclusion_balls.png)
+[![exclusion_regions](../plots/exclusion_balls.png)](../plots/exclusion_balls.png)
 
 * The set $\Omega$ is built by accumulating complete orbitals ($\Vert{}k\Vert{} = \text{const}$) until reaching budget $M$, which means **the last orbital is typically truncated**.
 
