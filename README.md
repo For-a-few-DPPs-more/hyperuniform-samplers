@@ -122,7 +122,7 @@ X_new = (X - s) mod 1, s drawn uniformly in [0,1]^D
 - **Machine learning and design of experiments:** initial designs, surrogate training sets, uncertainty quantification.
 - **Hyperuniformity research:** reference data to study structure factors and crystallisation, and to benchmark new samplers.
 
-> **Note:** `L1-43` and `WD-43` are not drop-in replacements for Sobol or Halton sequences: they show slightly weaker discrepancy according to `scipy.stats.qmc.discrepancy`. They are complementary strategies, worth exploring when the integrand has favourable low-frequency spectral properties.
+> **Note:** `L1-43` and `WD-43` are not drop-in replacements for Sobol or Halton sequences: they show slightly weaker discrepancy according to `scipy.stats.qmc.discrepancy` (see [BENCHMARK.md](infos/BENCHMARK.md)). They are complementary strategies, worth exploring when the integrand has favourable low-frequency spectral properties.
 
 ## Acknowledgements
 
