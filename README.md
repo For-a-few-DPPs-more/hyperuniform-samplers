@@ -119,10 +119,12 @@ X_new = (X - s) mod 1, s drawn uniformly in [0,1]^D
 - **Rendering and blue noise:** anti-aliasing, path tracing, dithering, denoising textures.
 - **Spatial sampling:** isotropic particle initialisation (SPH, molecular dynamics) with periodic boundary conditions.
 - **Monte Carlo / QMC integration:** periodic or smooth integrands (`L1-43` by default, `WD-43` for low effective dimensionality). Random shifts give independent replicas and error bars.
-- **Machine learning and design of experiments:** initial designs, surrogate training sets, uncertainty quantification.
-- **Hyperuniformity research:** reference data to study structure factors and crystallisation, and to benchmark new samplers.
+- **Machine learning and design of experiments:** initial designs, uncertainty quantification.
+- **Hyperuniformity research:** reference data to study structure factors and to benchmark new samplers.
 
-> **Note:** `L1-43` and `WD-43` are not drop-in replacements for Sobol or Halton sequences: they show slightly weaker discrepancy according to `scipy.stats.qmc.discrepancy` (see [BENCHMARK.md](infos/BENCHMARK.md)). They are complementary strategies, worth exploring when the integrand has favourable low-frequency spectral properties.
+> **Note - discrepancy:** This database  is not drop-in replacements for Sobol or Halton sequences: they show slightly weaker discrepancy according to `scipy.stats.qmc.discrepancy` (see [BENCHMARK.md](infos/BENCHMARK.md)). They are complementary strategies, worth exploring when the integrand has favourable low-frequency spectral properties. 
+
+> **Note - adaptative sampling** Although this database contains only uniform samples, spectral methods proposed in [SAMPLING.md](infos/SAMPLING.md) support adaptative sampling, by passing a target distribution to the sampler. This could be of use for importance sampling or when one require well distributed points, but under a specific spatial distribution. 
 
 ## Acknowledgements
 
