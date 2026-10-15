@@ -55,7 +55,7 @@ Spectral exclusion regions for the four versions, with N = 1024, D = 2:
 
 [![exclusion_regions](./plots/exclusion_balls.png)](./plots/exclusion_balls.png)
 
-All details for reproducibility are in [SAMPLING.md](SAMPLING.md).
+All details for reproducibility are in [SAMPLING.md](infos/SAMPLING.md).
 
 ## Guarantees
 
@@ -108,11 +108,11 @@ X_new = (X - s) mod 1, s drawn uniformly in [0,1]^D
   sup S_t(k) = sup S(k) × N_t / N
   ```
 
-  where N is the original number of points and N_t the number after tiling. See [TILING.md](TILING.md).
+  where N is the original number of points and N_t the number after tiling. See [TILING.md](infos/TILING.md).
 
   ![Tiling effect](./plots/tiling_effect.png)
 
-- **Projection** (lower dimension): 17 ≤ D_proj ≤ 22 is projected from D = 23, and 24 ≤ D_proj ≤ 31 from D = 32. See [PROJECTION.md](PROJECTION.md).
+- **Projection** (lower dimension): 17 ≤ D_proj ≤ 22 is projected from D = 23, and 24 ≤ D_proj ≤ 31 from D = 32. See [PROJECTION.md](infos/PROJECTION.md).
 
 ## Use cases
 
