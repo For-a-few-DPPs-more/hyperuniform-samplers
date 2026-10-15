@@ -1,6 +1,6 @@
 ## Benchmark for QMC Methods
 
-Average ranking based on `scipy.stats.qmc.discrepancy`.
+Average ranking based on `scipy.stats.qmc.discrepancy` computation.
 
 Run the benchmark with:
 
@@ -21,6 +21,8 @@ python .\src\benchmark_data.py
 | 6 | Chi30 (ours) | 6.52 | 6.76 | 6.86 | 6.71 |
 | 6 | Chi43 (ours) | 6.71 | 6.48 | 6.95 | 6.71 |
 | 8 | LHS (SciPy QMC) | 7.62 | 7.76 | 7.14 | 7.51 |
+| 9 | poisson i.i.d (baseline) | 9.00 | 9.00 | 9.00 | 9.00 |
+
 
 **Note:** Ranks are averaged over three sample sizes (\(N \in \{1024, 2048, 4096\}\)), seven dimensions (\(D \in \{2,\ldots,8\}\)), and three discrepancy measures (CD, WD, and MD). Lower ranks indicate better relative performance. Chi30 and Chi43 have identical overall mean ranks.
 

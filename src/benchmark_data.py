@@ -21,6 +21,7 @@ def scipy_benchmark(shape, seed=42, values = False):
         "WDChi43": lambda: new_data(N=N, D=D, chi="WD-43", seed=seed),
         "LHS": lambda: qmc.LatinHypercube(D, seed=seed).random(N),
         "LHS random-cd": lambda: qmc.LatinHypercube(D, optimization="random-cd", seed=seed).random(N),
+        "poisson i.i.d": lambda: np.random.rand(N, D)
     }
 
     np.random.seed(seed)
