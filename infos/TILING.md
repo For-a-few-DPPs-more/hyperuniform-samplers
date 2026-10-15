@@ -37,7 +37,11 @@ with
 k' = ((k_a + k_b)/2, (k_a - k_b)/2).
 ```
 
-The transformation is applied to one pair of axes at a time.
+This example show the result of the full tiling procedure in 2D:
+
+![Tiling effect](../plots/tiling_effect.png)
+
+The x 2 transformation is applied to one pair of axes at a time, resulting in a total x 2^K increase in the number of points.
 
 **Procedure.**
 
