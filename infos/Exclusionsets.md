@@ -5,7 +5,7 @@ The sampling process to build the hyperuniform database proceeded as follows:
 * Initialize with random i.i.d. points.
 * Select a spectral exclusion set $\Omega$ containing exactly $M = \lfloor \chi \cdot D \cdot (N-1) \rfloor$ wave vectors based on a chosen geometry ($L_2$ ball, $L_1$ ball, or WD weights) to compute the Fourier loss:
 
-$$\text{loss} = \sum_{k \in \Omega} \text{weight}(k) \left\vert{} \sum_{\text{point} \in \text{points}} e^{2i\pi \langle k, \text{point}\rangle} \right\vert{}^2$$
+$$\text{loss} = \sum_{k \in \Omega} 1/\left\vert{}k\right\vert{}^2 \left\vert{} \sum_{\text{point} \in \text{points}} e^{2i\pi \langle k, \text{point}\rangle} \right\vert{}^2$$
 
 
 * The set $\Omega$ is built by accumulating complete orbitals ($\Vert{}k\Vert{} = \text{const}$) until reaching budget $M$, which means **the last orbital is typically truncated**.
