@@ -18,15 +18,16 @@ Because the spectral bound $S(k) \le \varepsilon$ is only guaranteed on **comple
 
 | Chi version | Exclusion Region | Weight $w(k)$ | Orbit Definition (Modes of Equal Weight) |
 | --- | --- | --- | --- |
-| **`30`, `43**` | $L_2$ ball | Decreasing in $\Vert{}k\Vert{}_2^2$ | Shells where $\Vert{}k\Vert{}_2^2 = \text{const}$ |
+| **`30`**, **`43`** | $L_2$ ball | Decreasing in $\Vert{}k\Vert{}_2^2$ | Shells where $\Vert{}k\Vert{}_2^2 = \text{const}$ |
 | **`L1-43`** | $L_1$ ball | Decreasing in $\Vert{}k\Vert{}_1$ | Shells where $\Vert{}k\Vert{}_1 = \text{const}$ |
-| **`WD-43`** | Star ball | $r(k) = \prod \hat{K}(k_i)$ | Orbits by permutations and sign changes |
+| **`WD-43`** | Star ball | $r(k) = \prod \hat{K}(k_i)$ (fourier coef of the wrap around disrepancy) | Shells where $r(k) = \text{const}$  |
 
 ---
 
 ## 2. Worst-Case $\chi_{\text{eff}} / \chi$ by Dimension
 
 Analysis across the whole database (544 point clouds, $N = 2^{10}$ to $2^{17}$, D = 2 to 16 plus D = 23, 32).
+Note that the analysis for 17 <= D <= 22 point clouds, which are obtained by projecting D = 23 and 24 <= D <= 31, obtained from D = 32, but can be deduced from the unprojected point clouds.
 
 | Dimension ($D$) | `30` ($L_2$) | `43` ($L_2$) | `L1-43` ($L_1$) | `WD-43` (Star) |
 | --- | --- | --- | --- | --- |
@@ -40,7 +41,7 @@ Analysis across the whole database (544 point clouds, $N = 2^{10}$ to $2^{17}$, 
 
 ### 3. Black, gray and light gray lists
 
-these are the points cloud with lowest $\chi_{\text{eff}} \le \chi$
+these are the points cloud with lowest $\chi_{\text{eff}} \le \chi$, and thus not so good as the rest.
 
 **Black: 5 – 10%** (5 point clouds, all with D ≥ 23)
 
