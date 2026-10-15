@@ -10,7 +10,7 @@ $$\text{loss} = \sum_{k \in \Omega} \text{weight}(k) \left\vert{} \sum_{\text{po
 
 * The set $\Omega$ is built by accumulating complete orbitals ($\Vert{}k\Vert{} = \text{const}$) until reaching budget $M$, which means **the last orbital is typically truncated**.
 
-Because the spectral bound $S(k) \le \varepsilon$ is only guaranteed on **complete orbits**, the nominal $\chi$ must be replaced by an effective **$\chi_{\text{eff}} \le \chi$**. This is especially critical in high dimensions, where a single orbit can represent thousands of wave vectors, and the fact that the last orbit is incomplete result in effective **$\chi_{\text{eff}} \le \chi$** beying only a fraction (5 percent in the worst case) of the nominal $\chi$.
+Because the spectral bound $S(k) \le \varepsilon$ is only guaranteed on **complete orbits**, the nominal $\chi$ must be replaced by an effective **$\chi_{\text{eff}} \le \chi$**. This is especially critical in high dimensions, where a single orbit can represent thousands of wave vectors, and the fact that the last orbit is incomplete result in effective **$\chi_{\text{eff}}$** beying only a fraction (5 percent in the worst case) of the nominal $\chi$.
 
 ---
 
@@ -27,7 +27,7 @@ Because the spectral bound $S(k) \le \varepsilon$ is only guaranteed on **comple
 ## 2. Worst-Case $\chi_{\text{eff}} / \chi$ by Dimension
 
 Analysis across the whole database (544 point clouds, $N = 2^{10}$ to $2^{17}$, D = 2 to 16 plus D = 23, 32).
-Note that the analysis for 17 <= D <= 22 point clouds, which are obtained by projecting D = 23 and 24 <= D <= 31, obtained from D = 32, but can be deduced from the unprojected point clouds.
+Note that the analysis for 17 <= D <= 22 point clouds, which are obtained by projecting D = 23 and 24 <= D <= 31, obtained from D = 32, is not presented but can be deduced from the unprojected point clouds.
 
 | Dimension ($D$) | `30` ($L_2$) | `43` ($L_2$) | `L1-43` ($L_1$) | `WD-43` (Star) |
 | --- | --- | --- | --- | --- |
