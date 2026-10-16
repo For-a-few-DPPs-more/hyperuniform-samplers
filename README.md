@@ -136,7 +136,7 @@ The large 2D and 3D point clouds rely on [FINUFFT](https://github.com/flatironin
 
 ## Citation
 
-If you use this database, please cite it (see also [`CITATION.cff`](CITATION.cff)):
+If you use this database, you can cite it as:
 
 ```bibtex
 @dataset{bardenet_lachiezerey_decacqueray_2026_hyperuniform,
