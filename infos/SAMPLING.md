@@ -12,7 +12,7 @@ We mostly follow [Morse et al. (2023)](https://doi.org/10.1103/PhysRevResearch.5
 
 * **Slightly higher $\chi$:** While Morse et al. initially recommended fixing $\chi = 0.4$, the parameter plays a crucial role in the resulting sample. We provide two versions of the samples, $\chi = 0.30$ and $\chi = 0.43$. This allows spectral optimisation up to the particle scale while staying isotropic and unordered (crystallisation empirically appears to start around $\chi \approx 0.45$).
 
-  Two additional versions, built with an L1 ball and a star ball, serve a different purpose. They are not stealthy in the strict sense $S(k) \le 10^{-4}$ and not isotropic, because they are intended for QMC methods with low effective dimensional integrands where the optimal shape of an exclusion set is not a usual L2 ball. The WD (star-ball) version is specifically designed for worst-case QMC error bounds induced by the wrap-around discrepancy kernel and is recommended for highly low-dimensional integrands. The L1 version (rhombus-ball) is the intermediate option between WD and L2, recommended for usual smooth integrands.
+  Two additional versions, built with an L1 ball and a star ball, serve a different purpose. They are not isotropic, because they are intended for QMC methods with low effective dimensional integrands where the optimal shape of an exclusion set is not a usual L2 ball. The WD (star-ball) version is specifically designed for worst-case QMC error bounds induced by the wrap-around discrepancy kernel and is recommended for highly low-dimensional integrands. The L1 version (rhombus-ball) is the intermediate option between WD and L2, recommended for usual smooth integrands.
 
 
 * an **important subtlety** about what the exclusion set precisely is, which comes up in high dimensions: see [Exclusionsets.md](Exclusionsets.md). This note is important but technical, and can be read on a second reading.
@@ -22,13 +22,13 @@ We mostly follow [Morse et al. (2023)](https://doi.org/10.1103/PhysRevResearch.5
 | $\chi$ | Exclusion set | Criterion |
 | :--- | :--- | :--- |
 | 0.30 | L2 ball (Euclidean) | $S(k) \le 10^{-10}$ |
-| 0.43 | L2 ball (Euclidean) | $S(k) \le 10^{-4}$ |
+| 0.43 | L2 ball (Euclidean) | $S(k) \le 10^{-3}$ |
 | 0.43 (L1 ball) | L1 ball | $S(k) \le 10^{-3}$ |
 | 0.43 (WD star) | Star ball $r(k) \le \text{cst}$ | $S(k) \le 10^{-2}$ |
 
   Here, $r(k)$ is the Fourier coefficient of the wrap-around discrepancy.
 
-  We retain the value $S(k) \le 10^{-4}$ as stealthy since it is sufficient for our application and most use cases. It would be difficult to go beyond it at large $\chi$. Regarding the $\chi = 0.30$ samples, going beyond $10^{-10}$ would be possible, but requires reimplementing the whole sampler with at least `float64` precision.
+  We retain the value $S(k) \le 10^{-3}$ as stealthy since it is sufficient for our application and most use cases. It would be difficult to go beyond it at large $\chi$. Regarding the $\chi = 0.30$ samples, going beyond $10^{-10}$ would be possible, but requires reimplementing the whole sampler with at least `float64` precision.
 
 * **L1 ball and $\chi = 0.43$ (`--chi L1-43`):** This version selects wave vectors with the L1 norm $\Vert{}k\Vert{}_1 = \sum \vert{}k_i\vert{}$ instead of the Euclidean norm, pushing $\chi$ up to 0.43 (i.e., $2\chi = 86\%$ of the spectral domain reachable with $N$ points). It is aimed at QMC integration (an L1 ball has a cross-polytope geometry, like a diamond in 2D, suited to integrands with a low effective dimension or a strong coordinate-wise structure), whereas the L2 versions are recommended for blue noise, where strict stealthiness and isotropy matter more than discrepancy. Check the [source code](https://github.com/For-a-few-DPPs-more/Recursive-Gaussian-Blue-Noise/tree/main/src/qmc_sampler) for implementation details.
 
