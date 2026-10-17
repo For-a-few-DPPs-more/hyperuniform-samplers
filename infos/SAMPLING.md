@@ -33,6 +33,7 @@ TThe main difference between the implemented version and  the method described i
     \dfrac{1}{2\pi^2 m^2} & \text{if } m \neq 0.
     \end{cases}
 ```
+  All sampling optimisation procedures starts from random i.i.d. point clouds besides the WD version, which start from a L1 warmstart to converge to a better minima by inheriting parts of the L1 sample spectral properties.
   
 
 * **Exclusion sets in high dimension.** An important subtlety, see [Exclusionsets.md](Exclusionsets.md)
