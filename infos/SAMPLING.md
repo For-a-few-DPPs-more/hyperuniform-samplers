@@ -3,8 +3,8 @@
 Here we describe how the samples were generated, for reproducibility.
 
 The method is **spectral optimisation** (non-uniform Fourier transform), mostly following [Morse et al. (2023)](https://doi.org/10.1103/PhysRevResearch.5.033190). We select the M most important wave vectors $k$ of an exclusion set $\Omega$
-(L2 ball, L1 ball or star ball), keeping one representative per pair $(k,-k)$. We initialise with a
-random $(N, D)$ point cloud, then run a gradient descent on
+(L2 ball, L1 ball or star ball), keeping one representative per pair $(k,-k)$. We initialise the $(N, D)$ point cloud with
+random i.i.d. points, then run a gradient descent on
 
 ```math
 \text{loss} = \sum_{k \in \Omega} \frac{1}{|k|^2} \left| \sum_{j=1}^{N} e^{2i\pi \langle k, x_j \rangle} \right|^2 .
