@@ -24,7 +24,7 @@ We mostly follow [Morse et al. (2023)](https://doi.org/10.1103/PhysRevResearch.5
   is not the optimal exclusion set. The L2 versions are recommended for blue noise.
   * **L1 ball, $\chi = 0.43$** (`--chi L1-43`): modes with the smallest $\|k\|_1 = \sum_i |k_i|$
     (cross-polytope geometry). Intermediate between WD and L2, recommended for usual smooth integrands.
-  * **Star ball (WD), $\chi = 0.43$** (`--chi WD-43`): modes with the largest exact product weight of the
+  * **Star ball (WD), $\chi = 0.43$** (`--chi WD-43`): modes with the largest spectral weights of the
     wrap-around discrepancy kernel,
 
 ```math
@@ -36,9 +36,7 @@ We mostly follow [Morse et al. (2023)](https://doi.org/10.1103/PhysRevResearch.5
     \dfrac{1}{2\pi^2 m^2} & \text{if } m \neq 0.
     \end{cases}
 ```
-
-    This is the exclusion set of the exact worst-case QMC error bound for the wrap-around
-    discrepancy, recommended for highly low-dimensional integrands.
+  
 
 * **Exclusion sets in high dimension.** An important subtlety, see [Exclusionsets.md](Exclusionsets.md)
   (technical, can be read on a second reading).
