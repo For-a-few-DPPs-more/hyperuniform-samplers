@@ -14,7 +14,7 @@ The exclusion set  $\Omega$ is choosen such that the number of wave vectors M wi
 
 TThe main difference  with the original method described in Morse et. al is:
 
-* Distinct $\chi$.** They recommend $\chi = 0.4$, but we provide $\chi = 0.30$ and $\chi = 0.43$,
+* Distinct $\chi$. They recommend $\chi = 0.4$, but we provide $\chi = 0.30$ and $\chi = 0.43$,
   which allows optimisation up to the particle scale while staying isotropic and unordered
   (crystallisation empirically starts around $\chi \approx 0.45$).
 
