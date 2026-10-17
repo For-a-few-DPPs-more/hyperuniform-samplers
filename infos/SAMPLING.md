@@ -10,7 +10,7 @@ random $(N, D)$ point cloud, then run a gradient descent on
 \text{loss} = \sum_{k \in \Omega} \frac{1}{|k|^2} \left| \sum_{j=1}^{N} e^{2i\pi \langle k, x_j \rangle} \right|^2 .
 ```
 
-The exclusion set size is choosen such that the number of wave vectors M within it is fixed as $M = \mathrm{round}(\chi \cdot D \cdot (N-1))$ where $\chi$ is an hyperparameter of the sampler. One need to take $\chi \le 0.5$ because each wave vector of the exclusion set gives two real constraints (real and imaginary parts). The goal is to obtain slightly fewer independent equations on the spectrum than they are free parameters in the point cloud.
+The exclusion set  $\Omega$ is choosen such that the number of wave vectors M within it is fixed as $M = \mathrm{round}(\chi \cdot D \cdot (N-1))$ where $\chi$ is an hyperparameter of the sampler. One need to take $\chi \le 0.5$ because each wave vector of the exclusion set gives two real constraints (real and imaginary parts). The goal is to obtain slightly fewer independent equations on the spectrum than they are free parameters in the point cloud.
 
 TThe main difference  with the original method described in Morse et. al is:
 
