@@ -3,7 +3,7 @@
 Here we describe how the samples were generated, for reproducibility.
 
 The method is **spectral optimisation** (non-uniform Fourier transform). We select the
-$M = \mathrm{round}(\chi D (N-1))$ most important wave vectors $k$ of an exclusion set $\Omega$
+$M = \mathrm{round}(\chi \cdot D \cdot (N-1))$ most important wave vectors $k$ of an exclusion set $\Omega$
 (L2 ball, L1 ball or star ball), keeping one representative per pair $(k,-k)$. We initialise with a
 random $(N, D)$ point cloud, then run a gradient descent on
 
