@@ -71,17 +71,14 @@ A near-zero S(k) means that the Monte Carlo integration error is controlled for 
 
 Following plots show the  values of S(k) for the 4 chi families, I. as a power spectrum map (kx, ky) -> S(k) for 2d point clouds only and II. as a radial ||k|| ↦ S(k) curve (average over radial bins) for all dimensions D = 2 to 16 : 
 
-<details>
-<summary>I. Show the 2d power spectrums </summary>
+I.  (kx, ky) -> S(k) power spectrums
       
-N = 8192, D = 2, all χ
+all χ, N = 8192, D = 2
       
 ![power spectrum](./plots/powerspectrum_8192points.png)
 
-</details>
       
-<details>
-<summary>II. Show the ||k|| ↦ S(k) curves </summary>
+II. ||k|| ↦ S(k) curves 
 
 χ = 0.30, N = 1024, D = 2 to 16
 
@@ -98,8 +95,6 @@ N = 8192, D = 2, all χ
 χ = WD-0.43
 
 ![chi WD-0.43](https://zenodo.org/records/23405562/files/fouriererror_all_samples_from_paper_WDchi43.png)
-
-</details>
 
 ### Randomisability
 
