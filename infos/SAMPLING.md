@@ -11,8 +11,7 @@ random $(N, D)$ point cloud, then run a gradient descent on
 \text{loss} = \sum_{k \in \Omega} \frac{1}{|k|^2} \left| \sum_{j=1}^{N} e^{2i\pi \langle k, x_j \rangle} \right|^2 .
 ```
 
-We take $\chi \le 0.5$ because each $k$ gives two real constraints (real and imaginary parts), so we
-want slightly fewer independent equations than free parameters.
+$\chi$ is an hyperparameter of the sampler which control the size of the exclusion set. One need to take $\chi \le 0.5$ because each wave vector of the exclusion set gives two real constraints (real and imaginary parts). The goal is to obtain slightly fewer independent equations on the spectrum than they are free parameters in the point cloud.
 
 We mostly follow [Morse et al. (2023)](https://doi.org/10.1103/PhysRevResearch.5.033190). Main differences:
 
