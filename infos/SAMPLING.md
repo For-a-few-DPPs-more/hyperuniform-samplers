@@ -48,8 +48,7 @@ TThe main difference  with the original method described in Morse et. al is:
   | 0.43 (L1) | L1 ball | $S(k) \le 10^{-3}$ |
   | 0.43 (WD) | Star ball, $r(k) \ge \text{cst}$ | $S(k) \le 10^{-2}$ |
 
-  $S(k) \le 10^{-3}$ is sufficient for most uses and hard to beat at large $\chi$. On the other hand, going beyond
-  $10^{-10}$ for $\chi = 0.30$ is conceptually not difficult but would require reimplementing the sampler in at least `float64`.
+Going beyond $10^{-10}$ for $\chi = 0.30$ would conceptually not be difficult but practically requires reimplementing the sampler in at least `float64` precision. On the other hand, at  $\chi = 0.43$ it would be difficult to go beyond $S(k) \le 10^{-3}$ on the whole exclusion set, which is anyway sufficient for most uses.
 
 * **Gradient descent.** We apply 150 steps of a gradient descent scheme. Instead of the FIRE method recommanded by Morse et.al, we use a `bold driver` scheme on the normalised gradient:
   good steps boost the learning rate, bad steps slow it down. This method has the strong advantage of working out of the box (no hyperparameter tuning) on the full (N, D) range that we considered.
