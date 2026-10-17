@@ -67,7 +67,9 @@ For a wave vector k = (k₁, ..., k_D) with integer components,
 S(k) = |Σⱼ exp(2iπ ⟨k, xⱼ⟩)|² / N
 ```
 
-A near-zero S(k) means that the Monte Carlo integration error is controlled for the low-frequency test function x ↦ exp(2iπ ⟨k, x⟩). Following plots show the  values of S(k) for the 4 chi families, I. as a power spectrum map (kx, ky) -> S(k) for 2d point clouds only and II. as a radial ||k|| ↦ S(k) curve (average over radial bins) for all dimensions D = 2 to 16 : 
+A near-zero S(k) means that the Monte Carlo integration error is controlled for the low-frequency test function x ↦ exp(2iπ ⟨k, x⟩). 
+
+Following plots show the  values of S(k) for the 4 chi families, I. as a power spectrum map (kx, ky) -> S(k) for 2d point clouds only and II. as a radial ||k|| ↦ S(k) curve (average over radial bins) for all dimensions D = 2 to 16 : 
 
 <details>
 <summary>I. Show the 2d power spectrums </summary>
