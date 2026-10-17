@@ -2,8 +2,7 @@
 
 Here we describe how the samples were generated, for reproducibility.
 
-The method is **spectral optimisation** (non-uniform Fourier transform). We select the
-$M = \mathrm{round}(\chi \cdot D \cdot (N-1))$ most important wave vectors $k$ of an exclusion set $\Omega$
+The method is **spectral optimisation** (non-uniform Fourier transform), mostly following [Morse et al. (2023)](https://doi.org/10.1103/PhysRevResearch.5.033190). We select the M most important wave vectors $k$ of an exclusion set $\Omega$
 (L2 ball, L1 ball or star ball), keeping one representative per pair $(k,-k)$. We initialise with a
 random $(N, D)$ point cloud, then run a gradient descent on
 
@@ -11,11 +10,11 @@ random $(N, D)$ point cloud, then run a gradient descent on
 \text{loss} = \sum_{k \in \Omega} \frac{1}{|k|^2} \left| \sum_{j=1}^{N} e^{2i\pi \langle k, x_j \rangle} \right|^2 .
 ```
 
-$\chi$ is an hyperparameter of the sampler which control the size of the exclusion set. One need to take $\chi \le 0.5$ because each wave vector of the exclusion set gives two real constraints (real and imaginary parts). The goal is to obtain slightly fewer independent equations on the spectrum than they are free parameters in the point cloud.
+The exclusion set size is choosen such that the number of wave vectors M within it is fixed as $M = \mathrm{round}(\chi \cdot D \cdot (N-1))$ where $\chi$ is an hyperparameter of the sampler. One need to take $\chi \le 0.5$ because each wave vector of the exclusion set gives two real constraints (real and imaginary parts). The goal is to obtain slightly fewer independent equations on the spectrum than they are free parameters in the point cloud.
 
-We mostly follow [Morse et al. (2023)](https://doi.org/10.1103/PhysRevResearch.5.033190). Main differences:
+TThe main difference  with the original method described in Morse et. al is:
 
-* **Higher $\chi$.** Morse et al. recommend $\chi = 0.4$. We provide $\chi = 0.30$ and $\chi = 0.43$,
+* Distinct $\chi$.** They recommend $\chi = 0.4$, but we provide $\chi = 0.30$ and $\chi = 0.43$,
   which allows optimisation up to the particle scale while staying isotropic and unordered
   (crystallisation empirically starts around $\chi \approx 0.45$).
 
