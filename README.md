@@ -71,8 +71,11 @@ A near-zero S(k) means that the Monte Carlo integration error is controlled for 
 
 <details>
 <summary>Show the 2d power spectrums </summary>
+      
 N = 8192, D = 2, all χ
+      
 ![power spectrum](.plots/powerspectrum_8192points.png)
+
 </details>
       
 <details>
