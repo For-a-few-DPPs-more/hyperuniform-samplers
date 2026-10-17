@@ -32,9 +32,21 @@ We mostly follow [Morse et al. (2023)](https://doi.org/10.1103/PhysRevResearch.5
 
 * **L1 ball and $\chi = 0.43$ (`--chi L1-43`):** This version selects wave vectors with the L1 norm $\Vert{}k\Vert{}_1 = \sum \vert{}k_i\vert{}$ instead of the Euclidean norm, pushing $\chi$ up to 0.43 (i.e., $2\chi = 86\%$ of the spectral domain reachable with $N$ points). It is aimed at QMC integration (an L1 ball has a cross-polytope geometry, like a diamond in 2D, suited to integrands with a low effective dimension or a strong coordinate-wise structure), whereas the L2 versions are recommended for blue noise, where strict stealthiness and isotropy matter more than discrepancy. Check the [source code](https://github.com/For-a-few-DPPs-more/Recursive-Gaussian-Blue-Noise/tree/main/src/qmc_sampler) for implementation details.
 
-* **Star ball (WD) and $\chi = 0.43$ (`--chi WD-43`):** This version selects wave vectors according to the exact product weight of the wrap-around discrepancy kernel:
-  $$r(k) = \prod_{i=1}^D \hat{K}(k_i),\qquad \hat{K}(m) = \begin{cases} 1 & \text{if } m = 0,\\ \dfrac{1}{2\pi^2 m^2} & \text{if } m \neq 0. \end{cases}$$
-  The top-$M$ modes ($M \approx \chi \cdot D \cdot (N-1)$) ordered by decreasing $r(k)$ form the **star ball**. This is the natural exclusion set that appears in the exact worst-case error bound for the star discrepancy. Consequently, the WD-43 samples are particularly well suited to QMC integration of irregular or non-smooth integrands.
+* **Star ball (WD) and χ = 0.43** (`--chi WD-43`): this version selects wave vectors according to the exact product weight of the wrap-around discrepancy kernel:
+
+```math
+r(k) = \prod_{i=1}^{D} \hat{K}(k_i),
+\qquad
+\hat{K}(m) =
+\begin{cases}
+\dfrac{4}{3} & \text{if } m = 0, \\[2mm]
+\dfrac{1}{2\pi^2 m^2} & \text{if } m \neq 0.
+\end{cases}
+```
+
+The top-$M$ modes ($M = \mathrm{round}(\chi \cdot D \cdot (N-1))$, counted up to
+$k \mapsto -k$), ordered by decreasing $r(k)$, form the star ball. This is the natural exclusion set that appears in the exact worst-case error bound for the wrap around discrepancy. Consequently, the WD-43 samples are particularly well suited to QMC integration of irregular or non-smooth
+integrands.
 
 * **Gradient descent:** Morse et al. use FIRE optimisation. We use a simple `bold driver` scheme on the normalised gradient (only its direction matters): good steps boost the learning rate, bad steps slow it down. We perform 150 iterations of this auto-scaled gradient step. It works on any $(N, D)$ out of the box, with no hyperparameter tuning.
 
