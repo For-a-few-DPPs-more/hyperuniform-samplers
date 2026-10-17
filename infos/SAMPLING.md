@@ -18,8 +18,7 @@ TThe main difference  with the original method described in Morse et. al is:
   which allows optimisation up to the particle scale while staying isotropic and unordered
   (crystallisation empirically starts around $\chi \approx 0.45$).
 
-* **QMC versions (not isotropic).** They target integrands with a low effective dimension, where an L2 ball
-  is not the optimal exclusion set. The L2 versions are recommended for blue noise.
+* QMC variants. Beyond the classical ball-shaped exclusion sets, well suited to blue-noise applications, we also explore other geometries tailored to QMC integration of functions with low effective dimension, for which the Euclidean ball is not the natural choice of exclusion region.
   * **L1 ball, $\chi = 0.43$** (`--chi L1-43`): modes with the smallest $\|k\|_1 = \sum_i |k_i|$
     (cross-polytope geometry). Intermediate between WD and L2, recommended for usual smooth integrands.
   * **Star ball (WD), $\chi = 0.43$** (`--chi WD-43`): modes with the largest spectral weights of the
