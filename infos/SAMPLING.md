@@ -12,9 +12,9 @@ random i.i.d. points, then run a gradient descent on
 
 The exclusion set  $\Omega$ is choosen such that the number of wave vectors M within it is fixed as $M = \mathrm{round}(\chi \cdot D \cdot (N-1))$ where $\chi$ is an hyperparameter of the sampler. One need to take $\chi \le 0.5$ because each wave vector of the exclusion set gives two real constraints (real and imaginary parts). The goal is to obtain slightly fewer independent equations on the spectrum than they are free parameters in the point cloud.
 
-TThe main difference  with the original method described in Morse et. al is:
+TThe main difference between the implemented version and  the method described in Morse et. al are:
 
-* Distinct $\chi$. They recommend $\chi = 0.4$, but we provide $\chi = 0.30$ and $\chi = 0.43$,
+* $\chi$ parametter. They recommend $\chi = 0.4$, but we provide $\chi = 0.30$ and $\chi = 0.43$,
   which allows optimisation up to the particle scale while staying isotropic and unordered
   (crystallisation empirically starts around $\chi \approx 0.45$).
 
