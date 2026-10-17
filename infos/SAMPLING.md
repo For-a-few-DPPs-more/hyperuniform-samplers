@@ -1,61 +1,73 @@
 ## Sampling method
 
-This file describes how the samples were generated, for reproducibility.
+Here we describe how the samples were generated, for reproducibility.
 
-The method is **spectral optimisation** (non-uniform Fourier transform): select the $(N-1) \cdot D \cdot \chi$ most important wave vectors `k` according to a chosen exclusion set $\Omega$ (Euclidean ball, L1 ball, or star ball), were we take only one representant among (k, -k) per symetry and $\chi$ chosen slightly below or equal to 0.5 to ensure near-maximal spectral coverage, initialise with a random (N, D) point cloud, then run a gradient descent on the Fourier loss:
+The method is **spectral optimisation** (non-uniform Fourier transform). We select the
+$M = \mathrm{round}(\chi \, D \, (N-1))$ most important wave vectors $k$ of an exclusion set $\Omega$
+(L2 ball, L1 ball or star ball), keeping one representative per pair $(k,-k)$. We initialise with a
+random $(N, D)$ point cloud, then run a gradient descent on
 
-$$\text{loss} = \sum_{k \in \Omega} 1/\left\vert{}k\right\vert{}^2 \left\vert{} \sum_{\text{point} \in \text{points}} e^{2i\pi \langle k, \text{point}\rangle} \right\vert{}^2$$
+```math
+\text{loss} = \sum_{k \in \Omega} \frac{1}{|k|^2} \left| \sum_{j=1}^{N} e^{2i\pi \langle k, x_j \rangle} \right|^2 .
+```
 
-The heuristic to determine that $\chi$ should be <= 0.5 is: "a bit less indepandant equations than free parameters of the point clouds", were each k constraint internaly counts two constraints, for the real and imaginary part.
+We take $\chi \le 0.5$ because each $k$ gives two real constraints (real and imaginary parts), so we
+want slightly fewer independent equations than free parameters.
 
 We mostly follow [Morse et al. (2023)](https://doi.org/10.1103/PhysRevResearch.5.033190). Main differences:
 
-* **Slightly higher $\chi$:** While Morse et al. initially recommended fixing $\chi = 0.4$, the parameter plays a crucial role in the resulting sample. We provide two versions of the samples, $\chi = 0.30$ and $\chi = 0.43$. This allows spectral optimisation up to the particle scale while staying isotropic and unordered (crystallisation empirically appears to start around $\chi \approx 0.45$).
+* **Higher $\chi$.** Morse et al. recommend $\chi = 0.4$. We provide $\chi = 0.30$ and $\chi = 0.43$,
+  which allows optimisation up to the particle scale while staying isotropic and unordered
+  (crystallisation empirically starts around $\chi \approx 0.45$).
 
-  Two additional versions, built with an L1 ball and a star ball, serve a different purpose. They are not isotropic, because they are intended for QMC methods with low effective dimensional integrands where the optimal shape of an exclusion set is not a usual L2 ball. The WD (star-ball) version is specifically designed for worst-case QMC error bounds induced by the wrap-around discrepancy kernel and is recommended for highly low-dimensional integrands. The L1 version (rhombus-ball) is the intermediate option between WD and L2, recommended for usual smooth integrands.
-
-
-* an **important subtlety** about what the exclusion set precisely is, which comes up in high dimensions: see [Exclusionsets.md](Exclusionsets.md). This note is important but technical, and can be read on a second reading.
-
-* **Weaker stealthy criterion:** $S(k)$ is the structure factor. Morse et al. reach $S(k) \le 10^{-51}$ using double-double (`float128`) precision. We use `float32`—which is much faster on GPU—and stop the descent after 150 iterations. For all targeted frequencies:
-
-| $\chi$ | Exclusion set | Criterion |
-| :--- | :--- | :--- |
-| 0.30 | L2 ball (Euclidean) | $S(k) \le 10^{-10}$ |
-| 0.43 | L2 ball (Euclidean) | $S(k) \le 10^{-3}$ |
-| 0.43 (L1 ball) | L1 ball | $S(k) \le 10^{-3}$ |
-| 0.43 (WD star) | Star ball $r(k) \le \text{cst}$ | $S(k) \le 10^{-2}$ |
-
-  Here, $r(k)$ is the Fourier coefficient of the wrap-around discrepancy.
-
-  We retain the value $S(k) \le 10^{-3}$ as stealthy since it is sufficient for our application and most use cases. It would be difficult to go beyond it at large $\chi$. Regarding the $\chi = 0.30$ samples, going beyond $10^{-10}$ would be possible, but requires reimplementing the whole sampler with at least `float64` precision.
-
-* **L1 ball and $\chi = 0.43$ (`--chi L1-43`):** This version selects wave vectors with the L1 norm $\Vert{}k\Vert{}_1 = \sum \vert{}k_i\vert{}$ instead of the Euclidean norm, pushing $\chi$ up to 0.43 (i.e., $2\chi = 86\%$ of the spectral domain reachable with $N$ points). It is aimed at QMC integration (an L1 ball has a cross-polytope geometry, like a diamond in 2D, suited to integrands with a low effective dimension or a strong coordinate-wise structure), whereas the L2 versions are recommended for blue noise, where strict stealthiness and isotropy matter more than discrepancy. Check the [source code](https://github.com/For-a-few-DPPs-more/Recursive-Gaussian-Blue-Noise/tree/main/src/qmc_sampler) for implementation details.
-
-* **Star ball (WD) and χ = 0.43** (`--chi WD-43`): this version selects wave vectors according to the exact product weight of the wrap-around discrepancy kernel:
+* **QMC versions (not isotropic).** They target integrands with a low effective dimension, where an L2 ball
+  is not the optimal exclusion set. The L2 versions are recommended for blue noise.
+  * **L1 ball, $\chi = 0.43$** (`--chi L1-43`): modes with the smallest $\|k\|_1 = \sum_i |k_i|$
+    (cross-polytope geometry). Intermediate between WD and L2, recommended for usual smooth integrands.
+  * **Star ball (WD), $\chi = 0.43$** (`--chi WD-43`): modes with the largest exact product weight of the
+    wrap-around discrepancy kernel,
 
 ```math
-r(k) = \prod_{i=1}^{D} \hat{K}(k_i),
-\qquad
-\hat{K}(m) =
-\begin{cases}
-\dfrac{4}{3} & \text{if } m = 0, \\[2mm]
-\dfrac{1}{2\pi^2 m^2} & \text{if } m \neq 0.
-\end{cases}
+    r(k) = \prod_{i=1}^{D} \hat{K}(k_i),
+    \qquad
+    \hat{K}(m) =
+    \begin{cases}
+    \dfrac{4}{3} & \text{if } m = 0, \\[2mm]
+    \dfrac{1}{2\pi^2 m^2} & \text{if } m \neq 0.
+    \end{cases}
 ```
 
-The top-$M$ modes ($M = \mathrm{round}(\chi \cdot D \cdot (N-1))$, counted up to
-$k \mapsto -k$), ordered by decreasing $r(k)$, form the star ball. This is the natural exclusion set that appears in the exact worst-case error bound for the wrap around discrepancy. Consequently, the WD-43 samples are particularly well suited to QMC integration of irregular or non-smooth
-integrands.
+    This is the exclusion set of the exact worst-case QMC error bound for the wrap-around
+    discrepancy, recommended for highly low-dimensional integrands.
 
-* **Gradient descent:** Morse et al. use FIRE optimisation. We use a simple `bold driver` scheme on the normalised gradient (only its direction matters): good steps boost the learning rate, bad steps slow it down. We perform 150 iterations of this auto-scaled gradient step. It works on any $(N, D)$ out of the box, with no hyperparameter tuning.
+* **Exclusion sets in high dimension.** An important subtlety, see [Exclusionsets.md](Exclusionsets.md)
+  (technical, can be read on a second reading).
 
-The samples were collected by running the notebook in `src/generate_all_samples_from_paper.ipynb` on a Google Colab T4 GPU. The optimisation algorithm has $O(N^2 \cdot D^2)$ complexity per single $(N, D)$ point cloud and thus requires intensive computation, making a GPU nearly mandatory for large point clouds. We ran $\chi = 0.30$, $\chi = 0.43$, $\chi = \text{L1-0.43}$, and $\chi = \text{WD-0.43}$, looping over all numbers of points $N = 2^{10}, \dots, 2^{17}$ and over dimensions $D = 2$ to 16, plus $D = 23$ and $D = 32$, which took roughly 2 hours in total per $\chi$ version.
+* **Weaker stealthy criterion.** Morse et al. reach $S(k) \le 10^{-51}$ with `float128`. We use `float32`
+  (much faster on GPU) and stop after 150 iterations. For all targeted frequencies:
 
-*Note:* Using the `pykeops` LazyTensor framework makes the spectral loss computation significantly faster. PyKeOps is a high-performance library for efficient kernel reduction.
+  | $\chi$ | Exclusion set | Criterion |
+  | :--- | :--- | :--- |
+  | 0.30 | L2 ball | $S(k) \le 10^{-10}$ |
+  | 0.43 | L2 ball | $S(k) \le 10^{-3}$ |
+  | 0.43 (L1) | L1 ball | $S(k) \le 10^{-3}$ |
+  | 0.43 (WD) | Star ball, $r(k) \ge \text{cst}$ | $S(k) \le 10^{-2}$ |
+
+  $S(k) \le 10^{-3}$ is sufficient for most uses and hard to beat at large $\chi$. On the other hand, going beyond
+  $10^{-10}$ for $\chi = 0.30$ is conceptually not difficult but would require reimplementing the sampler in at least `float64`.
+
+* **Gradient descent.** We apply 150 steps of a gradient descent scheme. Instead of the FIRE method recommanded by Morse et.al, we use a `bold driver` scheme on the normalised gradient:
+  good steps boost the learning rate, bad steps slow it down. This method has the strong advantage of working out of the box (no hyperparameter tuning) on the full (N, D) range that we considered.
+
+The algorithm cost is $O(N^2 D^2)$ per sampled point cloud, so a GPU is nearly mandatory for the sampling. We ran the notebook `src/generate_all_samples_from_paper.ipynb`,which internally rely on following [source code](https://github.com/For-a-few-DPPs-more/Recursive-Gaussian-Blue-Noise/tree/main/src/qmc_sampler),
+on a Google Colab T4 GPU for all
+four ball versions, with $N = 2^{10}, \dots, 2^{17}$ and $D = 2$ to $16$, plus $D = 23$ and $D = 32$
+(about 2 hours for D = 2 to 16, plus 2 extra hours for D = (23,32), per ball version). 
+
+*Note:* Using the pykeops LazyTensor framework makes the spectral loss computation significantly faster. PyKeOps is a high-performance library for efficient kernel reduction.
 
 ## Large point clouds
 
-We used the `FINUFFT` Python library to sample additional massive point clouds in 2D / 3D. They can be downloaded manually from the Zenodo database. `FINUFFT` essentially allows replacing the $O(N^2)$ complexity of the gradient descent with $O(N \log N)$ using a Fast Fourier Transform (FFT). 
-
-Here is the [source code](https://github.com/For-a-few-DPPs-more/Recursive-Gaussian-Blue-Noise/blob/main/src/blue_sampler/run/run_nufft.py) to run the FINUFFT-based pipeline.
+In 2d / 3d, were the `FINUFFT` transform  is available (replaces the $O(N^2)$ gradient evaluation by
+$O(N \log N)$ via a fast fourier transform), we additionaly sampled massive point clouds (up to 134 millions in 2d and 32 millions in 3d). They can be downloaded manually from the Zenodo database, along with up to 1 million sized 4D point clouds.
+[Source code](https://github.com/For-a-few-DPPs-more/Recursive-Gaussian-Blue-Noise/blob/main/src/blue_sampler/run/run_nufft.py) for the finufft, large point clouds version.
