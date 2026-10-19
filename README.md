@@ -2,9 +2,9 @@
 
 This is the GitHub companion repository of the Hyperuniform samples database stored on [Zenodo](https://doi.org/10.5281/zenodo.23405562). The database contains hyperuniform point clouds (e.g. blue noise) on the unit hypercube [0,1)ᴰ, sampled with the [blue-sampler](https://pypi.org/project/blue-sampler/) Python package.
 
-**2D example** (the N = 2048, D = 2, Chi43 point clouds of this database):
+**2D example** (the N = 1024, D = 2, Chi43 point clouds of this database):
 
-![2D example, N = 2048, chi43](./plots/exemple_chi43_2048points.png)
+![2D example, N = 1024, chi43](./plots/exemple_chi43_1024points.png)
 
 ## Installation
 
