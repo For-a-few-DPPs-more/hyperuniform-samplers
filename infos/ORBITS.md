@@ -3,7 +3,7 @@
 The sampling process to build the hyperuniform database proceeded as follows:
 
 * Initialize with random i.i.d. points.
-* Select a spectral exclusion set $\Omega$ based on a chosen geometry (`L2` ball or `WD` ball), with a budget of $M = \lfloor \chi \cdot D \cdot (N-1) \rfloor$ wave vectors, where $\chi = 0.43$ for all samples, to compute the Fourier loss:
+* Select a spectral exclusion set $\Omega$ based on a chosen geometry (`L2` ball or `WD` ball), with a budget of $M = \lfloor \chi \cdot D \cdot (N-1) \rfloor$ wave vectors (note that we count the pair (k, -k) as a single wave vector due to spectral symmetry), where $\chi = 0.43$, to compute the Fourier loss:
 
 $$\text{loss} = \sum_{k \in \Omega} 1/\left\vert{}k\right\vert{}^2 \left\vert{} \sum_{\text{point} \in \text{points}} e^{2i\pi \langle k, \text{point}\rangle} \right\vert{}^2$$
 

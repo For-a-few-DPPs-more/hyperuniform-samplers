@@ -31,8 +31,8 @@ The main differences between the implemented version and the method of Morse et 
 ```
   All optimisations start from random i.i.d. point clouds, except the WD version, which starts from an L1 warm start (spectral exclusion set is an L1 ball) so as to converge to a better minimum by inheriting part of the spectral properties of the L1 sample.
 
-* **Exclusion sets in high dimension.** An important subtlety, see [Exclusionsets.md](Exclusionsets.md)
-  (technical, can be read on a second reading), arise from the fact that we sample point up to rather "high" dimension (up to dimension 32).
+* **Exclusion sets in high dimension.** An important subtlety lead to an incomplete orbits phenomenom, see [ORBITS.md](ORBITS.md)
+  (technical, can be read on a second reading), which arise from the fact that we sample point up to rather "high" dimension (up to dimension 32).
 
 * **Weaker stealthy criterion.** Morse et al. reach $S(k) \le 10^{-51}$ with `float128`. We use `float32`,
   which makes it impossible to go beyond $S(k) \le 10^{-12}$ due to numerical precision. In practice, we stop after 150 iterations of gradient descent followed by 150 iterations of quasi-Newton descent, which yields $S(k) \le 10^{-10}$.
