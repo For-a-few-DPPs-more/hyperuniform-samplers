@@ -33,7 +33,7 @@ python src/load_data.py --dim all --ball all
 python src/new_data.py --dim 2 --npoints 1024 --ball l2 --seed 42
 ```
 
-Or from a notebook: see [quick_start.ipynb](./infos/quick_start.html) and follow the instructions.
+Or from a notebook: see [quick_start.ipynb](https://for-a-few-dpps-more.github.io/hyperuniform-samplers/infos/quick_start.html) and follow the instructions.
 
 ## Data characteristics
 
