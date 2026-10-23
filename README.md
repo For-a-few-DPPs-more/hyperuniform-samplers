@@ -42,7 +42,7 @@ Or from a notebook: see [quick_start.ipynb](https://for-a-few-dpps-more.github.i
 - **Number of points:** native N = 2¹⁰ to 2¹⁷ (powers of 2); up to N = 2²⁴ with tiling.
 - **Dimension:** native D = 2 to 16, plus D = 20, 24, 28 and D = 32; any 2 ≤ D ≤ 32 with projection.
 
-> **Note: Large storage.** In low dimensions (D ≤ 4), the Zenodo database provides additional, much larger point clouds, to be downloaded manually ([`larges.zip`](https://zenodo.org/records/23405562?preview_file=larges.zip), 2.7 GB). They go up to N = 2²⁷ ≈ 134 million points in 2D, 2²⁵ ≈ 34 million in 3D and 2²¹ ≈ 2 million in 4D.
+> **Note: Large storage.** In low dimensions (D ≤ 4), the Zenodo database provides additional, much larger point clouds, to be downloaded manually ([`larges.zip`](https://zenodo.org/records/23244509?preview_file=larges.zip), 2.7 GB). They go up to N = 2²⁷ ≈ 134 million points in 2D, 2²⁵ ≈ 34 million in 3D and 2²¹ ≈ 2 million in 4D.
 
 [![ND_coverage](./plots/coverage_table_ND.png)](./plots/coverage_table_ND.png)
 
