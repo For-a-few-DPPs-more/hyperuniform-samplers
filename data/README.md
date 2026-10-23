@@ -1,12 +1,12 @@
 This `data/` folder is empty by default. It serves as a placeholder for the sample datasets.
 
-The datasets can be downloaded manually from [Zenodo](https://doi.org/10.5281/zenodo.23405562), or automatically from the root of the repository (open a new terminal and run this):
+The datasets can be downloaded manually from [Zenodo](https://doi.org/10.5281/zenodo.23244509), or automatically from the root of the repository (open a new terminal and run this):
 
 ```bash
-# all datasets: D = 2 to 16, plus 23 and 32, with chi = 0.30, chi = 0.43, chi = L1-43 and chi = WD-43
-python src/load_data.py --dim all --chi all    
+# all datasets: D = 2 to 16, plus 23 and 32, with ball = l2 and ball = wd
+python src/load_data.py --dim all --ball all    
 # a single dimension (faster)
-python src/load_data.py --dim 2 --chi all     
-# several dimensions, single chi  
-python src/load_data.py --dim 2 3 4 --chi 43    
+python src/load_data.py --dim 2 --ball all     
+# several dimensions, single ball  
+python src/load_data.py --dim 2 3 4 --ball l2    
 ```

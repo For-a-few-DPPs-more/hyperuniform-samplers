@@ -6,24 +6,15 @@ Once the `data/` folder contains the datasets downloaded from Zenodo, new point 
 
 **Supported:** any `(N, D)` with `N` a power of 2, `2^10 <= N <= 2^24`, and `2 <= D <= 32`.
 
-**The `--chi` parameter** (required) selects the dataset the cloud is built from. Three values are available, with different spectral properties:
-
-| `chi` | χ    | Stealthiness within the spectral exclusion region |
-|---------|------|---------------------------------------------------|
-| `30`    | 0.30 | `S(k) <= 1e-10`, 60% coverage of the reachable spectral domain (smaller exclusion region)        |
-| `43`    | 0.43 | `S(k) <= 1e-4`, 86% coverage (larger exclusion region)          |
-| `L1-43`    | 0.43 | `S(k) <= 1e-2`, 100% coverage (maximal exclusion region). Intended for quasi monte carlo methods   |
-| `WD-43`    | 0.43 | minimised `WD discrepancy`,  no stealthiness consideration. Worst case quasi monte carlo methods with irregular integrands  |
-
 The matching samples must be present in `data/`. 
 
 ## Example
 
 ```bash
-python src/new_data.py --dim 2 --npoints 1024 --chi 43 --seed 42
+python src/new_data.py --dim 2 --npoints 1024 --ball l2 --seed 42
 ```
 
-This writes `new_data/N1024_D2_chi43_seed42.npy`, an array of shape `(1024, 2)` in float32.
+This writes `new_data/N1024_D2_l2_seed42.npy`, an array of shape `(1024, 2)` in float32.
 
 Useful options: `--npoints 2**20` (powers of 2 are accepted), `--data <dir>` (where the downloaded datasets are), `--out <file.npy>` (custom output path).
 

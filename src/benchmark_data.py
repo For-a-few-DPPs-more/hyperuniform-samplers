@@ -1,129 +1,159 @@
+"""Benchmark hyperuniform point clouds against standard QMC / random samplers.
+
+For each (N, D) configuration, every sampler is scored with several scipy
+discrepancies (lower = better) and ranked (1 = best). Per-configuration prints
+only show the rankings. At the end, two summary tables are printed:
+
+1. Global ranking: mean rank over all configurations, sorted best to worst.
+2. Geometric mean of the discrepancy ratio relative to Sobol, per discrepancy
+   (< 1 means better than Sobol).
+
+Usage
+-----
+    python benchmark_data.py
+"""
+
 import time
+
 import numpy as np
 from scipy.stats import qmc
+
 from new_data import new_data
 
-DISCREPANCIES = ("CD", "WD", "MD",) #optionnal: include "L2-star"
+DISCREPANCIES = ("CD", "WD", "MD")  # optional: add "L2-star"
+REFERENCE = "Sobol"  # sampler used as the baseline for the ratios
 
-def scipy_benchmark(shape, seed=42, values = False):
-    """Compare scipy QMC engines and blue-sampler point clouds for a given shape (N, D).
 
-    Prints a ranking per discrepancy table (1 = best).
-    """
-    N, D = shape
-
-    gens = {
+def make_generators(N, D, seed):
+    """Return the samplers to compare, as {name: callable returning (N, D)}."""
+    rng = np.random.default_rng(seed)
+    return {
         "Sobol": lambda: qmc.Sobol(D, seed=seed).random(N),
         "Halton": lambda: qmc.Halton(D, seed=seed).random(N),
-        "Chi30": lambda: new_data(N=N, D=D, chi=30, seed=seed),
-        "Chi43": lambda: new_data(N=N, D=D, chi=43, seed=seed),
-        "L1Chi43": lambda: new_data(N=N, D=D, chi="L1-43", seed=seed),
-        "WDChi43": lambda: new_data(N=N, D=D, chi="WD-43", seed=seed),
+        "l2": lambda: new_data(N=N, D=D, ball="l2", seed=seed),
+        "wd": lambda: new_data(N=N, D=D, ball="wd", seed=seed),
         "LHS": lambda: qmc.LatinHypercube(D, seed=seed).random(N),
-        "LHS random-cd": lambda: qmc.LatinHypercube(D, optimization="random-cd", seed=seed).random(N),
-        "poisson i.i.d": lambda: np.random.rand(N, D)
+        "LHS random-cd": lambda: qmc.LatinHypercube(
+            D, optimization="random-cd", seed=seed
+        ).random(N),
+        "i.i.d. uniform": lambda: rng.random((N, D)),
     }
 
-    np.random.seed(seed)
-    clouds, times = {}, {}
-    for name, g in gens.items():
-        try:
-            t0 = time.perf_counter()
-            clouds[name] = np.asarray(g(), dtype=float)
-            times[name] = time.perf_counter() - t0
-        except Exception as e:
-            print(f"[skip] {name}: {type(e).__name__}: {e}")
 
-    res = {n: [qmc.discrepancy(P, method=d) for d in DISCREPANCIES] for n, P in clouds.items()}
-    names = list(res)
-    w = max(len(n) for n in names) + 2
+def scipy_benchmark(shape, seed=42, verbose=True):
+    """Compare samplers for a given shape (N, D).
 
-    if values:
-
-        # ---- table 1: discrepance values (lower = better) ----
-        header = f"{'':<{w}}" + "".join(f"{d:>14}" for d in DISCREPANCIES)
-        print(f"\nDiscrepancies (lower = better)  —  N={N}, D={D}\n{header}\n{'-' * len(header)}")
-        for n in names:
-            vals = []
-            for v in res[n]:
-                vals.append(f"{v:>14.2e}")
-            print(f"{n:<{w}}" + "".join(vals))
-
-    # ---- table 2: rank per discrepancy (1 = best), sorted by mean rank ----
-    ranks = {n: [] for n in names}
-    for j in range(len(DISCREPANCIES)):
-        for r, n in enumerate(sorted(names, key=lambda n: res[n][j]), start=1):
-            ranks[n].append(r)
-    header = f"{'':<{w}}" + "".join(f"{d:>12}" for d in DISCREPANCIES) + f"{'mean':>9}"
-    print(f"\n(N = {N}, D = {D}) Discrepancy Ranking (1 = best)\n{header}\n{'-' * len(header)}")
-    for n in sorted(names, key=lambda n: np.mean(ranks[n])):
-        print(f"{n:<{w}}" + "".join(f"{r:>12d}" for r in ranks[n]) + f"{np.mean(ranks[n]):>9.2f}")
-
-    return
-
-import numpy as np
-import matplotlib.pyplot as plt
-
-
-def plot2D_structure_factor(pts, wv, ax=None, cmap="gray", figsize=(7, 6)):
-    """
-    Plot the 2D structure factor S(k) at selected wavevectors.
-
-    Parameters
-    ----------
-    pts : array-like, shape (N, 2)
-        Positions of the points in real space.
-    wv : array-like, shape (M, 2)
-        Wavevectors at which to evaluate S(k).
-    ax : matplotlib.axes.Axes, optional
-        Existing axes.
-    cmap : str
-        Colormap used for S(k).
-    figsize : tuple
-        Figure size if ax is None.
+    Prints the ranking per discrepancy (1 = best) if `verbose`.
 
     Returns
     -------
-    fig, ax, sf : figure, axes, ndarray
-        Figure, axes and computed structure factor.
+    values : dict {name: list of discrepancy values, one per DISCREPANCIES}
+    ranks  : dict {name: list of ranks, one per DISCREPANCIES}
     """
-    pts = np.asarray(pts, dtype=float)
-    wv = np.asarray(wv, dtype=float)
-    wv = wv[~(wv == 0).all(axis = -1)]
-    # S(k) = |sum_j exp(2i pi k.r_j)|^2 / N
-    phase = 2*np.pi*wv @ pts.T
-    sf = np.abs(np.exp(1j * phase).sum(axis=1))**2 / len(pts)
+    N, D = shape
 
-    if ax is None:
-        fig, ax = plt.subplots(figsize=figsize)
-    else:
-        fig = ax.figure
+    # ---- generate the point clouds ----
+    clouds = {}
+    for name, gen in make_generators(N, D, seed).items():
+        try:
+            clouds[name] = np.asarray(gen(), dtype=float)
+        except Exception as e:  # e.g. missing data files for l2 / wd
+            print(f"[skip] {name}: {type(e).__name__}: {e}")
 
-    wv = np.concatenate((wv, -wv), axis = 0)
-    sf = np.concatenate((sf, sf), axis = 0)
-    sf = np.log(sf).clip(min = -10, max = 3)
+    # ---- discrepancies (lower = better) ----
+    values = {
+        n: [qmc.discrepancy(P, method=d) for d in DISCREPANCIES]
+        for n, P in clouds.items()
+    }
+    names = list(values)
 
-    sc = ax.scatter(
-        wv[:, 0], wv[:, 1],
-        c=sf,
-        cmap=cmap,
-        s = 300*(1000/len(wv)),
-        linewidths=0,
-        edgecolors="none",
-    )
+    # ---- rank per discrepancy (1 = best) ----
+    ranks = {n: [] for n in names}
+    for j in range(len(DISCREPANCIES)):
+        for r, n in enumerate(sorted(names, key=lambda n: values[n][j]), start=1):
+            ranks[n].append(r)
 
-    cbar = fig.colorbar(sc, ax=ax)
-    ax.set_title("2D Structure Factor (log)")
+    if verbose:
+        w = max(len(n) for n in names) + 2
+        header = f"{'':<{w}}" + "".join(f"{d:>12}" for d in DISCREPANCIES) + f"{'mean':>9}"
+        print(f"\n(N = {N}, D = {D}) Discrepancy ranking (1 = best)")
+        print(header)
+        print("-" * len(header))
+        for n in sorted(names, key=lambda n: np.mean(ranks[n])):
+            print(
+                f"{n:<{w}}"
+                + "".join(f"{r:>12d}" for r in ranks[n])
+                + f"{np.mean(ranks[n]):>9.2f}"
+            )
 
-    ax.set_xticks([])
-    ax.set_yticks([])
+    return values, ranks
 
-    return fig, ax, sf
-    
+
+def summarize(all_values, all_ranks):
+    """Print the final tables aggregated over all (N, D) configurations.
+
+    all_values, all_ranks : lists of the dicts returned by scipy_benchmark.
+    """
+    names = sorted({n for r in all_ranks for n in r})
+    w = max(len(n) for n in names) + 2
+    nd = len(DISCREPANCIES)
+
+    # ---- global ranking: mean rank over configurations where the sampler ran ----
+    mean_rank = {
+        n: np.mean([r[n] for r in all_ranks if n in r], axis=0) for n in names
+    }
+    global_rank = {n: mean_rank[n].mean() for n in names}
+    order = sorted(names, key=lambda n: global_rank[n])
+
+    print("\n" + "=" * 60)
+    print(f"FINAL SUMMARY over {len(all_ranks)} configurations")
+    print("=" * 60)
+
+    header = f"{'':<{w}}" + "".join(f"{d:>12}" for d in DISCREPANCIES) + f"{'global':>9}"
+    print("\nGlobal ranking (mean rank, 1 = best), sorted by global rank")
+    print(header)
+    print("-" * len(header))
+    for n in order:
+        print(
+            f"{n:<{w}}"
+            + "".join(f"{x:>12.2f}" for x in mean_rank[n])
+            + f"{global_rank[n]:>9.2f}"
+        )
+
+    # ---- geometric mean of discrepancy ratios relative to the reference ----
+    if not any(REFERENCE in v for v in all_values):
+        return
+
+    print(f"\nGeometric mean of discrepancy relative to {REFERENCE} (< 1 = better than {REFERENCE})")
+    header = f"{'':<{w}}" + "".join(f"{d:>12}" for d in DISCREPANCIES)
+    print(header)
+    print("-" * len(header))
+    for n in order:
+        row = []
+        for j in range(nd):
+            # only configurations where both the sampler and the reference ran
+            logs = [
+                np.log(v[n][j] / v[REFERENCE][j])
+                for v in all_values
+                if n in v and REFERENCE in v
+            ]
+            row.append(np.exp(np.mean(logs)) if logs else np.nan)
+        print(f"{n:<{w}}" + "".join(f"{x:>12.3f}" for x in row))
+
+
+def main(Ns=(2**10, 2**11, 2**12), Ds=range(2, 9), seed=42):
+    all_values, all_ranks = [], []
+    for N in Ns:
+        print("=" * 30)
+        print(f"=== benchmark for N = {N} ===")
+        print("=" * 30)
+        for D in Ds:
+            values, ranks = scipy_benchmark((N, D), seed=seed)
+            all_values.append(values)
+            all_ranks.append(ranks)
+
+    summarize(all_values, all_ranks)
+
+
 if __name__ == "__main__":
-    for n in (2**10, 2**11, 2**12):
-        print("="*30)
-        print(f"=== benchmark for N = {n} ===")
-        print("="*30)
-        for d in range(2, 9):
-            scipy_benchmark((n, d))
+    main()

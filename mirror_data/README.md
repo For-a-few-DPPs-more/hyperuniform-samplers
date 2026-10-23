@@ -1,2 +1,1 @@
-This mirror the zenodo database (used by github release)
-Empty by default
+this folder is empty. It serves as a mirror for the zenodo database

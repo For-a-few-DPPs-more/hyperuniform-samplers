@@ -1,6 +1,6 @@
-## Benchmark for QMC Methods
+# Benchmark for QMC Methods
 
-Average ranking based on `scipy.stats.qmc.discrepancy` computation.
+Comparison of the `l2` and `wd` point clouds with standard QMC and random samplers, based on `scipy.stats.qmc.discrepancy` (lower = better).
 
 Run the benchmark with:
 
@@ -9,20 +9,30 @@ pip install scipy
 python src/benchmark_data.py
 ```
 
-### Global Mean Rank by Method
+## Geometric mean of the discrepancy relative to Sobol
 
-| Global Rank | Method | Mean CD Rank | Mean WD Rank | Mean MD Rank | Overall Mean Rank |
-|---:|---|---:|---:|---:|---:|
-| 1 | Sobol (SciPy QMC) | 1.00 | 1.14 | 1.00 | 1.05 |
-| 2 | Halton (SciPy QMC) | 2.10 | 2.86 | 2.14 | 2.36 |
-| 3 | WDChi43 (ours) | 3.33 | 2.00 | 2.86 | 2.73 |
-| 4 | LHS random-cd (SciPy QMC) | 3.57 | 4.00 | 4.00 | 3.86 |
-| 5 | L1Chi43 (ours) | 5.14 | 5.00 | 5.05 | 5.06 |
-| 6 | Chi30 (ours) | 6.52 | 6.76 | 6.86 | 6.71 |
-| 6 | Chi43 (ours) | 6.71 | 6.48 | 6.95 | 6.71 |
-| 8 | LHS (SciPy QMC) | 7.62 | 7.76 | 7.14 | 7.51 |
-| 9 | poisson i.i.d (baseline) | 9.00 | 9.00 | 9.00 | 9.00 |
+For each sampler and each discrepancy, we compute the geometric mean over all configurations of
 
+```
+discrepancy(sampler) / discrepancy(Sobol)
+```
 
-**Note:** Ranks are averaged over three sample sizes (\(N \in \{1024, 2048, 4096\}\)), seven dimensions (\(D \in \{2,\ldots,8\}\)), and three discrepancy measures (CD, WD, and MD). Lower ranks indicate better relative performance. Chi30 and Chi43 have identical overall mean ranks.
+A value below 1 means better than Sobol. Sobol is 1 by construction.
 
+| Method | CD | WD | MD |
+|---|---:|---:|---:|
+| Sobol (SciPy QMC) | 1.00 | 1.00 | 1.00 |
+| Halton (SciPy QMC) | 1.72 | 1.47 | 1.62 |
+| **wd (ours)** | 2.72 | 1.28 | 1.88 |
+| LHS random-cd (SciPy QMC) | 3.45 | 3.51 | 3.70 |
+| **l2 (ours)** | 17.03 | 9.17 | 15.92 |
+| LHS (SciPy QMC) | 25.66 | 12.45 | 18.72 |
+| i.i.d. uniform (baseline) | 87.64 | 53.94 | 87.46 |
+
+**Setup.** Averages are taken over three sample sizes (N ∈ {1024, 2048, 4096}) and seven dimensions (D ∈ {2, ..., 8}), i.e. 21 configurations per discrepancy (CD: centered, WD: wrap-around, MD: mixture).
+
+## Reading the results
+
+- **`wd`** is the closest to the QMC sequences: it is better than Halton on the wrap-around discrepancy (1.28 vs 1.47) and better than `LHS random-cd` on all three measures. It remains behind Sobol, which is the best method on this benchmark.
+- **`l2`** is not designed to minimise discrepancy: its exclusion region is an isotropic ball, which targets blue-noise quality rather than axis-aligned uniformity. It still improves over plain `LHS` and by a factor of 3 to 6 over i.i.d. sampling.
+- These samples are therefore not drop-in replacements for Sobol or Halton. They are complementary: use `wd` for QMC integration when the integrand has favourable low-frequency spectral properties or low effective dimension, and `l2` when isotropy matters.

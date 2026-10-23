@@ -4,25 +4,25 @@
 
 Usage
 -----
-    python load_data.py --dim all --chi all
-    python load_data.py --dim 2 3 4 --chi 30
-    python load_data.py --dim all --chi L1-43
-    python load_data.py --dim all --chi all --url zenodo
+    python load_data.py --dim all --ball all
+    python load_data.py --dim 2 3 4 --ball 30
+    python load_data.py --dim all --ball L1-43
+    python load_data.py --dim all --ball all --url zenodo
 
 Dataset families
 ----------------
-    30     -> chi30_D{j}.zip     -> <out>/chi30/D{j}/
-    43     -> chi43_D{j}.zip     -> <out>/chi43/D{j}/
-    L1-43  -> L1chi43_D{j}.zip   -> <out>/L1chi43/D{j}/
-    WD-43  -> WDchi43_D{j}.zip   -> <out>/WDchi43/D{j}/
+    30     -> ball30_D{j}.zip     -> <out>/ball30/D{j}/
+    43     -> ball43_D{j}.zip     -> <out>/ball43/D{j}/
+    L1-43  -> L1ball43_D{j}.zip   -> <out>/L1ball43/D{j}/
+    WD-43  -> WDball43_D{j}.zip   -> <out>/WDball43/D{j}/
 
-L1-43 denotes chi = 0.43 with the L1 norm. It is a distinct
-dataset family and must not be confused with chi43.
+L1-43 denotes ball = 0.43 with the L1 norm. It is a distinct
+dataset family and must not be confused with ball43.
 
 WD-43 uses a star shaped pseudo-norm based on the fourier coefficients
 of the wrap-around discrepancy (see scipy.stats.qmc.discrepancy)
 
-Archives are downloaded from GitHub Releases by default, with
+Arballves are downloaded from GitHub Releases by default, with
 Zenodo as an alternative source.
 
 Already-downloaded dimensions are skipped unless --force is used.
@@ -39,31 +39,23 @@ from pathlib import Path
 # Dataset mirrors
 GITHUB_URL = (
     "https://github.com/For-a-few-DPPs-more/"
-    "hyperuniform-samplers/releases/download/dataset-v3.0.0" #v3 includes the L1-43 and WD-43
+    "hyperuniform-samplers/releases/download/dataset-v5.0.0" #v5 include quasi newton finition
 )
 
 ZENODO_URL = "https://zenodo.org/records/23405562/files"
 
-AVAILABLE_DIMS = list(range(2, 17)) + [23, 32]
+AVAILABLE_DIMS = list(range(2, 17)) + [20, 24, 28, 32]
 
-# Public labels map explicitly to archive prefixes and output folders.
-# Never derive archive names directly from the public label.
+# Public labels map explicitly to arballve prefixes and output folders.
+# Never derive arballve names directly from the public label.
 DATASET_FAMILIES = {
-    "30": {
-        "archive_prefix": "chi30",
-        "output_dir": "chi30",
+    "l2": {
+        "arballve_prefix": "l2",
+        "output_dir": "l2",
     },
-    "43": {
-        "archive_prefix": "chi43",
-        "output_dir": "chi43",
-    },
-    "L1-43": {
-        "archive_prefix": "L1chi43",
-        "output_dir": "L1chi43",
-    },
-    "WD-43": {
-        "archive_prefix": "WDchi43",
-        "output_dir": "WDchi43",
+    "wd": {
+        "arballve_prefix": "wd",
+        "output_dir": "wd",
     },
 }
 
@@ -90,8 +82,8 @@ def parse_dims(values):
     return chosen
 
 
-def parse_chis(values):
-    """Parse dataset family labels without conflating L1-43 and chi43."""
+def parse_balls(values):
+    """Parse dataset family label."""
     if values == ["all"]:
         return list(DATASET_FAMILIES)
 
@@ -132,13 +124,13 @@ def main():
         "--dim",
         nargs="+",
         required=True,
-        help="dimension(s), or 'all' (2..16, 23, 32)",
+        help="dimension(s), or 'all' (2..16, 20, 24, 28, 32)",
     )
     p.add_argument(
-        "--chi",
+        "--ball",
         nargs="+",
         required=True,
-        help="dataset family: 30, 43, L1-43, WD-43 or all",
+        help="dataset family: l2, wd or all",
     )
     p.add_argument(
         "--out",
@@ -166,11 +158,11 @@ def main():
 
     base_url = GITHUB_URL if args.url == "github" else ZENODO_URL
     dims = parse_dims(args.dim)
-    chis = parse_chis(args.chi)
+    balls = parse_balls(args.ball)
 
-    for chi in chis:
-        family = DATASET_FAMILIES[chi]
-        archive_prefix = family["archive_prefix"]
+    for ball in balls:
+        family = DATASET_FAMILIES[ball]
+        arballve_prefix = family["arballve_prefix"]
         output_dir = family["output_dir"]
 
         for d in dims:
@@ -178,22 +170,22 @@ def main():
 
             if any(target.glob("*.h5")) and not args.force:
                 print(
-                    f"{chi}, D={d}: already present in {target}, skipping"
+                    f"{ball}, D={d}: already present in {target}, skipping"
                 )
                 continue
 
             target.mkdir(parents=True, exist_ok=True)
             zpath = target.with_suffix(".zip")
 
-            # Examples: chi30_D2.zip, chi43_D2.zip, L1chi43_D2.zip
-            filename = f"{archive_prefix}_D{d}.zip"
+            # Examples: l2D2.zip, wdD2.zip
+            filename = f"{arballve_prefix}D{d}.zip"
 
             if args.url == "github":
                 url = f"{base_url}/{filename}"
             else:
                 url = f"{base_url}/{filename}?download=1"
 
-            print(f"{chi}, D={d}: downloading {url}")
+            print(f"{ball}, D={d}: downloading {url}")
 
             try:
                 download(url, zpath)
@@ -202,7 +194,7 @@ def main():
                     bad_file = z.testzip()
                     if bad_file is not None:
                         raise zipfile.BadZipFile(
-                            f"Corrupted member in archive: {bad_file}"
+                            f"Corrupted member in arballve: {bad_file}"
                         )
 
                     for member in z.infolist():
@@ -212,7 +204,7 @@ def main():
 
                 zpath.unlink()
                 count = len(list(target.glob("*.h5")))
-                print(f"{chi}, D={d}: {count} files in {target}")
+                print(f"{ball}, D={d}: {count} files in {target}")
 
             except (
                 RuntimeError,
@@ -222,7 +214,7 @@ def main():
             ) as e:
                 zpath.unlink(missing_ok=True)
                 print(
-                    f"ERROR: {chi}, D={d}: {e}",
+                    f"ERROR: {ball}, D={d}: {e}",
                     file=sys.stderr,
                 )
                 print(
