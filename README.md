@@ -2,7 +2,7 @@
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23244509.svg)](https://doi.org/10.5281/zenodo.23244509)
 [![GitHub](https://img.shields.io/badge/GitHub-hyperuniform--samplers-181717?logo=github)](https://github.com/For-a-few-DPPs-more/hyperuniform-samplers)
-[![Home](https://img.shields.io/badge/Home-blue?logo=googlechrome&logoColor=white)](https://for-a-few-dpps-more.github.io/hyperuniform-samplers/)
+[![Home](https://img.shields.io/badge/Home-green?logo=googlechrome&logoColor=white)](https://for-a-few-dpps-more.github.io/hyperuniform-samplers/)
 
 
 This is the GitHub companion repository of the Hyperuniform samples database stored on [Zenodo](https://doi.org/10.5281/zenodo.23244509). The database contains hyperuniform point clouds (e.g. blue noise) on the unit hypercube [0,1)ᴰ.
