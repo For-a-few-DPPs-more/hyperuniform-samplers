@@ -71,16 +71,16 @@ S(k) = |Σⱼ exp(2iπ ⟨k, xⱼ⟩)|² / N
 
 A near-zero S(k), as here for the provided samples (S(k) ≤ 10⁻¹⁰ on the exclusion set) means that the Monte Carlo integration error is controlled for the low-frequency test function x ↦ exp(2iπ ⟨k, x⟩). The number of such controlled wave vectors is 2 * Chi * (N -1) * D where Chi is an hyperparametter that we set to 0.43 (common choices are 0.3 and 0.4, see for exemple [Morse et al. (2023)](https://doi.org/10.1103/PhysRevResearch.5.033190) ) and the factor 2 comes from the symmetry S(k) = S(-k).
 
-Following plots show the values of S(k) for the 2 ball families, 1. as a power spectrum map (kx, ky) -> S(k) for 2d point clouds only and 2. as a radial ||k|| ↦ S(k) curve (average over radial bins) for all dimensions D = 2 to 16 : 
+Following plots show the values of S(k) for the 2 ball families, 1. as a power spectrum map (kx, ky) ↦ S(k) for 2d point clouds only and 2. as a radial |k| ↦ S(k) curve (average over radial bins) for all dimensions D = 2 to 16 : 
 
-- (kx, ky) -> S(k) power spectrums
+- (kx, ky) ↦ S(k) power spectrums
       
 all χ, N = 8192, D = 2
       
 ![power spectrum](./plots/powerspectrum_8192points.png)
 
       
-- ||k|| ↦ S(k) curves 
+- |k| ↦ S(k) curves 
 
 l2 ball, N = 1024, D = 2 to 16
 
