@@ -112,7 +112,9 @@ X_new = (X - s) mod 1, s drawn uniformly in [0,1]^D
 
   ![Tiling effect](./plots/tiling_effect.png)
 
-- **Projection** (lower dimension): 17 ≤ D_proj ≤ 19 is projected from D = 20, 21 ≤ D_proj ≤ 23 from D = 24 and so on. See [PROJECTION.md](infos/PROJECTION.md).
+  >Warning: The tiling procedure implemented here relies on 45° rotations of the points, except for certain special powers-of-two number of points. Tiling should therefore be used with caution for non-isotropic (WD) hyperuniform samples, as it will break axial alignment.
+
+- **Projection** (lower dimension): 17 ≤ D_proj ≤ 19 is projected from D = 20, 21 ≤ D_proj ≤ 23 from D = 24 and so on. Projection also comes with additional caveats, see [PROJECTION.md](infos/PROJECTION.md).
 
 ## Use cases
 
