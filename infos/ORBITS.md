@@ -39,7 +39,7 @@ This is especially critical in high dimensions, where a single orbit can contain
 
 Analysis for $`N = 2^{10}`$ to $`2^{17}`$, with $`D = 2`$ to $`16`$, and $`D = 20, 24, 28, 32`$.
 
-For the remaining dimensions ($`17 \le D \le 19`$, $`21 \le D \le 23`$, $`25 \le D \le 27`$, and $`29 \le D \le 31`$), the incomplete-orbit effect combines with an additional projection effect. The exact $`\chi_{\text{eff}} / \chi`$ table, including both effects, is provided in [PROJECTIONS.md](PROJECTIONS.md).
+For the remaining dimensions ($`17 \le D \le 19`$, $`21 \le D \le 23`$, $`25 \le D \le 27`$, and $`29 \le D \le 31`$), the incomplete-orbit effect combines with an additional projection effect. The exact $`\chi_{\text{eff}} / \chi`$ table, including both effects, is provided in [PROJECTION.md](PROJECTION.md).
 
 The following table reports the **worst-case** $`\chi_{\text{eff}} / \chi`$, in percent (higher is better). The worst case is the minimum across $`N = 2^{10}, \ldots, 2^{17}`$.
 
