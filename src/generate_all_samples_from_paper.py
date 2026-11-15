@@ -17,7 +17,7 @@ pip install qmc_sampler
 #%pip install qmc_sampler
 
 #command for google colab
-!pip install --upgrade qmc_sampler
+#!pip install --upgrade qmc_sampler
 
 import blue_sampler as blue
 from qmc_sampler import sample_l1, sample_l2, sample_wd, plot_structure_factor, plot
