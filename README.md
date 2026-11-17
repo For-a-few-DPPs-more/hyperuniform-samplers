@@ -74,14 +74,14 @@ A near-zero S(k), as here for the provided samples means that the Monte Carlo in
 
 Following plots show the values of S(k) for the 2 ball families, 1. as a power spectrum map (kx, ky) ↦ S(k) for 2d point clouds only and 2. as a radial |k| ↦ S(k) curve (average over radial bins) for all dimensions D = 2 to 16 : 
 
-- (kx, ky) ↦ S(k) power spectrums
+- (kx, ky) ↦ S(k) power spectrums for 2D point clouds
       
-all χ, N = 8192, D = 2
+l2 and wd ball, N = 8192, D = 2
       
 ![power spectrum](./plots/powerspectrum_8192points.png)
 
       
-- |k| ↦ S(k) curves 
+- |k| ↦ S(k) curves, |k| normalised by N^1/D for better readability 
 
 l2 ball, N = 1024, D = 2 to 16
 
