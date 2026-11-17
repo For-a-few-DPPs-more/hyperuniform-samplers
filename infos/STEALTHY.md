@@ -64,5 +64,4 @@ Number of exceptions per point set:
 
 ## Why this bound
 
-The scaling bound has the form of the error of a float32 evaluation of S: rounding the phases ⟨**k**, **x**ⱼ⟩ contributes a term in |**k**|², and accumulating the sum over N points contributes a term in ε²N (ε² ≈ 3.6·10⁻¹⁵ in float32). On generic point sets (D = 2–6, N ≤ 2¹²), this evaluation error reaches up to 0.4 times the bound, and the optimiser stalls at this level in float32 while it keeps improving in float64. Storing the coordinates in float32 is not the limiting factor: it bounds S at about 10⁻¹³ |**k**|² (median 5·10⁻¹⁵ |**k**|²), well below β.
-
+The scaling bound has the form of the error of a float32 evaluation of S. The optimiser stalls at this level in float32 while it keeps improving in float64. : Numerically, rounding the phases ⟨**k**, **x**ⱼ⟩ contributes a term in ε_1*|**k**|², and accumulating the sum over N points contributes a term in ε_2*N.
