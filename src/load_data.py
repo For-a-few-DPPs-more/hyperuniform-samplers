@@ -5,24 +5,17 @@
 Usage
 -----
     python load_data.py --dim all --ball all
-    python load_data.py --dim 2 3 4 --ball 30
-    python load_data.py --dim all --ball L1-43
-    python load_data.py --dim all --ball all --url zenodo
+    python load_data.py --dim 2 3 4 --ball l2
+    python load_data.py --dim all --ball wd --url zenodo
 
 Dataset families
 ----------------
-    30     -> ball30_D{j}.zip     -> <out>/ball30/D{j}/
-    43     -> ball43_D{j}.zip     -> <out>/ball43/D{j}/
-    L1-43  -> L1ball43_D{j}.zip   -> <out>/L1ball43/D{j}/
-    WD-43  -> WDball43_D{j}.zip   -> <out>/WDball43/D{j}/
+    l2  -> l2D{j}.zip  -> <out>/l2/D{j}/   Euclidean-ball exclusion set (blue noise)
+    wd  -> wdD{j}.zip  -> <out>/wd/D{j}/   star-shaped exclusion set built from the
+                                           Fourier coefficients of the wrap-around
+                                           discrepancy (see scipy.stats.qmc.discrepancy)
 
-L1-43 denotes ball = 0.43 with the L1 norm. It is a distinct
-dataset family and must not be confused with ball43.
-
-WD-43 uses a star shaped pseudo-norm based on the fourier coefficients
-of the wrap-around discrepancy (see scipy.stats.qmc.discrepancy)
-
-Arballves are downloaded from GitHub Releases by default, with
+Archives are downloaded from GitHub Releases by default, with
 Zenodo as an alternative source.
 
 Already-downloaded dimensions are skipped unless --force is used.
@@ -46,15 +39,15 @@ ZENODO_URL = "https://zenodo.org/records/23405562/files"
 
 AVAILABLE_DIMS = list(range(2, 17)) + [20, 24, 28, 32]
 
-# Public labels map explicitly to arballve prefixes and output folders.
-# Never derive arballve names directly from the public label.
+# Public labels map explicitly to archive prefixes and output folders.
+# Never derive archive names directly from the public label.
 DATASET_FAMILIES = {
     "l2": {
-        "arballve_prefix": "l2",
+        "archive_prefix": "l2",
         "output_dir": "l2",
     },
     "wd": {
-        "arballve_prefix": "wd",
+        "archive_prefix": "wd",
         "output_dir": "wd",
     },
 }
@@ -162,7 +155,7 @@ def main():
 
     for ball in balls:
         family = DATASET_FAMILIES[ball]
-        arballve_prefix = family["arballve_prefix"]
+        archive_prefix = family["archive_prefix"]
         output_dir = family["output_dir"]
 
         for d in dims:
@@ -178,7 +171,7 @@ def main():
             zpath = target.with_suffix(".zip")
 
             # Examples: l2D2.zip, wdD2.zip
-            filename = f"{arballve_prefix}D{d}.zip"
+            filename = f"{archive_prefix}D{d}.zip"
 
             if args.url == "github":
                 url = f"{base_url}/{filename}"
@@ -194,7 +187,7 @@ def main():
                     bad_file = z.testzip()
                     if bad_file is not None:
                         raise zipfile.BadZipFile(
-                            f"Corrupted member in arballve: {bad_file}"
+                            f"Corrupted member in archive: {bad_file}"
                         )
 
                     for member in z.infolist():

@@ -3,7 +3,7 @@
 The sampling process to build the hyperuniform database proceeded as follows:
 
 - Initialize with random i.i.d. points.
-- Select a spectral exclusion set $`\Omega`$ based on a chosen geometry (`L2` ball or `WD` ball), with a budget of $`M = \lfloor \chi \cdot D \cdot (N-1) \rfloor`$ wave vectors (note that we count the pair $`(k, -k)`$ as a single wave vector due to spectral symmetry), where $`\chi = 0.43`$, to compute the Fourier loss:
+- Select a spectral exclusion set $`\Omega`$ based on a chosen geometry (`L2` ball or `WD` ball), with a budget of $`M = \mathrm{round}(\chi \cdot D \cdot (N-1))`$ wave vectors (note that we count the pair $`(k, -k)`$ as a single wave vector due to spectral symmetry), where $`\chi = 0.43`$, to compute the Fourier loss:
 
 $$
 \text{loss} = \sum_{k \in \Omega} \frac{1}{\lvert k \rvert^2}
@@ -61,13 +61,13 @@ The following table reports the **worst-case** $`\chi_{\text{eff}} / \chi`$, in 
 
 These are the point clouds with the lowest $`\chi_{\text{eff}} / \chi`$, and thus the least effective use of the spectral exclusion budget. All of them are `L2` point clouds: `WD` never falls below 38% in the dimensions considered.
 
-**Black: 5–10%** (3 point clouds)
+**Black: 5–10%** (4 point clouds)
 
 | Ball | D | N |
 | :--- | ---: | --- |
 | `L2` | 24 | $`2^{13}`$ (10.26%) |
 | `L2` | 28 | $`2^{10}`$ (6.37%) |
-| `L2` | 32 | $`2^{10}`$ (7.27%) |
+| `L2` | 32 | $`2^{10}`$ (7.27%), $`2^{14}`$ (9.26%) |
 
 **Gray: 10–20%** (9 point clouds)
 
@@ -77,13 +77,12 @@ These are the point clouds with the lowest $`\chi_{\text{eff}} / \chi`$, and thu
 | `L2` | 20 | $`2^{12}`$ (14.08%) |
 | `L2` | 20 | $`2^{15}`$ (15.52%) |
 | `L2` | 24 | $`2^{12}`$ (20.52%) |
-| `L2` | 24 | $`2^{15}`$ (13.85%) |
 | `L2` | 24 | $`2^{16}`$ (13.85%) |
-| `L2` | 28 | $`2^{12}`$ (14.08%) |
+| `L2` | 28 | $`2^{13}`$ (14.08%) |
 | `L2` | 28 | $`2^{17}`$ (11.26%) |
 | `L2` | 32 | $`2^{13}`$ (18.51%), $`2^{17}`$ (17.11%) |
 
-**Light Gray: 20–30%** (7 point clouds)
+**Light Gray: 20–30%** (9 point clouds)
 
 | Ball | D | N |
 | :--- | ---: | --- |
@@ -92,8 +91,8 @@ These are the point clouds with the lowest $`\chi_{\text{eff}} / \chi`$, and thu
 | `L2` | 15 | $`2^{13}`$ (24.6%), $`2^{15}`$ (29.1%) |
 | `L2` | 20 | $`2^{11}`$ (28.18%) |
 | `L2` | 20 | $`2^{17}`$ (25.95%) |
-| `L2` | 24 | $`2^{14}`$ (27.71%) |
-| `L2` | 28 | $`2^{14}`$ (28.17%) |
+| `L2` | 24 | $`2^{15}`$ (27.71%) |
+| `L2` | 28 | $`2^{12}`$ (28.17%), $`2^{16}`$ (22.52%) |
 
 ---
 
