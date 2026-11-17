@@ -2,7 +2,7 @@ This `new_data/` folder is empty by default. It is where newly generated point c
 
 ## Generating a new point cloud
 
-Once the `data/` folder contains the datasets downloaded from Zenodo, new point clouds can be built from them by randomisation, projection and tiling.
+Once the `data/` folder contains the datasets downloaded with `src/load_data.py`, new point clouds can be built from them by randomisation, projection and tiling.
 
 **Supported:** any `(N, D)` with `N` a power of 2, `2^10 <= N <= 2^24`, and `2 <= D <= 32`.
 

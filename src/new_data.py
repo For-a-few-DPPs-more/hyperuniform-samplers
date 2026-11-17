@@ -6,7 +6,7 @@ Usage
     python new_data.py --dim 2 --npoints 1024 --ball l2 --seed 42
     python new_data.py --dim 20 --npoints 2**20 --ball wd --seed 0
 
-Balls (spectral exclusion regions, chi = 0.43, S(k) <= 1e-10)
+Balls (spectral exclusion regions, chi = 0.43, S(k) bounds in infos/STEALTHY.md)
 -------------------------------------------------------------
     l2 : Euclidean ball (isotropic, blue noise).
          data/l2/D{j}/N{n}_D{j}.h5
@@ -189,4 +189,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main()
