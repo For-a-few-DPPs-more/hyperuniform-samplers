@@ -8,7 +8,7 @@ on **every** wave vector of its exclusion set: 304 point sets (`l2` and `wd` bal
 
 ## Uniform bound
 
-Largest S(**k**) over all N, per dimension, exceptions excluded.
+Largest S(**k**) over all N, per dimension, exceptions (†) excluded.
 
 | D | `l2` | `wd` |
 |---:|---:|---:|
