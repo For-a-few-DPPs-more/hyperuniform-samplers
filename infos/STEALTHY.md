@@ -32,8 +32,6 @@ Largest S(**k**) over all N, per dimension, exceptions excluded.
 | 28 | 9.0·10⁻¹⁰ | 6.7·10⁻⁸ |
 | 32 | 9.1·10⁻¹⁰ | 4.0·10⁻⁸ |
 
-† Maximum over the point sets without exception; in the point sets that contain exceptions (D ≤ 6, N ≥ 2¹⁵), the other wave vectors are only known to satisfy the scaling bound.
-
 ## Scaling bound
 
   S(**k**) ≤ α N + β |**k**|²,  with α = 2·10⁻¹⁴ and β = 3·10⁻¹²
