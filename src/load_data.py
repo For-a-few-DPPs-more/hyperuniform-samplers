@@ -35,7 +35,7 @@ GITHUB_URL = (
     "hyperuniform-samplers/releases/download/dataset-v5.0.0" #v5 include quasi newton finition
 )
 
-ZENODO_URL = "https://zenodo.org/records/23405562/files"
+ZENODO_URL = "https://zenodo.org/records/23605844/files"
 
 AVAILABLE_DIMS = list(range(2, 17)) + [20, 24, 28, 32]
 

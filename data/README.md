@@ -1,6 +1,6 @@
 This `data/` folder is empty by default. It serves as a placeholder for the sample datasets.
 
-The datasets are downloaded automatically from the GitHub release (default) or from the [Zenodo](https://doi.org/10.5281/zenodo.23405562) mirror (`--url zenodo`), from the root of the repository (open a new terminal and run this):
+The datasets are downloaded automatically from the GitHub release (default) or from the [Zenodo](https://doi.org/10.5281/zenodo.23605844) mirror (`--url zenodo`), from the root of the repository (open a new terminal and run this):
 
 ```bash
 # all datasets: D = 2 to 16, plus 20, 24, 28 and 32, with ball = l2 and ball = wd

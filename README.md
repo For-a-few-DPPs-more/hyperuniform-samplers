@@ -1,11 +1,11 @@
 # Hyperuniform Point Clouds Database
 
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23405562.svg)](https://doi.org/10.5281/zenodo.23405562)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23605844.svg)](https://doi.org/10.5281/zenodo.23605844)
 [![GitHub](https://img.shields.io/badge/GitHub-hyperuniform--samplers-181717?logo=github)](https://github.com/For-a-few-DPPs-more/hyperuniform-samplers)
 [![Home](https://img.shields.io/badge/Home-green?logo=googlechrome&logoColor=white)](https://for-a-few-dpps-more.github.io/hyperuniform-samplers/)
 
 
-This repository distributes the Hyperuniform samples database, published  on [Zenodo](https://doi.org/10.5281/zenodo.23405562). The database contains hyperuniform point clouds (e.g. blue noise) on the unit hypercube [0,1)ᴰ.
+This repository distributes the Hyperuniform samples database, published  on [Zenodo](https://doi.org/10.5281/zenodo.23605844). The database contains hyperuniform point clouds (e.g. blue noise) on the unit hypercube [0,1)ᴰ.
 
 **2D example** (the N = 1024, D = 2 point clouds (l2) of this database) :
 
@@ -44,7 +44,7 @@ Or from a notebook: see [quick_start.ipynb](https://for-a-few-dpps-more.github.i
 - **Number of points:** native N = 2¹⁰ to 2¹⁷ (powers of 2); up to N = 2²⁴ with tiling.
 - **Dimension:** native D = 2 to 16, plus D = 20, 24, 28 and D = 32; any 2 ≤ D ≤ 32 with projection.
 
-> **Note: Large storage.** In low dimensions (D ≤ 4), the Zenodo database provides additional, much larger point clouds, to be downloaded manually ([`larges.zip`](https://zenodo.org/records/23405562?preview_file=larges.zip), 2.7 GB). They go up to N = 2²⁷ ≈ 134 million points in 2D, 2²⁵ ≈ 34 million in 3D and 2²¹ ≈ 2 million in 4D.
+> **Note: Large storage.** In low dimensions (D ≤ 4), the Zenodo database provides additional, much larger point clouds, to be downloaded manually ([`larges.zip`](https://zenodo.org/records/23605844?preview_file=larges.zip), 2.7 GB). They go up to N = 2²⁷ ≈ 134 million points in 2D, 2²⁵ ≈ 34 million in 3D and 2²¹ ≈ 2 million in 4D.
 
 [![ND_coverage](./plots/coverage_table_ND.png)](./plots/coverage_table_ND.png)
 
@@ -150,8 +150,8 @@ If you use this database, you can cite it as:
   year      = {2026},
   publisher = {Zenodo},
   version   = {v5},
-  doi       = {10.5281/zenodo.23405562},
-  url       = {https://doi.org/10.5281/zenodo.23405562}
+  doi       = {10.5281/zenodo.23605844},
+  url       = {https://doi.org/10.5281/zenodo.23605844}
 }
 ```
 
