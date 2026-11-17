@@ -35,7 +35,7 @@ The main differences between the implemented version and the method of Morse et 
   (technical, can be read on a second reading), which arise from the fact that we sample point up to rather "high" dimension (up to dimension 32).
 
 * **Weaker stealthy criterion.** Morse et al. reach $S(k) \le 10^{-51}$ with `float128`. We use `float32`,
-  which makes it impossible to go beyond $S(k) \le 10^{-12}$ due to numerical precision. In practice, we stop after 150 iterations of gradient descent followed by 150 iterations of quasi-Newton descent, which yields $S(k) \le 10^{-10}$.
+  which makes it impossible to go beyond $S(k) \le 10⁻13 |k|²$ due to numerical precision. In practice, we stop after 150 iterations of gradient descent followed by 150 iterations of quasi-Newton descent, reaching S(k) ≤ 2·10⁻¹⁴ N + 3·10⁻¹² |k|². Using `float32`is a fondamental design choice of our pipeline, because it comes up with a massive speedup compared to float64 on common GPUs, which are often optimised for graphic applications in mind were exact precision is not a priority.
 
 * **Gradient descent.** Instead of the FIRE method recommended by Morse et al., we use a `bold driver` scheme on the normalised gradient: good steps boost the learning rate, bad steps slow it down. This method has the strong advantage of working out of the box (no hyperparameter tuning) on the full $(N, D)$ range that we considered.
   The bold driver alone would be sufficient to converge for low $\chi$ ($\chi \le 0.3$, or even a bit more). However, our goal was to push $\chi$ as high as possible ($\chi = 0.43$ in the samples of the database), which makes the optimisation significantly harder. Gradient descent is then not enough, so we complete it with 150 additional quasi-Newton iterations.
