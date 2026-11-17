@@ -36,7 +36,7 @@ Largest S(**k**) over all N, per dimension, exceptions (†) excluded.
 
   S(**k**) ≤ α N + β |**k**|²,  with α = 2·10⁻¹⁴ and β = 3·10⁻¹²
 
-These are pessimistic worth case bounds, typical S(k) values are far below it (median S / bound below 0.1 for both balls).
+These are pessimistic worth case bounds, typical S(k) values are far below it.
 
 ## Exceptions
 
