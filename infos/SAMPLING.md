@@ -40,7 +40,7 @@ The main differences between the implemented version and the method of Morse et 
 * **Gradient descent.** Instead of the FIRE method recommended by Morse et al., we use a `bold driver` scheme on the normalised gradient: good steps boost the learning rate, bad steps slow it down. This method has the strong advantage of working out of the box (no hyperparameter tuning) on the full $(N, D)$ range that we considered.
   The bold driver alone would be sufficient to converge for low $\chi$ ($\chi \le 0.3$, or even a bit more). However, our goal was to push $\chi$ as high as possible ($\chi = 0.43$ in the samples of the database), which makes the optimisation significantly harder. Gradient descent is then not enough, so we complete it with 150 additional quasi-Newton iterations.
 
-The algorithm cost is $O(N^2 D^2)$ per sampled point cloud, so a GPU is nearly mandatory. We ran the notebook `src/generate_all_samples_from_paper.ipynb`, which internally relies on the [qmc-sampler](https://pypi.org/project/qmc-sampler/) python package,
+The algorithm cost is $O(N^2 D^2)$ per sampled point cloud, so a GPU is nearly mandatory. We ran the notebook `src/generate_all_samples_from_paper.ipynb`, which internally relies on the [`qmc-sampler`](../qmc_sampler/README.md) python package,
 on a Google Colab T4 GPU for the three geometries (`l2`, `l1`, `wd`), with $N = 2^{10}, \dots, 2^{17}$ and $D = 2$ to $16$, plus $D = 20$, $24$, $28$ and $32$
 (about 2 hours for $D = 2$ to $16$, plus 2 extra hours for $D = 20, 24, 28, 32$, per geometry).
 
@@ -49,4 +49,4 @@ on a Google Colab T4 GPU for the three geometries (`l2`, `l1`, `wd`), with $N = 
 ## Large point clouds
 
 In 2d / 3d, where the `FINUFFT` transform is available (it replaces the $O(N^2)$ gradient evaluation by
-$O(N \log N)$ via a fast Fourier transform), we additionally sampled massive point clouds (up to $2^{27} \approx 134$ million points in 2d and $2^{25} \approx 34$ million in 3d). They can be downloaded manually from the Zenodo database (`larges.zip`), along with 4D point clouds of up to $2^{21} \approx 2$ million points. The finufft based 2D/3D point clouds were generated using following [python file](https://github.com/For-a-few-DPPs-more/Recursive-Gaussian-Blue-Noise/blob/main/src/blue_sampler/run/run_nufft.py).
+$O(N \log N)$ via a fast Fourier transform), we additionally sampled massive point clouds (up to $2^{27} \approx 134$ million points in 2d and $2^{25} \approx 34$ million in 3d). They can be downloaded manually from the Zenodo database (`larges.zip`), along with 4D point clouds of up to $2^{21} \approx 2$ million points. 
