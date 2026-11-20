@@ -2,7 +2,7 @@
 see https://github.com/For-a-few-DPPs-more/Recursive-Gaussian-Blue-Noise/blob/main/src/blue_sampler/run/run_nufft.py:
 same but:
   - L1 ball or wd ball instead of only L2 ball
-  - keops / torch backends (exact direct sums), finufft optional in D <= 3
+  - keops / torch backends (exact direct sums), finufft / cufinufft (GPU) optional in D <= 3
   - quasi newton finition (optional)
 """
 
@@ -20,13 +20,11 @@ from qmc_sampler.qmc_geom import CHI, get_wave_vectors
 # ------------------------------------------------------------------
 # Global defaults
 # ------------------------------------------------------------------
-EPSILON   = 1e-12
-PRECISION = "float32"
+EPSILON   = 1e-12          # regularisation of the weights 1 / |k|^2 (not the NUFFT tolerance)
+PRECISION = "float32"      # default precision, see `precision` in sample()
 NITER     = 150
 LR        = 1.0
 
-real_dtype    = np.float32 if PRECISION == "float32" else np.float64
-complex_dtype = np.complex64 if PRECISION == "float32" else np.complex128
 two_pi        = 2.0 * pi
 
 
@@ -60,6 +58,8 @@ def sample(
     verbose: int = 1,
     warmstart: Optional[np.ndarray] = None,
     quasi_newton_finition: bool = True,
+    precision: str = PRECISION,
+    eps: Optional[float] = None,
 ):
     """
     Generate a low-discrepancy point set on [0,1)^D by spectral optimisation.
@@ -76,16 +76,26 @@ def sample(
     lr       : base learning-rate scale
     verbose  : print progress
     warmstart: optional warm start for the point cloud, eg a Sobol sequence
+    quasi_newton_finition : run L-BFGS (at most n_iter iterations) after the gradient steps
+    precision: "float32" (default, fast on GPU) or "float64"
+    eps      : relative tolerance of the (cu)finufft backends (default: 1e-4 in float32,
+               1e-8 in float64); ignored by the exact backends keops and torch
 
     Returns
     -------
     x : (N, D) array of points in [0,1)^D
     """
+    if precision not in ("float32", "float64"):
+        raise ValueError(f"qmc_sampler: precision must be 'float32' or 'float64', got {precision!r}")
+    real_dtype = np.float32 if precision == "float32" else np.float64
+    complex_dtype = np.complex64 if precision == "float32" else np.complex128
+
     rng = np.random.default_rng(seed)
     if warmstart is None and mode == "wd":
         warmstart = sample(N, D, "l1", Chi = 0.5, target = target, seed = seed, 
-                           n_iter = n_iter, lr = lr, verbose = verbose, quasi_newton_finition = False)
-    x = rng.uniform(size=(N, D)).astype(real_dtype) if warmstart is None else warmstart
+                           n_iter = n_iter, lr = lr, verbose = verbose, quasi_newton_finition = False,
+                           precision = precision, eps = eps)
+    x = (rng.uniform(size=(N, D)) if warmstart is None else np.asarray(warmstart)).astype(real_dtype)
 
     K, M = get_wave_vectors(N, D, mode=mode, chi=Chi, rng=rng)
     w = (1/(K*K + EPSILON).sum(axis = -1))
@@ -98,7 +108,7 @@ def sample(
     # optional target spectrum: f_target(k) = (1/Nt) sum_j exp(-2i pi k.y_j)
     if target is not None:
         tgt = np.asarray(target, dtype=real_dtype)
-        fk_target = (nudft1(tgt, None, K_int, isign=-1, backend=backend)
+        fk_target = (nudft1(tgt, None, K_int, isign=-1, backend=backend, eps=eps)
                      / tgt.shape[0]).astype(complex_dtype)
     else:
         fk_target = np.zeros(M, dtype=complex_dtype)
@@ -108,7 +118,7 @@ def sample(
 
     def fourier_modes(pts):
         # f(k) = (1/N) sum_j exp(-2i pi k.x_j)
-        f = nudft1(pts, None, K_int, isign=-1, backend=backend) / N
+        f = nudft1(pts, None, K_int, isign=-1, backend=backend, eps=eps) / N
         return f.real.astype(real_dtype), f.imag.astype(real_dtype)
 
     def loss_and_grad(pts):
@@ -123,14 +133,14 @@ def sample(
         # grad_j = sum_k k (cr_k sin(2 pi k.x_j) + ci_k cos(2 pi k.x_j))
         #        = Re sum_k (ci_k - i cr_k) k exp(+2i pi k.x_j)
         a = (ci - 1j * cr)[:, None] * K_real
-        grad = nudft2_real(pts, a, K_int, isign=1, backend=backend)
+        grad = nudft2_real(pts, a, K_int, isign=1, backend=backend, eps=eps)
         return loss, np.asarray(grad).astype(real_dtype)
 
     adaptive = lr * 0.1 * N ** (-1.0 / D)
     prev_loss = np.inf
 
     if verbose:
-        print(f"[{backend}-{mode}] N={N}  D={D}  modes={M}  Chi={Chi:.3f}")
+        print(f"[{backend}-{mode}-{precision}] N={N}  D={D}  modes={M}  Chi={Chi:.3f}")
 
     t0 = time.time()
     for it in range(n_iter):

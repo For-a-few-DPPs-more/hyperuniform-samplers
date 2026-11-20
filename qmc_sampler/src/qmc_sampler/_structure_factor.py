@@ -90,7 +90,7 @@ def structure_factor(
     points         : (N, D) array of point coordinates in [0, 1)^D.
     resolution     : number of sampled wave vectors (only used when D >= 4).
     precision      : "float32" | "float64". Use float64 to resolve S below ~1e-6
-                     With the finufft backend, the relative accuracy of the Fourier
+                     With the (cu)finufft backend, the relative accuracy of the Fourier
                      sums is FINUFFT_EPS[precision] (1e-4 / 1e-8), which sets a floor
                      on the smallest S that can be resolved.
 

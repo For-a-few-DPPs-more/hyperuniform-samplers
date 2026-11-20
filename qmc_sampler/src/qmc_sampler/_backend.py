@@ -11,14 +11,17 @@ Available backends
 "keops"   : exact direct sums (O(N M)), pykeops LazyTensor reductions (GPU if available).
 "torch"   : exact direct sums (O(N M)), dense torch tensors by chunks (cuda if available).
 "finufft" : non-uniform FFT (O(N log N + M)), D <= 3 only. Approximate, with relative
-            tolerance FINUFFT_EPS[precision] (1e-4 in float32, 1e-8 in float64).
+            tolerance `eps` (default FINUFFT_EPS[precision]: 1e-4 in float32, 1e-8 in float64).
+"cufinufft": GPU version of finufft (cufinufft + cupy, NVIDIA GPU required), same
+            restrictions and tolerances as "finufft".
 
 The backend is chosen per dimension:
 
     select_backend(dimensions={2, 3}, backend="finufft")
 
-Default (dimensions never selected): "keops" if available, else "torch", else "finufft".
-finufft is never the default when keops or torch is available, so that, unless asked
+Default (dimensions never selected), first available among:
+    "keops" >> "torch" >> "cufinufft" >> "finufft"
+(cu)finufft is never the default when keops or torch is available, so that, unless asked
 otherwise, all Fourier sums are exact up to machine precision.
 """
 from __future__ import annotations
@@ -32,6 +35,7 @@ __all__ = [
     "BACKENDS",
     "FINUFFT_EPS",
     "FINUFFT_MAX_DIM",
+    "NUFFT_BACKENDS",
     "available_backends",
     "get_backend",
     "select_backend",
@@ -39,14 +43,26 @@ __all__ = [
     "nudft2_real",
 ]
 
-BACKENDS = ("keops", "torch", "finufft")      # also the default priority order
-FINUFFT_EPS = {"float32": 1e-4, "float64": 1e-8}
+BACKENDS = ("keops", "torch", "cufinufft", "finufft")   # also the default priority order
+NUFFT_BACKENDS = ("finufft", "cufinufft")             # approximate, D <= FINUFFT_MAX_DIM
+FINUFFT_EPS = {"float32": 1e-4, "float64": 1e-8}      # also used by cufinufft
 FINUFFT_MAX_DIM = 3
 TORCH_CHUNK_ELEMS = 8_000_000                 # torch: (points x wave vectors) per chunk
 
-_MODULES = {"keops": "pykeops.numpy", "torch": "torch", "finufft": "finufft"}
-_PIP = {"keops": "pykeops", "torch": "torch", "finufft": "finufft"}
-_cache: dict = {}                             # backend -> imported module, or the ImportError
+# backend -> modules to import (the first one is the backend module)
+_MODULES = {
+    "keops": ("pykeops.numpy",),
+    "torch": ("torch",),
+    "finufft": ("finufft",),
+    "cufinufft": ("cufinufft", "cupy"),
+}
+_PIP = {
+    "keops": "pip install pykeops",
+    "torch": "pip install torch",
+    "finufft": "pip install finufft",
+    "cufinufft": "pip install cufinufft cupy-cuda12x  (cupy-cuda11x for CUDA 11)",
+}
+_cache: dict = {}                             # backend -> imported module, or the error
 _selected: dict = {}                          # dimension -> backend
 
 
@@ -57,16 +73,22 @@ _selected: dict = {}                          # dimension -> backend
 def _load(backend: str):
     """Import (once) and return the module of a backend; raise a clean ImportError otherwise."""
     if backend not in _cache:
+        name = None
         try:
-            _cache[backend] = importlib.import_module(_MODULES[backend])
-        except Exception as err:              # ImportError, or a broken install
-            _cache[backend] = err
+            mods = []
+            for name in _MODULES[backend]:
+                mods.append(importlib.import_module(name))
+            if backend == "cufinufft" and mods[1].cuda.runtime.getDeviceCount() < 1:
+                raise RuntimeError("no CUDA device found")
+            _cache[backend] = mods[0]
+        except Exception as err:              # ImportError, broken install, or no GPU
+            _cache[backend] = (name, err)
     mod = _cache[backend]
-    if isinstance(mod, Exception):
+    if isinstance(mod, tuple):
+        name, err = mod
         raise ImportError(
             f"qmc_sampler: backend {backend!r} is not available "
-            f"(import of {_MODULES[backend]!r} failed: {mod}). "
-            f"Install it with `pip install {_PIP[backend]}`."
+            f"({name!r}: {err}). Install it with `{_PIP[backend]}`."
         ) from None
     return mod
 
@@ -89,7 +111,7 @@ def available_backends(D: Optional[int] = None) -> list:
     """Backends that can be imported (and, if D is given, that support dimension D)."""
     out = [b for b in BACKENDS if _is_available(b)]
     if D is not None and _check_dim(D) > FINUFFT_MAX_DIM:
-        out = [b for b in out if b != "finufft"]
+        out = [b for b in out if b not in NUFFT_BACKENDS]
     return out
 
 
@@ -100,12 +122,12 @@ def select_backend(dimensions: Union[int, Iterable[int]], backend: Optional[str]
     Parameters
     ----------
     dimensions : int or iterable of ints, e.g. 2 or {2, 3}.
-    backend    : "keops" | "torch" | "finufft", or None to restore the default
-                 for these dimensions.
+    backend    : "keops" | "torch" | "finufft" | "cufinufft", or None to restore the
+                 default for these dimensions.
 
     Raises
     ------
-    ValueError  : unknown backend, invalid dimension, or finufft with a dimension > 3.
+    ValueError  : unknown backend, invalid dimension, or (cu)finufft with a dimension > 3.
     ImportError : the backend cannot be imported.
 
     Nothing is changed if an error is raised.
@@ -114,6 +136,7 @@ def select_backend(dimensions: Union[int, Iterable[int]], backend: Optional[str]
     -------
     >>> import qmc_sampler
     >>> qmc_sampler.select_backend(dimensions={2, 3}, backend="finufft")
+    >>> qmc_sampler.select_backend(dimensions=2, backend="cufinufft")     # on GPU
     """
     dims = [dimensions] if isinstance(dimensions, (int, np.integer)) else list(dimensions)
     if not dims:
@@ -126,11 +149,11 @@ def select_backend(dimensions: Union[int, Iterable[int]], backend: Optional[str]
         return
     if backend not in BACKENDS:
         raise ValueError(f"qmc_sampler: unknown backend {backend!r}, expected one of {BACKENDS}")
-    if backend == "finufft":
+    if backend in NUFFT_BACKENDS:
         too_big = sorted(D for D in dims if D > FINUFFT_MAX_DIM)
         if too_big:
             raise ValueError(
-                f"qmc_sampler: the finufft backend only supports dimensions <= "
+                f"qmc_sampler: the {backend} backend only supports dimensions <= "
                 f"{FINUFFT_MAX_DIM}, got {too_big}"
             )
     _load(backend)
@@ -144,13 +167,13 @@ def get_backend(D: int) -> str:
     if D in _selected:
         return _selected[D]
     for b in BACKENDS:
-        if (b != "finufft" or D <= FINUFFT_MAX_DIM) and _is_available(b):
+        if (b not in NUFFT_BACKENDS or D <= FINUFFT_MAX_DIM) and _is_available(b):
             return b
     raise ImportError(
         f"qmc_sampler: no backend available in dimension {D}. Install pykeops "
         f"(`pip install pykeops`) or torch (`pip install torch`)"
-        + (", or finufft (`pip install finufft`)." if D <= FINUFFT_MAX_DIM else
-           " (finufft only supports D <= 3).")
+        + (", or cufinufft / finufft (`pip install finufft`)." if D <= FINUFFT_MAX_DIM else
+           " ((cu)finufft only supports D <= 3).")
     )
 
 
@@ -264,32 +287,51 @@ def _finufft_grid(k):
     return shape, tuple((k + half).T)
 
 
-def _finufft_fn(D, kind):
-    return getattr(_load("finufft"), f"nufft{D}d{kind}")
+def _nufft_fn(backend, D, kind):
+    return getattr(_load(backend), f"nufft{D}d{kind}")
 
 
-def _finufft_nudft1(x, c, k, isign, precision):
+def _nufft_io(backend):
+    """(to_device, to_numpy) array converters: identity for finufft, cupy for cufinufft."""
+    if backend == "cufinufft":
+        cp = importlib.import_module("cupy")       # already imported by _load
+        return cp.asarray, cp.asnumpy
+    return (lambda a: a), np.asarray
+
+
+def _nufft_coords(x, precision, to_dev):
+    real = _real(precision)
+    return [to_dev(np.ascontiguousarray(2.0 * np.pi * x[:, d], dtype=real))
+            for d in range(x.shape[1])]
+
+
+def _finufft_nudft1(x, c, k, isign, precision, backend="finufft", eps=None):
     N, D = x.shape
     shape, idx = _finufft_grid(k)
-    coords = [np.ascontiguousarray(2.0 * np.pi * x[:, d], dtype=_real(precision)) for d in range(D)]
+    to_dev, to_np = _nufft_io(backend)
+    coords = _nufft_coords(x, precision, to_dev)
     cc = np.ones(N) if c is None else np.asarray(c)
-    cc = np.ascontiguousarray(cc, dtype=_complex(precision))
-    f = _finufft_fn(D, 1)(*coords, cc, shape, eps=FINUFFT_EPS[precision], isign=isign)
-    return f[idx].astype(np.complex128)
+    cc = to_dev(np.ascontiguousarray(cc, dtype=_complex(precision)))
+    tol = FINUFFT_EPS[precision] if eps is None else eps
+    f = _nufft_fn(backend, D, 1)(*coords, cc, shape, eps=tol, isign=isign)
+    return to_np(f)[idx].astype(np.complex128)
 
 
-def _finufft_nudft2_real(x, a, k, isign, precision):
+def _finufft_nudft2_real(x, a, k, isign, precision, backend="finufft", eps=None):
     N, D = x.shape
     P = a.shape[1]
     shape, idx = _finufft_grid(k)
-    coords = [np.ascontiguousarray(2.0 * np.pi * x[:, d], dtype=_real(precision)) for d in range(D)]
+    to_dev, to_np = _nufft_io(backend)
+    coords = _nufft_coords(x, precision, to_dev)
     f = np.zeros((P,) + shape, dtype=_complex(precision))
     for p in range(P):
         np.add.at(f[p], idx, a[:, p])
+    fn = _nufft_fn(backend, D, 2)
+    tol = FINUFFT_EPS[precision] if eps is None else eps
     if P == 1:
-        g = _finufft_fn(D, 2)(*coords, f[0], eps=FINUFFT_EPS[precision], isign=isign)[None]
+        g = to_np(fn(*coords, to_dev(f[0]), eps=tol, isign=isign))[None]
     else:
-        g = _finufft_fn(D, 2)(*coords, f, eps=FINUFFT_EPS[precision], isign=isign)
+        g = to_np(fn(*coords, to_dev(f), eps=tol, isign=isign))
     return np.ascontiguousarray(g.real.T)                               # (N, P)
 
 
@@ -297,11 +339,14 @@ def _finufft_nudft2_real(x, a, k, isign, precision):
 # Public primitives
 # ---------------------------------------------------------------------------
 
-def nudft1(x, c, k, isign: int = -1, backend: Optional[str] = None) -> np.ndarray:
+def nudft1(x, c, k, isign: int = -1, backend: Optional[str] = None,
+           eps: Optional[float] = None) -> np.ndarray:
     """F_m = sum_j c_j exp(isign * 2i pi k_m . x_j), shape (M,), complex128.
 
     x : (N, D) float32 or float64 (sets the precision), c : (N,) real/complex or None (ones),
     k : (M, D) integer wave vectors. backend defaults to get_backend(D).
+    eps : relative tolerance of (cu)finufft (default FINUFFT_EPS[precision]); ignored by
+          the exact backends.
     """
     x = np.asarray(x)
     if x.dtype not in (np.float32, np.float64):
@@ -315,14 +360,17 @@ def nudft1(x, c, k, isign: int = -1, backend: Optional[str] = None) -> np.ndarra
         return _keops_nudft1(x, c, k, isign, _real(precision))
     if backend == "torch":
         return _torch_nudft1(x, c, k, isign, _real(precision))
-    return _finufft_nudft1(x, c, k, isign, precision)
+    return _finufft_nudft1(x, c, k, isign, precision, backend, eps)
 
 
-def nudft2_real(x, a, k, isign: int = 1, backend: Optional[str] = None) -> np.ndarray:
+def nudft2_real(x, a, k, isign: int = 1, backend: Optional[str] = None,
+                eps: Optional[float] = None) -> np.ndarray:
     """g_jp = Re sum_m a_mp exp(isign * 2i pi k_m . x_j), shape (N, P), dtype of x.
 
     x : (N, D) float32 or float64 (sets the precision), a : (M, P) complex,
     k : (M, D) integer wave vectors. backend defaults to get_backend(D).
+    eps : relative tolerance of (cu)finufft (default FINUFFT_EPS[precision]); ignored by
+          the exact backends.
     """
     x = np.asarray(x)
     if x.dtype not in (np.float32, np.float64):
@@ -339,5 +387,5 @@ def nudft2_real(x, a, k, isign: int = 1, backend: Optional[str] = None) -> np.nd
     elif backend == "torch":
         g = _torch_nudft2_real(x, a, k, isign, _real(precision))
     else:
-        g = _finufft_nudft2_real(x, a, k, isign, precision)
+        g = _finufft_nudft2_real(x, a, k, isign, precision, backend, eps)
     return np.asarray(g, dtype=x.dtype)
