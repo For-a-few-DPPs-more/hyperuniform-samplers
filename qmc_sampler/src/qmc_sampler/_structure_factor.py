@@ -3,7 +3,9 @@ Structure factor estimation. Adapted from blue_sampler/structure_factor.py (copi
 qmc_sampler does not depend on blue_sampler).
 
 Wave vectors: exhaustive grid for D <= 3, lattice + random sampling for D >= 4. Fourier sums
-with the backend selected for dimension D (see qmc_sampler.select_backend), like the samplers.
+with the backend selected for dimension D (see qmc_sampler.select_backend) and the module
+precision / NUFFT tolerance (qmc_sampler.select_precision / select_nufft_tolerance), exactly
+like the samplers.
 """
 
 from __future__ import annotations
@@ -34,17 +36,17 @@ def _grid(n_modes: int, D: int) -> np.ndarray:
     return integer_grid(np.arange(-(n_modes // 2), n_modes - (n_modes // 2)), D)
 
 
-def _fourier_sums(pts, c, kint, precision):
-    """F(n) = sum_j c_j exp(2i pi n.x_j) for every row n of kint (backend of dimension D)."""
-    real = np.float64 if precision == "float64" else np.float32
-    return nudft1(np.ascontiguousarray(pts, dtype=real), c, kint, isign=1)
+def _fourier_sums(pts, c, kint):
+    """F(n) = sum_j c_j exp(2i pi n.x_j) for every row n of kint (backend of dimension D,
+    module precision)."""
+    return nudft1(np.ascontiguousarray(pts), c, kint, isign=1)
 
 
 # ---------------------------------------------------------------------------
 # Core
 # ---------------------------------------------------------------------------
 
-def _structure_factor_core(points, resolution, precision):
+def _structure_factor_core(points, resolution):
     """Return (kint, S, n_exp): wave vectors of the analysed window, S, expected count rho|W|."""
     pts = np.asarray(points, dtype=float).reshape(-1, np.asarray(points).shape[-1])
     N, D = pts.shape
@@ -54,7 +56,6 @@ def _structure_factor_core(points, resolution, precision):
 
     kunit = float(n_exp ** (1.0 / D))
     kmax = K_MAX * kunit
-    precision = "float64" if precision in ("float64", "double") else "float32"
 
     if D <= 3:
         kint = _grid(int(np.ceil(kmax)) + 1, D)
@@ -63,7 +64,7 @@ def _structure_factor_core(points, resolution, precision):
         if kmax <= k_low:
             kmax = k_low + 1
         kint = isotropic_wave_vectors(k_low, kmax, D, int(resolution * (1.0 - LOW_MODE_FRACTION)))
-    F = _fourier_sums(pts, weights, kint, precision)
+    F = _fourier_sums(pts, weights, kint)
 
     S = np.abs(F) ** 2 / n_exp
 
@@ -80,7 +81,6 @@ def _structure_factor_core(points, resolution, precision):
 def structure_factor(
     points: np.ndarray,
     resolution: int = 2000,
-    precision="float32",
 ) -> tuple[np.ndarray, np.ndarray]:
     """
     Estimate S(k) via scattering intensity.
@@ -89,10 +89,10 @@ def structure_factor(
     ----------
     points         : (N, D) array of point coordinates in [0, 1)^D.
     resolution     : number of sampled wave vectors (only used when D >= 4).
-    precision      : "float32" | "float64". Use float64 to resolve S below ~1e-6
-                     With the (cu)finufft backend, the relative accuracy of the Fourier
-                     sums is FINUFFT_EPS[precision] (1e-4 / 1e-8), which sets a floor
-                     on the smallest S that can be resolved.
+
+    Precision and (cu)finufft tolerance are the module settings (qmc_sampler.select_precision,
+    select_nufft_tolerance), the same as for the samplers. They set a floor on the smallest
+    S that can be resolved.
 
     Returns
     -------
@@ -105,7 +105,7 @@ def structure_factor(
     ----
     Points must lie in the unit hypercube [0, 1)^D. This is not checked.
     """
-    kint, S, _ = _structure_factor_core(points, resolution, precision)
+    kint, S, _ = _structure_factor_core(points, resolution)
     return kint, S
 
 
@@ -113,7 +113,6 @@ def structure_factor_and_average(
     points,
     resolution: int = 20000,
     min_val: float = 1e-20,
-    precision="float32",
 ):
     """
     Compute the structure factor of a point set and return raw and radially-averaged curves.
@@ -131,7 +130,7 @@ def structure_factor_and_average(
     """
     pts = np.asarray(points).reshape(-1, np.asarray(points).shape[-1])
     D = pts.shape[1]
-    kint, Sraw, n_exp = _structure_factor_core(pts, resolution // RESOLUTION_DIVISOR, precision)
+    kint, Sraw, n_exp = _structure_factor_core(pts, resolution // RESOLUTION_DIVISOR)
     kunit = n_exp ** (1.0 / D)
     k2_ = (kint ** 2).sum(axis=1)
 

@@ -4,7 +4,7 @@
 
 ```python
 sample_l2(N, D, Chi=0.43, n_iter=150, lr=1.0, quasi_newton_finition=True,
-          precision="float32", eps=None, seed=None, warmstart=None, target=None, verbose=0)
+          seed=None, warmstart=None, target=None, verbose=0)
 ```
 
 ## Main params
@@ -27,19 +27,24 @@ sample_l2(N, D, Chi=0.43, n_iter=150, lr=1.0, quasi_newton_finition=True,
 | `warmstart` | `None` | Initial point cloud (e.g. a Sobol sequence). By default: uniform random points, except for `sample_wd`, which starts from a quick `sample_l1` run (`Chi=0.5`, no L-BFGS). |
 | `seed` | `None` | Random seed (initial points, tie-breaking between wave vectors of the same norm). Set it for reproducible results. |
 
-## Accuracy
+## Module settings
 
-| parameter | default | description |
-|-----------|---------|-------------|
-| `precision` | `"float32"` | `"float32"` or `"float64"`. float32 is much faster on GPU and uses half the memory, but limits how small the structure factor can get: S(k) ≤ α N + β \|k\|², with α = 2·10⁻¹⁴ and β = 3·10⁻¹² (see the README). Use float64 to optimise further. |
-| `eps` | `None` | Relative tolerance of the `"finufft"` and `"cufinufft"` backends. By default, `1e-4` in float32 and `1e-8` in float64. Ignored by `"keops"` and `"torch"`, which are exact. Lower it (e.g. `1e-12`, with float64) to reach machine precision. |
+Backend, precision and NUFFT tolerance are not sampler arguments: they are set once at the module
+level, and apply both to the samplers and to the structure factor (`plot_structure_factor`), so
+that points are always measured the way they were sampled.
 
-## Backend
-
-The backend is selected at the module level, per dimension, and require extra installations (see the Readme): 
+| setting | default | set / read | description |
+|---------|---------|------------|-------------|
+| backend | first available: keops >> torch >> cufinufft >> finufft | `select_backend(dimensions, backend)` / `get_backend(D)` | Chosen per dimension. (cu)finufft only for D <= 3 and needs extra installations (see the README). |
+| precision | `"float32"` | `select_precision(p)` / `get_precision()` | `"float32"` or `"float64"`, for all dimensions. float32 is much faster on GPU and uses half the memory, but limits how small the structure factor can get: S(k) ≤ α N + β \|k\|², with α = 2·10⁻¹⁴ and β = 3·10⁻¹² (see the README). Use float64 to optimise further. |
+| nufft_tolerance | `"auto"` | `select_nufft_tolerance(tol)` / `get_nufft_tolerance()` | Relative tolerance of the `"finufft"` and `"cufinufft"` backends. `"auto"` means `1e-4` in float32 and `1e-8` in float64. Ignored by `"keops"` and `"torch"`, which are exact. Lower it (e.g. `1e-12`, with float64) to reach machine precision. |
 
 ```python
-qmc_sampler.select_backend(dimensions={2, 3}, backend="finufft") 
+import qmc_sampler
+
+qmc_sampler.select_backend(dimensions={2, 3}, backend="finufft")
+qmc_sampler.select_precision("float64")
+qmc_sampler.select_nufft_tolerance(1e-12)
 ```
 
-The samplers return an `(N, D)` array of points in [0, 1)^D, with dtype `precision`.
+The samplers return an `(N, D)` array of points in [0, 1)^D, with dtype `get_precision()`.

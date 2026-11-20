@@ -106,7 +106,6 @@ def plot(
 def plot_structure_factor(
     points: NDArray,
     resolution: int = 20_000,
-    precision: str = "float32",
     ax: plt.Axes | None = None,
     return_fig: bool = False,
     title: str = None,
@@ -130,9 +129,6 @@ def plot_structure_factor(
         Number of sampled wave vectors. Larger values produce a smoother
         radial curve at increased computational cost. If D >= 4, the resolution
         will be divided by 10 for faster computation because fast fourier is unavailable, so if D >= 4, ask for a "resolution = 200_000" if an effecitve resolution = 20_000 is needed (20_000 evaluated wave vectors).
-    precision : precision used for the structure factor computation.
-        float64 is much slower, but might be needed if the true structure
-        factor is beyond 10^(-10).
     ax : matplotlib.axes.Axes, optional
         Existing axes on which to draw. If None, a new figure is created.
     return_fig : bool, default=False
@@ -160,6 +156,10 @@ def plot_structure_factor(
     not the exact structure factor. In particular, finite-window boundary effects 
     can introduce a bias. 
 
+    Precision, (cu)finufft tolerance and backend are the module settings
+    (qmc_sampler.select_precision, select_nufft_tolerance, select_backend), the same as
+    for the samplers, so that points are measured as they were sampled.
+
     Warnings
     --------
     The input points are assumed to lie in the unit hypercube ``[0, 1)^D``.
@@ -183,7 +183,7 @@ def plot_structure_factor(
 
     # --- Compute structure factor and averages ---
     k, S, kgroup, Sgroup = structure_factor_and_average(
-        pts, resolution=resolution, precision=precision)
+        pts, resolution=resolution)
     # --- Scatter (raw values) ---
     c_light, c_dark = "#b8c4d0", "#6b7f94"
     Sgroup_interp = np.exp(np.interp(np.log(k), np.log(kgroup), np.log(Sgroup)))
