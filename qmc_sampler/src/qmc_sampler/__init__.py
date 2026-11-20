@@ -13,7 +13,15 @@ Available methods:
 print(MESSAGE)
 
 
-from ._backend import available_backends, get_backend, select_backend
+from ._backend import (
+    available_backends,
+    get_backend,
+    get_nufft_tolerance,
+    get_precision,
+    select_backend,
+    select_nufft_tolerance,
+    select_precision,
+)
 from ._viz import plot, plot_structure_factor
 from .qmc_sampler import sample_l1, sample_l2, sample_wd
 
@@ -26,5 +34,9 @@ __all__ = [
     "select_backend",
     "get_backend",
     "available_backends",
+    "select_precision",
+    "get_precision",
+    "select_nufft_tolerance",
+    "get_nufft_tolerance",
 ]
-__version__ = "3.0.1"
+__version__ = "3.0.2"

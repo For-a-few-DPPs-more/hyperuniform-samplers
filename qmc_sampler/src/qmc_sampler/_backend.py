@@ -11,7 +11,7 @@ Available backends
 "keops"   : exact direct sums (O(N M)), pykeops LazyTensor reductions (GPU if available).
 "torch"   : exact direct sums (O(N M)), dense torch tensors by chunks (cuda if available).
 "finufft" : non-uniform FFT (O(N log N + M)), D <= 3 only. Approximate, with relative
-            tolerance `eps` (default FINUFFT_EPS[precision]: 1e-4 in float32, 1e-8 in float64).
+            tolerance get_nufft_tolerance() (see select_nufft_tolerance).
 "cufinufft": GPU version of finufft (cufinufft + cupy, NVIDIA GPU required), same
             restrictions and tolerances as "finufft".
 
@@ -23,6 +23,12 @@ Default (dimensions never selected), first available among:
     "keops" >> "torch" >> "cufinufft" >> "finufft"
 (cu)finufft is never the default when keops or torch is available, so that, unless asked
 otherwise, all Fourier sums are exact up to machine precision.
+
+Precision and NUFFT tolerance are module-level settings too, shared by the samplers and the
+structure factor (so that points are always sampled and measured consistently):
+
+    select_precision("float64")              # default "float32"
+    select_nufft_tolerance(1e-12)            # default "auto": AUTO_NUFFT_TOLERANCE[precision]
 """
 from __future__ import annotations
 
@@ -33,19 +39,25 @@ import numpy as np
 
 __all__ = [
     "BACKENDS",
-    "FINUFFT_EPS",
+    "AUTO_NUFFT_TOLERANCE",
+    "PRECISIONS",
     "FINUFFT_MAX_DIM",
     "NUFFT_BACKENDS",
     "available_backends",
     "get_backend",
     "select_backend",
+    "get_precision",
+    "select_precision",
+    "get_nufft_tolerance",
+    "select_nufft_tolerance",
     "nudft1",
     "nudft2_real",
 ]
 
 BACKENDS = ("keops", "torch", "cufinufft", "finufft")   # also the default priority order
 NUFFT_BACKENDS = ("finufft", "cufinufft")             # approximate, D <= FINUFFT_MAX_DIM
-FINUFFT_EPS = {"float32": 1e-4, "float64": 1e-8}      # also used by cufinufft
+PRECISIONS = ("float32", "float64")
+AUTO_NUFFT_TOLERANCE = {"float32": 1e-4, "float64": 1e-8}   # (cu)finufft, nufft_tolerance="auto"
 FINUFFT_MAX_DIM = 3
 TORCH_CHUNK_ELEMS = 8_000_000                 # torch: (points x wave vectors) per chunk
 
@@ -64,6 +76,7 @@ _PIP = {
 }
 _cache: dict = {}                             # backend -> imported module, or the error
 _selected: dict = {}                          # dimension -> backend
+_settings: dict = {"precision": "float32", "nufft_tolerance": "auto"}
 
 
 # ---------------------------------------------------------------------------
@@ -178,12 +191,68 @@ def get_backend(D: int) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Helpers
+# Precision and NUFFT tolerance (module-level, all dimensions)
 # ---------------------------------------------------------------------------
 
-def _precision(x) -> str:
-    return "float64" if np.asarray(x).dtype == np.float64 else "float32"
+def select_precision(precision: str) -> None:
+    """
+    Select the floating point precision of all computations: sampling and structure factor.
 
+    precision : "float32" (default: fast on GPU, half the memory) or "float64".
+
+    Example
+    -------
+    >>> qmc_sampler.select_precision("float64")
+    """
+    if precision not in PRECISIONS:
+        raise ValueError(f"qmc_sampler: precision must be one of {PRECISIONS}, got {precision!r}")
+    _settings["precision"] = precision
+
+
+def get_precision() -> str:
+    """Current precision, "float32" or "float64"."""
+    return _settings["precision"]
+
+
+def select_nufft_tolerance(tolerance: Union[str, float] = "auto") -> None:
+    """
+    Select the relative tolerance of the (cu)finufft backends (ignored by keops and torch,
+    which are exact).
+
+    tolerance : "auto" (default: AUTO_NUFFT_TOLERANCE[precision], i.e. 1e-4 in float32 and
+                1e-8 in float64) or a positive float. Values below the machine precision of
+                the current precision are clamped by finufft.
+
+    Example
+    -------
+    >>> qmc_sampler.select_precision("float64")
+    >>> qmc_sampler.select_nufft_tolerance(1e-12)
+    """
+    if isinstance(tolerance, str):
+        if tolerance != "auto":
+            raise ValueError(f"qmc_sampler: nufft_tolerance must be 'auto' or a positive "
+                             f"float, got {tolerance!r}")
+    elif isinstance(tolerance, bool) or not isinstance(tolerance, (int, float, np.floating)) \
+            or not tolerance > 0:
+        raise ValueError(f"qmc_sampler: nufft_tolerance must be 'auto' or a positive float, "
+                         f"got {tolerance!r}")
+    else:
+        tolerance = float(tolerance)
+    _settings["nufft_tolerance"] = tolerance
+
+
+def get_nufft_tolerance(resolve: bool = True) -> Union[str, float]:
+    """Current (cu)finufft tolerance. resolve=True turns "auto" into its value for the
+    current precision; resolve=False returns the setting as is."""
+    tol = _settings["nufft_tolerance"]
+    if resolve and tol == "auto":
+        return AUTO_NUFFT_TOLERANCE[get_precision()]
+    return tol
+
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
 
 def _real(precision):
     return np.float64 if precision == "float64" else np.float32
@@ -305,19 +374,19 @@ def _nufft_coords(x, precision, to_dev):
             for d in range(x.shape[1])]
 
 
-def _finufft_nudft1(x, c, k, isign, precision, backend="finufft", eps=None):
+def _finufft_nudft1(x, c, k, isign, precision, backend="finufft"):
     N, D = x.shape
     shape, idx = _finufft_grid(k)
     to_dev, to_np = _nufft_io(backend)
     coords = _nufft_coords(x, precision, to_dev)
     cc = np.ones(N) if c is None else np.asarray(c)
     cc = to_dev(np.ascontiguousarray(cc, dtype=_complex(precision)))
-    tol = FINUFFT_EPS[precision] if eps is None else eps
+    tol = get_nufft_tolerance()
     f = _nufft_fn(backend, D, 1)(*coords, cc, shape, eps=tol, isign=isign)
     return to_np(f)[idx].astype(np.complex128)
 
 
-def _finufft_nudft2_real(x, a, k, isign, precision, backend="finufft", eps=None):
+def _finufft_nudft2_real(x, a, k, isign, precision, backend="finufft"):
     N, D = x.shape
     P = a.shape[1]
     shape, idx = _finufft_grid(k)
@@ -327,7 +396,7 @@ def _finufft_nudft2_real(x, a, k, isign, precision, backend="finufft", eps=None)
     for p in range(P):
         np.add.at(f[p], idx, a[:, p])
     fn = _nufft_fn(backend, D, 2)
-    tol = FINUFFT_EPS[precision] if eps is None else eps
+    tol = get_nufft_tolerance()
     if P == 1:
         g = to_np(fn(*coords, to_dev(f[0]), eps=tol, isign=isign))[None]
     else:
@@ -339,19 +408,15 @@ def _finufft_nudft2_real(x, a, k, isign, precision, backend="finufft", eps=None)
 # Public primitives
 # ---------------------------------------------------------------------------
 
-def nudft1(x, c, k, isign: int = -1, backend: Optional[str] = None,
-           eps: Optional[float] = None) -> np.ndarray:
+def nudft1(x, c, k, isign: int = -1, backend: Optional[str] = None) -> np.ndarray:
     """F_m = sum_j c_j exp(isign * 2i pi k_m . x_j), shape (M,), complex128.
 
-    x : (N, D) float32 or float64 (sets the precision), c : (N,) real/complex or None (ones),
+    x : (N, D) points, cast to get_precision(), c : (N,) real/complex or None (ones),
     k : (M, D) integer wave vectors. backend defaults to get_backend(D).
-    eps : relative tolerance of (cu)finufft (default FINUFFT_EPS[precision]); ignored by
-          the exact backends.
+    (cu)finufft tolerance: get_nufft_tolerance().
     """
-    x = np.asarray(x)
-    if x.dtype not in (np.float32, np.float64):
-        x = x.astype(np.float64)
-    precision = _precision(x)
+    precision = get_precision()
+    x = np.asarray(x, dtype=_real(precision))
     backend = backend or get_backend(x.shape[1])
     k = np.asarray(k)
     if len(k) == 0:
@@ -360,22 +425,18 @@ def nudft1(x, c, k, isign: int = -1, backend: Optional[str] = None,
         return _keops_nudft1(x, c, k, isign, _real(precision))
     if backend == "torch":
         return _torch_nudft1(x, c, k, isign, _real(precision))
-    return _finufft_nudft1(x, c, k, isign, precision, backend, eps)
+    return _finufft_nudft1(x, c, k, isign, precision, backend)
 
 
-def nudft2_real(x, a, k, isign: int = 1, backend: Optional[str] = None,
-                eps: Optional[float] = None) -> np.ndarray:
-    """g_jp = Re sum_m a_mp exp(isign * 2i pi k_m . x_j), shape (N, P), dtype of x.
+def nudft2_real(x, a, k, isign: int = 1, backend: Optional[str] = None) -> np.ndarray:
+    """g_jp = Re sum_m a_mp exp(isign * 2i pi k_m . x_j), shape (N, P), dtype get_precision().
 
-    x : (N, D) float32 or float64 (sets the precision), a : (M, P) complex,
+    x : (N, D) points, cast to get_precision(), a : (M, P) complex,
     k : (M, D) integer wave vectors. backend defaults to get_backend(D).
-    eps : relative tolerance of (cu)finufft (default FINUFFT_EPS[precision]); ignored by
-          the exact backends.
+    (cu)finufft tolerance: get_nufft_tolerance().
     """
-    x = np.asarray(x)
-    if x.dtype not in (np.float32, np.float64):
-        x = x.astype(np.float64)
-    precision = _precision(x)
+    precision = get_precision()
+    x = np.asarray(x, dtype=_real(precision))
     backend = backend or get_backend(x.shape[1])
     a = np.asarray(a)
     a = a.reshape(len(a), -1)
@@ -387,5 +448,5 @@ def nudft2_real(x, a, k, isign: int = 1, backend: Optional[str] = None,
     elif backend == "torch":
         g = _torch_nudft2_real(x, a, k, isign, _real(precision))
     else:
-        g = _finufft_nudft2_real(x, a, k, isign, precision, backend, eps)
+        g = _finufft_nudft2_real(x, a, k, isign, precision, backend)
     return np.asarray(g, dtype=x.dtype)

@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "qmc-sampler"
-version = "3.0.1"
+version = "3.0.2"
 description = "QMC point sets by spectral optimisation (L2, L1 and WD exclusion regions)"
 readme = "README.md"
 license = { text = "MIT" }
@@ -45,6 +45,7 @@ exclude = [
     "**/*.jpg",
     "**/*.png",
     "**/__pycache__",
+    "plots",
 ]
 
 [tool.ruff]
