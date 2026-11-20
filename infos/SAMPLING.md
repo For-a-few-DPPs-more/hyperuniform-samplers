@@ -40,7 +40,7 @@ The main differences between the implemented version and the method of Morse et 
 * **Gradient descent.** Instead of the FIRE method recommended by Morse et al., we use a `bold driver` scheme on the normalised gradient: good steps boost the learning rate, bad steps slow it down. This method has the strong advantage of working out of the box (no hyperparameter tuning) on the full $(N, D)$ range that we considered.
   The bold driver alone would be sufficient to converge for low $\chi$ ($\chi \le 0.3$, or even a bit more). However, our goal was to push $\chi$ as high as possible ($\chi = 0.43$ in the samples of the database), which makes the optimisation significantly harder. Gradient descent is then not enough, so we complete it with 150 additional quasi-Newton iterations.
 
-The algorithm cost is $O(N^2 D^2)$ per sampled point cloud, so a GPU is nearly mandatory. We ran the notebook `src/generate_all_samples_from_paper.ipynb`, which internally relies on the [`qmc-sampler`](./qmc_sampler/README.md) python package,
+The algorithm cost is $O(N^2 D^2)$ per sampled point cloud, so a GPU is nearly mandatory. We ran the notebook `src/generate_all_samples_from_paper.ipynb`, which internally relies on the [`qmc-sampler`](../qmc_sampler/README.md) python package,
 on a Google Colab T4 GPU for the three geometries (`l2`, `l1`, `wd`), with $N = 2^{10}, \dots, 2^{17}$ and $D = 2$ to $16$, plus $D = 20$, $24$, $28$ and $32$
 (about 2 hours for $D = 2$ to $16$, plus 2 extra hours for $D = 20, 24, 28, 32$, per geometry).
 
