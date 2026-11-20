@@ -1,7 +1,7 @@
 # qmc-sampler
 
 [![PyPI](https://img.shields.io/pypi/v/qmc-sampler)](https://pypi.org/project/qmc-sampler/)
-[![GitHub](https://img.shields.io/badge/GitHub-hyperuniform-samplers-blue?logo=github)](https://github.com/For-a-few-DPPs-more/hyperuniform-samplers/qmc-sampler/README.md)
+[![GitHub](https://img.shields.io/badge/GitHub-hyperuniform-samplers-blue?logo=github)](https://github.com/For-a-few-DPPs-more/hyperuniform-samplers)
 [![Dataset](https://zenodo.org/badge/DOI/10.5281/zenodo.23605844.svg)](https://doi.org/10.5281/zenodo.23605844)
 
 **Quasi-Monte Carlo point sampling from spectral optimisation.**
