@@ -7,8 +7,12 @@
 **Quasi-Monte Carlo point sets by spectral optimisation.**
 
 `qmc-sampler` generates QMC point sets on the torus [0, 1)^D by minimising the Fourier
-coefficients of the points over every wave vector of an exclusion region. It was used to
-generate a large dataset of hyperuniform point sets, published on
+coefficients of the points over every wave vector of an exclusion region $\Omega$ :
+
+```math
+\text{Min loss} = \sum_{k \in \Omega} \frac{1}{|k|^2} \left| \sum_{j=1}^{N} e^{2i\pi \langle k, x_j \rangle} \right|^2 .
+```
+It was used to generate a large dataset of hyperuniform point sets, published on
 [Zenodo](https://doi.org/10.5281/zenodo.23605844).
 
 ## Installation
@@ -37,26 +41,6 @@ Extra parameters (`Chi`, `n_iter`, `seed`, ...) can be set to the samplers. They
 together with the module settings (backend, precision, NUFFT tolerance), in
 [Params.md](https://github.com/For-a-few-DPPs-more/hyperuniform-samplers/blob/main/qmc_sampler/Params.md).
 
-## Precision: float32 by default
-
-Computations run in **float32** by default. This is a deliberate choice: it roughly halves memory
-use and is much faster on GPU (KeOps, torch, cuFINUFFT), which matters for large `N` and `D`. The
-price is a floor on the reachable structure factor, which grows with `N` and `|k|`:
-
-  S(**k**) ≤ α N + β |**k**|²,  with α = 2·10⁻¹⁴ and β = 3·10⁻¹²
-
-For a deeper optimisation, switch to float64. Like the backend, the precision is a module
-setting: it applies to the samplers **and** to the structure factor, so that points are always
-measured with the precision they were sampled with.
-
-```python
-import qmc_sampler
-
-qmc_sampler.select_precision("float64")
-x = qmc_sampler.sample_l2(1000, 2)
-qmc_sampler.plot_structure_factor(x)      # also in float64
-```
-
 ## Backends
 
 We provide four different backends for computing the Fourier kernel. All four are available,
@@ -78,7 +62,7 @@ the first available backend in the order of the table, so by default every sum i
 **In 2D and 3D, (cu)FINUFFT is strongly recommended**, for l2 and l1 sampling: one iteration costs 
 O(N log N) instead of O(N^2), which is usually one or more orders of magnitude faster and makes large `N` reachable.
 The default (cu)FINUFFT tolerance (`"auto"`, which depends on the precision) trades accuracy for
-speed; lower it, in float64, to go down to machine precision.
+speed; lower it to go down to machine precision.
 
 ```bash
 pip install finufft                  # or: pip install "qmc-sampler[finufft]"
@@ -90,6 +74,26 @@ import qmc_sampler
 
 qmc_sampler.select_backend(dimensions={2, 3}, backend="finufft")   # or "cufinufft"
 qmc_sampler.select_nufft_tolerance(1e-12)                          # default "auto"
+```
+
+## Precision: float32 by default
+
+Computations run in **float32** by default. This is a deliberate choice: it roughly halves memory
+use and is much faster on GPU (KeOps, torch, cuFINUFFT), which matters for large `N` and `D`. The
+price is a floor on the reachable structure factor, which grows with `N` and `|k|`:
+
+  S(**k**) ≤ α N + β |**k**|²,  with α = 2·10⁻¹⁴ and β = 3·10⁻¹²
+
+For a deeper optimisation, switch to float64. Like the backend, the precision is a module
+setting: it applies to the samplers **and** to the structure factor, so that points are always
+measured with the precision they were sampled with.
+
+```python
+import qmc_sampler
+
+qmc_sampler.select_precision("float64")
+x = qmc_sampler.sample_l2(1000, 2)
+qmc_sampler.plot_structure_factor(x)      # also in float64
 ```
 
 ## Plotting
