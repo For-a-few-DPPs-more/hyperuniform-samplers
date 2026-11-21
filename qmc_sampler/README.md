@@ -52,9 +52,9 @@ be made with extra care for big scale or high precision experiments.
 | backend       | method                                  | cost           | dimensions | accuracy                                    |
 |---------------|-----------------------------------------|----------------|------------|---------------------------------------------|
 | `"keops"`     | direct sums, pykeops (GPU if available) | O(N M)         | any        | exact (machine precision)                   |
-| `"torch"`     | direct sums, torch (CUDA if available)  | O(N M)         | any        | exact (machine precision)                   |
-| `"cufinufft"` | non-uniform FFT on GPU (cufinufft + cupy) | O(N log N + M) | D <= 3   | `nufft_tolerance` (auto: 1e-4 float32, 1e-8 float64) |
-| `"finufft"`   | non-uniform FFT on CPU                  | O(N log N + M) | D <= 3     | `nufft_tolerance` (auto: 1e-4 float32, 1e-8 float64) |
+| `"torch"`     | direct sums, torch (GPU if available)  | O(N M)         | any        | exact (machine precision)                   |
+| `"cufinufft"` | non-uniform FFT (GPU only) | O(N log N + M) | D <= 3   | `nufft_tolerance` (auto: 1e-4 float32, 1e-8 float64) |
+| `"finufft"`   | non-uniform FFT  (CPU only) | O(N log N + M) | D <= 3     | `nufft_tolerance` (auto: 1e-4 float32, 1e-8 float64) |
 
 `M` is the number of wave vectors and grows like `N`. Unless told otherwise, `qmc-sampler` uses
 the first available backend in the order of the table, so by default every sum is exact.
