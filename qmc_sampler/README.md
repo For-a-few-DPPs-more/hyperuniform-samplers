@@ -31,9 +31,9 @@ x = sample_l2(1000, 2)            # (N, D) array of points in [0, 1)^D
 
 Three shapes of exclusion region are available:
 
-- **`sample_l2(N, D)`**: isotropic L2 ball, the classical choice.
-- **`sample_l1(N, D)`**: L1 ball, anisotropic, useful when the integrand has a low effective dimension.
-- **`sample_wd(N, D)`**: weights of the wrap-around discrepancy, which push this low-effective-dimension idea further.
+- **`sample_l2(N, D)`**, $\Omega$: isotropic L2 ball, the classical choice.
+- **`sample_l1(N, D)`**, $\Omega$: L1 ball, anisotropic, useful when the integrand has a low effective dimension.
+- **`sample_wd(N, D)`**, $\Omega$: star shaped region (based on the wrap-around discrepancy), push this low-effective-dimension idea further.
 
 ![Spectral exclusion regions in 2D](https://raw.githubusercontent.com/For-a-few-DPPs-more/hyperuniform-samplers/main/qmc_sampler/plots/exclusion_regions.png)
 
