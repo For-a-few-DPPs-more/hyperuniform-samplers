@@ -59,7 +59,12 @@ qmc_sampler.plot_structure_factor(x)      # also in float64
 
 ## Backends
 
-All Fourier sums go through one of four backends:
+We provide four different backends for computing the Fourier kernel. \
+All four are available, provided that their respective dependencies are properly \
+installed on the user's system. Backend selection affects both computational speed \
+and numerical precision, and should therefore be made with extra care for big scale \
+experiments.
+
 
 | backend       | method                                  | cost           | dimensions | accuracy                                    |
 |---------------|-----------------------------------------|----------------|------------|---------------------------------------------|
