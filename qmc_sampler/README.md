@@ -99,7 +99,7 @@ qmc_sampler.plot_structure_factor(x)      # also in float64
 ## Plotting
 
 ```python
-from qmc_sampler import plot, plot_structure_factor   # adapted from blue_sampler
+from qmc_sampler import plot, plot_structure_factor 
 ```
 
 `plot_structure_factor` uses the same module settings as the samplers (backend of the
