@@ -10,7 +10,7 @@
 coefficients of the points over every wave vector of an exclusion region $\Omega$ :
 
 ```math
-\text{Min loss(x} = \sum_{k \in \Omega} \frac{1}{|k|^2} \left| \sum_{j=1}^{N} e^{2i\pi \langle k, x_j \rangle} \right|^2 .
+\text{Min loss(x)} = \sum_{k \in \Omega} \frac{1}{|k|^2} \left| \sum_{j=1}^{N} e^{2i\pi \langle k, x_j \rangle} \right|^2 .
 ```
 It was used to generate a large dataset of hyperuniform point sets, published on
 [Zenodo](https://doi.org/10.5281/zenodo.23605844).
