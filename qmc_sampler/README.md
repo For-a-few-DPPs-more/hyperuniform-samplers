@@ -58,6 +58,9 @@ be made with extra care for big scale or high precision experiments.
 
 `M` is the number of wave vectors and grows like `N`. Unless told otherwise, `qmc-sampler` uses
 the first available backend in the order of the table, so by default every sum is exact.
+KeOps counts as available only if it compiles and runs a tiny test reduction: where pykeops
+installs but cannot compile (no C++ compiler, Windows), the next backend is used instead.
+`finufft` is always installed, so D <= 3 always has a working backend.
 
 **In 2D and 3D, (cu)FINUFFT is strongly recommended**, for l2 and l1 sampling: one iteration costs 
 O(N log N) instead of O(N^2), which is usually one or more orders of magnitude faster and makes large `N` reachable.
@@ -65,8 +68,7 @@ The default (cu)FINUFFT tolerance (`"auto"`, which depends on the precision) tra
 speed; lower it to go down to machine precision.
 
 ```bash
-pip install finufft                  # or: pip install "qmc-sampler[finufft]"
-pip install cufinufft cupy-cuda12x   # GPU, CUDA 12 (CUDA 11: cupy-cuda11x)
+pip install cufinufft cupy-cuda12x   # GPU, CUDA 12 (CUDA 11: cupy-cuda11x); finufft is installed with qmc-sampler
 ```
 
 ```python
@@ -102,8 +104,16 @@ qmc_sampler.plot_structure_factor(x)      # also in float64
 from qmc_sampler import plot, plot_structure_factor 
 ```
 
-`plot_structure_factor` uses the same module settings as the samplers (backend of the
-dimension of the points, precision, NUFFT tolerance).
+Both come from [structure-factor-v2](https://pypi.org/project/structure-factor-v2/), installed
+with `qmc-sampler`. `plot_structure_factor` uses the same module settings as the samplers
+(backend of the dimension of the points, precision, NUFFT tolerance), and accepts all the
+options of `structure_factor_v2.plot_structure_factor`, e.g. the Kaiser-tapered estimate for
+non-periodic windows:
+
+```python
+plot_structure_factor(x, trust_boundary=False)
+plot_structure_factor(x, backend="keops")      # overrides the module setting for this plot
+```
 
 ## Links
 

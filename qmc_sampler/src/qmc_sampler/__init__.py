@@ -39,4 +39,4 @@ __all__ = [
     "select_nufft_tolerance",
     "get_nufft_tolerance",
 ]
-__version__ = "3.0.2"
+__version__ = "3.1.0"

@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "qmc-sampler"
-version = "3.0.2"
+version = "3.1.0"
 description = "QMC point sets by spectral optimisation (L2, L1 and WD exclusion regions)"
 readme = "README.md"
 license = { text = "MIT" }
@@ -25,7 +25,9 @@ dependencies = [
     "numpy",
     "scipy",
     "matplotlib",
-    "pykeops",
+    "pykeops",                  # kept for the published notebooks; used only if it compiles
+    "finufft",                  # fallback backend that always works in D <= 3
+    "structure-factor-v2>=2.0", # plot, plot_structure_factor
 ]
 
 [project.optional-dependencies]
