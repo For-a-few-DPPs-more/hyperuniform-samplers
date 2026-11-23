@@ -101,18 +101,9 @@ qmc_sampler.plot_structure_factor(x)      # also in float64
 ## Plotting
 
 ```python
-from qmc_sampler import plot, plot_structure_factor 
-```
-
-Both come from [structure-factor-v2](https://pypi.org/project/structure-factor-v2/), installed
-with `qmc-sampler`. `plot_structure_factor` uses the same module settings as the samplers
-(backend of the dimension of the points, precision, NUFFT tolerance), and accepts all the
-options of `structure_factor_v2.plot_structure_factor`, e.g. the Kaiser-tapered estimate for
-non-periodic windows:
-
-```python
-plot_structure_factor(x, trust_boundary=False)
-plot_structure_factor(x, backend="keops")      # overrides the module setting for this plot
+from qmc_sampler import plot, plot_structure_factor
+plot(x)
+plot_structure_factor(x)
 ```
 
 ## Links
