@@ -43,6 +43,8 @@ Or from a notebook: see [quick_start.ipynb](https://for-a-few-dpps-more.github.i
 - **Size:** ≈ 500 MB by default, ≈ 3.2 GB with the large point clouds (see note below).
 - **Number of points:** native N = 2¹⁰ to 2¹⁷ (powers of 2); up to N = 2²⁴ with tiling.
 - **Dimension:** native D = 2 to 16, plus D = 20, 24, 28 and D = 32; any 2 ≤ D ≤ 32 with projection.
+- **Mirror:** for commodity, a mirror of the database, as a github release,  is available at following [`link`](https://github.com/For-a-few-DPPs-more/hyperuniform-samplers/releases/tag/dataset-v5.0.0). Downloading from the mirror will probably be quicker than from Zenodo.
+ 
 
 > **Note: Large storage.** In low dimensions (D ≤ 4), the Zenodo database provides additional, much larger point clouds, to be downloaded manually ([`larges.zip`](https://zenodo.org/records/23605844?preview_file=larges.zip), 2.7 GB). They go up to N = 2²⁷ ≈ 134 million points in 2D, 2²⁵ ≈ 34 million in 3D and 2²¹ ≈ 2 million in 4D.
 
