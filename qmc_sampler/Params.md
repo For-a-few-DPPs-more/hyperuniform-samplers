@@ -35,7 +35,7 @@ that points are always measured the way they were sampled.
 
 | setting | default | set / read | description |
 |---------|---------|------------|-------------|
-| backend | first available: keops >> torch >> cufinufft >> finufft | `select_backend(dimensions, backend)` / `get_backend(D)` | Chosen per dimension. (cu)finufft only for D <= 3 and needs extra installations (see the README). |
+| backend | first available: keops (if it compiles) >> torch >> cufinufft >> finufft | `select_backend(dimensions, backend)` / `get_backend(D)` | Chosen per dimension. (cu)finufft only for D <= 3; finufft is always installed, cufinufft needs extra installations (see the README). |
 | precision | `"float32"` | `select_precision(p)` / `get_precision()` | `"float32"` or `"float64"`, for all dimensions. float32 is much faster on GPU and uses half the memory, but limits how small the structure factor can get: S(k) ≤ α N + β \|k\|², with α = 2·10⁻¹⁴ and β = 3·10⁻¹² (see the README). Use float64 to optimise further. |
 | nufft_tolerance | `"auto"` | `select_nufft_tolerance(tol)` / `get_nufft_tolerance()` | Relative tolerance of the `"finufft"` and `"cufinufft"` backends. `"auto"` means `1e-4` in float32 and `1e-8` in float64. Ignored by `"keops"` and `"torch"`, which are exact. Lower it (e.g. `1e-12`, with float64) to reach machine precision. |
 

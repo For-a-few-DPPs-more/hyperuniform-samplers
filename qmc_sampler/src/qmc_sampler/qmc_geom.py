@@ -10,11 +10,6 @@ get_wave_vectors(N, D, chi, ...)
 For given parameters N, D, and chi, this function returns:
 
     - The selected wave vectors k in the exclusion region.
-    - The corresponding Fourier weights, used to compute the
-      weighted loss
-
-          sum_k weight(k) * |X_hat(k)|**2
-
     - The number of selected wave vectors, for a sanity check.
       The expected count is
 

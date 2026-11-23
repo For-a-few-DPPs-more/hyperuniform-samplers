@@ -43,6 +43,8 @@ Or from a notebook: see [quick_start.ipynb](https://for-a-few-dpps-more.github.i
 - **Size:** ≈ 500 MB by default, ≈ 3.2 GB with the large point clouds (see note below).
 - **Number of points:** native N = 2¹⁰ to 2¹⁷ (powers of 2); up to N = 2²⁴ with tiling.
 - **Dimension:** native D = 2 to 16, plus D = 20, 24, 28 and D = 32; any 2 ≤ D ≤ 32 with projection.
+- **Mirror:** for commodity, a mirror of the database, as a github release,  is available at following [`link`](https://github.com/For-a-few-DPPs-more/hyperuniform-samplers/releases/tag/dataset-v5.0.0). Downloading from the mirror will probably be quicker than from Zenodo.
+ 
 
 > **Note: Large storage.** In low dimensions (D ≤ 4), the Zenodo database provides additional, much larger point clouds, to be downloaded manually ([`larges.zip`](https://zenodo.org/records/23605844?preview_file=larges.zip), 2.7 GB). They go up to N = 2²⁷ ≈ 134 million points in 2D, 2²⁵ ≈ 34 million in 3D and 2²¹ ≈ 2 million in 4D.
 
@@ -72,9 +74,9 @@ For a wave vector k = (k₁, ..., k_D) with integer components, let define the s
 S(k) = |Σⱼ exp(2iπ ⟨k, xⱼ⟩)|² / N
 ```
 
-A near-zero S(k), as here for the provided samples means that the Monte Carlo integration error is controlled for the low-frequency test function x ↦ exp(2iπ ⟨k, x⟩). The number of such controlled wave vectors is at most 2 * Chi * (N -1) * D where Chi is an hyperparametter that we set to 0.43 (common choices are 0.3 and 0.4, see for exemple [Morse et al. (2023)](https://doi.org/10.1103/PhysRevResearch.5.033190) ) and the factor 2 comes from the symmetry S(k) = S(-k). 
+A near-zero S(k), as here for the provided samples (S(k) ≤ 2·10⁻¹⁴ N + 3·10⁻¹² |k|²)[^1] means that the Monte Carlo integration error is controlled for the low-frequency test function x ↦ exp(2iπ ⟨k, x⟩). The number of such controlled wave vectors is at most 2 * Chi * (N -1) * D where Chi is an hyperparametter that we set to 0.43 (common choices are 0.3 and 0.4, see for exemple [Morse et al. (2023)](https://doi.org/10.1103/PhysRevResearch.5.033190) ) and the factor 2 comes from the symmetry S(k) = S(-k). 
 
-Following plots show the values of S(k) for the 2 ball families, 1. as a power spectrum map (kx, ky) ↦ S(k) for 2d point clouds only and 2. as a radial |k| ↦ S(k) curve (average over radial bins) for all dimensions D = 2 to 16 : 
+Following plots show the values of S(k) for the 2 ball families, 1. as a power spectrum map (kx, ky) ↦ S(k) for 2d point clouds only and 2. as a radial |k| ↦ S(k) curve (average over radial bins) for dimensions D = 2 to 16 : 
 
 - (kx, ky) ↦ S(k) power spectrums for 2D point clouds
       

@@ -277,7 +277,7 @@ def sample(
             x.ravel(), 
             jac=True,
             method="L-BFGS-B",
-            options={"maxiter": n_iter, "maxcor": 30, "maxfun": 2 * n_iter, "ftol": 0, "gtol": 0, "maxfun": 10*n_iter},
+            options={"maxiter": n_iter, "maxcor": 30, "ftol": 0, "gtol": 0, "maxfun": 10*n_iter},
         )
 
         x = np.mod(res.x.reshape(N, D), 1.0).astype(real_dtype)

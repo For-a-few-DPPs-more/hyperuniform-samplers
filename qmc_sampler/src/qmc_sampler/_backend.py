@@ -22,7 +22,9 @@ The backend is chosen per dimension:
 Default (dimensions never selected), first available among:
     "keops" >> "torch" >> "cufinufft" >> "finufft"
 (cu)finufft is never the default when keops or torch is available, so that, unless asked
-otherwise, all Fourier sums are exact up to machine precision.
+otherwise, all Fourier sums are exact up to machine precision. KeOps counts as available only
+if it compiles and runs a tiny reduction (tested once), so that a pykeops which imports but
+cannot compile (no compiler, Windows) falls back to the next backend instead of failing.
 
 Precision and NUFFT tolerance are module-level settings too, shared by the samplers and the
 structure factor (so that points are always sampled and measured consistently):
@@ -93,17 +95,35 @@ def _load(backend: str):
                 mods.append(importlib.import_module(name))
             if backend == "cufinufft" and mods[1].cuda.runtime.getDeviceCount() < 1:
                 raise RuntimeError("no CUDA device found")
+            if backend == "keops":
+                name = "pykeops (test reduction)"
+                _keops_smoke_test(mods[0])
             _cache[backend] = mods[0]
-        except Exception as err:              # ImportError, broken install, or no GPU
+        except Exception as err:              # ImportError, broken install, no GPU, no compiler
             _cache[backend] = (name, err)
     mod = _cache[backend]
     if isinstance(mod, tuple):
         name, err = mod
+        hint = (_KEOPS_RUNTIME_HINT if name == "pykeops (test reduction)"
+                else f"Install it with `{_PIP[backend]}`.")
         raise ImportError(
-            f"qmc_sampler: backend {backend!r} is not available "
-            f"({name!r}: {err}). Install it with `{_PIP[backend]}`."
+            f"qmc_sampler: backend {backend!r} is not available ({name!r}: {err}). {hint}"
         ) from None
     return mod
+
+
+_KEOPS_RUNTIME_HINT = (
+    "pykeops imports but cannot compile or run a reduction (a C++ compiler is needed, and "
+    "KeOps does not support Windows); another backend is used by default."
+)
+
+
+def _keops_smoke_test(pykeops_numpy) -> None:
+    """Compile and run a tiny KeOps reduction: pykeops often imports fine where it cannot
+    compile (no compiler, Windows), and would then fail at the first Fourier sum."""
+    x = np.random.rand(10, 3).astype(np.float32)
+    LazyTensor = pykeops_numpy.LazyTensor
+    ((LazyTensor(x[:, None, :]) - LazyTensor(x[None, :, :])) ** 2).sum(-1).sum_reduction(axis=1)
 
 
 def _is_available(backend: str) -> bool:
